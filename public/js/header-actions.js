@@ -370,9 +370,117 @@
     window.location.href = '/login.html';
   }
 
+  // ---- Mobile drawer ----
+  const MOBILE_NAV = [
+    { href: '/dashboard.html', icon: 'dashboard', label: 'Dashboard' },
+    { href: '/obras.html', icon: 'construction', label: 'Obras' },
+    { href: '/funcionarios.html', icon: 'groups', label: 'Funcionários' },
+    { href: '/responsaveis.html', icon: 'engineering', label: 'Responsáveis' },
+    { href: '/relatorio.html', icon: 'analytics', label: 'Relatórios' },
+    { href: '/usuarios.html', icon: 'manage_accounts', label: 'Usuários', adminOnly: true },
+  ];
+
+  function injectMobileDrawer() {
+    const path = window.location.pathname;
+
+    const navLinks = MOBILE_NAV.map(item => {
+      const isActive = path === item.href || path.endsWith(item.href);
+      const base = 'align-items:center;gap:16px;padding:12px 16px;font-family:\'JetBrains Mono\',monospace;font-size:12px;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;transition:background .15s;';
+      const state = isActive ? 'background:#c62828;color:#ffe0dd;border-right:4px solid #a20513;font-weight:700;' : 'color:#546067;';
+      const display = item.adminOnly ? 'display:none;' : 'display:flex;';
+      const idAttr = item.adminOnly ? ' id="drawer-link-usuarios"' : '';
+      const iconFill = isActive ? "font-variation-settings:'FILL' 1;" : '';
+      return `<a href="${item.href}"${idAttr} style="${display}${base}${state}"><span class="material-symbols-outlined" style="font-size:20px;${iconFill}">${item.icon}</span>${item.label}</a>`;
+    }).join('');
+
+    const overlay = document.createElement('div');
+    overlay.id = 'mobile-drawer-overlay';
+    overlay.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;';
+    overlay.innerHTML = `
+      <div id="mobile-drawer" style="position:absolute;top:0;left:0;height:100%;width:256px;background:#f3f3f3;border-right:2px solid #e4beba;display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .25s cubic-bezier(.4,0,.2,1);">
+        <div style="padding:16px;border-bottom:2px solid #e4beba;display:flex;align-items:center;justify-content:space-between;background:#2f3131;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:40px;height:40px;border-radius:50%;background:#d7e4ec;border:2px solid #e4beba;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+              <span id="drawer-avatar-icon" class="material-symbols-outlined" style="color:#546067;">person</span>
+              <img id="drawer-avatar-img" alt="Foto" style="display:none;width:100%;height:100%;object-fit:cover;">
+            </div>
+            <div>
+              <div id="drawer-user-nome" style="font-family:'Hanken Grotesk',sans-serif;font-weight:700;font-size:13px;color:#f1f1f1;">...</div>
+              <div id="drawer-user-role" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#b0b8bc;text-transform:uppercase;letter-spacing:.05em;">Encarregado</div>
+            </div>
+          </div>
+          <button id="drawer-close-btn" style="background:none;border:none;cursor:pointer;color:#b0b8bc;display:flex;align-items:center;padding:4px;">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <nav style="flex:1;padding:8px 0;overflow-y:auto;">
+          ${navLinks}
+        </nav>
+        <div style="padding:12px 16px;border-top:2px solid #e4beba;">
+          <button id="drawer-logout-btn" style="width:100%;height:44px;border:2px solid #8f706c;color:#546067;background:none;font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;cursor:pointer;letter-spacing:.05em;display:flex;align-items:center;justify-content:center;gap:8px;">
+            <span class="material-symbols-outlined" style="font-size:16px;">logout</span>Sair
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeMobileDrawer();
+    });
+    document.getElementById('drawer-close-btn')?.addEventListener('click', closeMobileDrawer);
+    document.getElementById('drawer-logout-btn')?.addEventListener('click', async () => {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      window.location.href = '/login.html';
+    });
+  }
+
+  async function loadDrawerUser() {
+    try {
+      const res = await fetch('/api/auth/me');
+      if (!res.ok) return;
+      const user = await res.json();
+      const nomeEl = document.getElementById('drawer-user-nome');
+      const roleEl = document.getElementById('drawer-user-role');
+      if (nomeEl) nomeEl.textContent = user.nome || '...';
+      if (roleEl) roleEl.textContent = user.papel === 'admin' ? 'Administrador' : 'Encarregado';
+      if (user.papel === 'admin') {
+        const linkUsuarios = document.getElementById('drawer-link-usuarios');
+        if (linkUsuarios) linkUsuarios.style.display = 'flex';
+      }
+      const photo = localStorage.getItem('wcj_user_photo');
+      if (photo) {
+        const img = document.getElementById('drawer-avatar-img');
+        const icon = document.getElementById('drawer-avatar-icon');
+        if (img) { img.src = photo; img.style.display = 'block'; }
+        if (icon) icon.style.display = 'none';
+      }
+    } catch {}
+  }
+
+  function openMobileDrawer() {
+    const overlay = document.getElementById('mobile-drawer-overlay');
+    const drawer = document.getElementById('mobile-drawer');
+    if (!overlay || !drawer) return;
+    overlay.style.display = 'block';
+    requestAnimationFrame(() => {
+      drawer.style.transform = 'translateX(0)';
+    });
+    loadDrawerUser();
+  }
+
+  function closeMobileDrawer() {
+    const overlay = document.getElementById('mobile-drawer-overlay');
+    const drawer = document.getElementById('mobile-drawer');
+    if (!overlay || !drawer) return;
+    drawer.style.transform = 'translateX(-100%)';
+    setTimeout(() => { overlay.style.display = 'none'; }, 250);
+  }
+
   // ---- Init ----
   function init() {
     injectHTML();
+    injectMobileDrawer();
 
     // Wire close buttons
     document.getElementById('btn-close-notif')?.addEventListener('click', () => {
@@ -389,6 +497,13 @@
     // Wire header buttons
     document.getElementById('btn-notif')?.addEventListener('click', toggleNotifPanel);
     document.getElementById('btn-settings')?.addEventListener('click', openSettingsModal);
+
+    // Wire hamburger (span with class md:hidden containing "menu" icon)
+    const hamburger = document.querySelector('header .md\\:hidden');
+    if (hamburger) {
+      hamburger.style.cursor = 'pointer';
+      hamburger.addEventListener('click', openMobileDrawer);
+    }
 
     // Close notif panel on outside click
     document.addEventListener('click', (e) => {

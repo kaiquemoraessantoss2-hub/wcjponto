@@ -290,5 +290,6 @@
     function fmtData(d) { if (!d) return '-'; return new Date(d).toLocaleDateString('pt-BR'); }
     async function logout() { await fetch('/api/auth/logout', {method:'POST'}); window.location.href='/login.html'; }
   </script>
+  <script src="/js/header-actions.js"></script>
 </body>
 </html>

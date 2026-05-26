@@ -355,5 +355,6 @@
     function esc(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
     async function logout() { await fetch('/api/auth/logout', {method:'POST'}); window.location.href='/login.html'; }
   </script>
+  <script src="/js/header-actions.js"></script>
 </body>
 </html>
