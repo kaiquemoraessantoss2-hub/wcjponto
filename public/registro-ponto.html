@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <title>Registrar Ponto - PontoWCJ</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;900&family=JetBrains+Mono:wght@500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#a20513", "on-primary": "#ffffff", "primary-container": "#c62828", "on-primary-container": "#ffe0dd",
+            "secondary": "#546067", "on-secondary": "#ffffff", "secondary-container": "#d7e4ec", "on-secondary-container": "#5a666d",
+            "tertiary": "#39535e", "tertiary-fixed-dim": "#afcbd8", "on-tertiary-fixed-variant": "#304a55",
+            "surface": "#f9f9f9", "surface-dim": "#dadada", "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f3f3f3", "surface-container": "#eeeeee",
+            "surface-container-high": "#e8e8e8", "surface-container-highest": "#e2e2e2",
+            "on-surface": "#1a1c1c", "on-surface-variant": "#5b403d",
+            "outline": "#8f706c", "outline-variant": "#e4beba",
+            "error": "#ba1a1a", "on-error": "#ffffff", "error-container": "#ffdad6", "on-error-container": "#93000a",
+            "inverse-surface": "#2f3131", "inverse-on-surface": "#f1f1f1"
+          },
+          fontFamily: { sans: ['Work Sans','sans-serif'], heading: ['Hanken Grotesk','sans-serif'], mono: ['JetBrains Mono','monospace'] },
+          borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem' }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Work Sans', sans-serif; background-color: #f9f9f9; color: #1a1c1c; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; user-select: none; }
+    .nav-link { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; color: #546067; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; text-decoration: none; transition: background-color 0.15s; }
+    .nav-link:hover { background-color: rgba(215,228,236,0.5); }
+    .nav-link.active { background-color: #c62828; color: #ffe0dd; border-right: 4px solid #a20513; font-weight: 700; }
+    input:focus, select:focus, textarea:focus { border-color: #a20513 !important; outline: none; box-shadow: none; }
+    .checkbox-presenca { width: 1.25rem; height: 1.25rem; border-radius: 0; border: 2px solid #8f706c; appearance: none; cursor: pointer; background: white; }
+    .checkbox-presenca:checked { background-color: #2e7d32; border-color: #2e7d32; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='white' d='M13.854 3.646a.5.5 0 010 .708l-7 7a.5.5 0 01-.708 0l-3.5-3.5a.5.5 0 11.708-.708L6.5 10.293l6.646-6.647a.5.5 0 01.708 0z'/%3E%3C/svg%3E"); background-size: 14px; background-position: center; background-repeat: no-repeat; }
+    .sticky-col { position: sticky; left: 0; z-index: 10; box-shadow: 2px 0 4px -2px rgba(0,0,0,0.1); }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #eeeeee; }
+    ::-webkit-scrollbar-thumb { background: #8f706c; border-radius: 2px; }
+  </style>
+</head>
+<body class="bg-surface">
+
+  <!-- Sidebar -->
+  <nav class="hidden md:flex fixed left-0 top-0 h-full w-64 bg-surface-container-low border-r-2 border-outline-variant flex-col z-40 pt-16">
+    <div class="p-4 border-b-2 border-outline-variant mb-2">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-secondary-container rounded-full flex items-center justify-center border-2 border-outline-variant">
+          <span class="material-symbols-outlined text-secondary">person</span>
+        </div>
+        <div>
+          <div class="text-sm font-bold text-primary font-heading" id="sideUserNome">...</div>
+          <div class="text-xs text-secondary font-mono uppercase tracking-wider" id="sideUserRole">Encarregado</div>
+        </div>
+      </div>
+    </div>
+    <div class="flex-1 py-2 flex flex-col">
+      <a href="/dashboard.html" class="nav-link"><span class="material-symbols-outlined">dashboard</span>Dashboard</a>
+      <a href="/obras.html" class="nav-link"><span class="material-symbols-outlined">construction</span>Obras</a>
+      <a href="/funcionarios.html" class="nav-link"><span class="material-symbols-outlined">groups</span>Funcionários</a>
+      <a href="/responsaveis.html" class="nav-link"><span class="material-symbols-outlined">engineering</span>Responsáveis</a>
+      <a href="/relatorio.html" class="nav-link"><span class="material-symbols-outlined">analytics</span>Relatórios</a>
+      <a href="/usuarios.html" class="nav-link hidden" id="linkUsuarios"><span class="material-symbols-outlined">manage_accounts</span>Usuários</a>
+    </div>
+    <div class="p-4 border-t-2 border-outline-variant">
+      <button onclick="logout()" class="w-full h-12 border-2 border-outline text-secondary font-mono text-xs uppercase flex items-center justify-center gap-2 hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined">logout</span>Sair
+      </button>
+    </div>
+  </nav>
+
+  <!-- Top Header -->
+  <header class="fixed top-0 left-0 right-0 md:left-64 z-50 bg-surface-container-highest border-b-2 border-outline-variant flex items-center justify-between px-4 md:px-10 h-16">
+    <div class="flex items-center gap-4">
+      <span class="md:hidden text-secondary material-symbols-outlined">menu</span>
+      <div>
+        <a href="/obras.html" class="text-secondary font-mono text-xs uppercase hover:text-primary transition-colors">← Obras</a>
+        <h1 class="text-lg font-black font-heading text-primary tracking-tight leading-tight" id="obraNome">Carregando...</h1>
+        <div class="text-xs font-mono text-secondary leading-tight" id="obraInfo"></div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="text-sm font-mono text-secondary hidden md:inline" id="userNome">...</span>
+      <span class="text-xs font-mono bg-surface-container px-2 py-1 text-secondary hidden md:inline" id="userPapel"></span>
+    </div>
+  </header>
+
+  <!-- Bottom nav (mobile) -->
+  <nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-highest border-t-2 border-outline-variant flex justify-around items-center h-14 z-50">
+    <a href="/dashboard.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span class="text-xs font-mono">Dash</span>
+    </a>
+    <a href="/obras.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
+      <span class="material-symbols-outlined">construction</span>
+      <span class="text-xs font-mono">Obras</span>
+    </a>
+    <a href="/funcionarios.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
+      <span class="material-symbols-outlined">engineering</span>
+      <span class="text-xs font-mono">Func</span>
+    </a>
+    <a href="/relatorio.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
+      <span class="material-symbols-outlined">analytics</span>
+      <span class="text-xs font-mono">Relat</span>
+    </a>
+  </nav>
+
+  <!-- Main content -->
+  <main class="md:ml-64 pt-16 pb-16 md:pb-0 min-h-screen bg-surface">
+
+    <!-- Filters bar -->
+    <div class="bg-surface-container-low border-b border-outline-variant px-4 md:px-10 py-4">
+      <div class="flex flex-wrap items-end gap-3">
+        <!-- Date -->
+        <div class="flex flex-col gap-1">
+          <label class="font-mono text-xs uppercase text-secondary tracking-wider">Data</label>
+          <input type="date" id="dataRegistro"
+            class="h-12 border-2 border-outline-variant bg-surface px-3 font-mono text-sm text-on-surface focus:border-primary w-44">
+        </div>
+        <!-- Filter name -->
+        <div class="flex flex-col gap-1 flex-1 min-w-[160px]">
+          <label class="font-mono text-xs uppercase text-secondary tracking-wider">Filtrar funcionário</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-secondary text-base pointer-events-none">search</span>
+            <input type="text" id="filtroNome" placeholder="Nome..."
+              class="h-12 border-2 border-outline-variant bg-surface pl-9 pr-3 font-mono text-sm text-on-surface focus:border-primary w-full">
+          </div>
+        </div>
+        <!-- Action buttons -->
+        <div class="flex items-end gap-2 flex-wrap">
+          <button onclick="marcarTodos(true)"
+            class="h-12 px-4 border-2 border-outline-variant text-secondary font-mono text-xs uppercase flex items-center gap-2 hover:bg-surface-container transition-colors">
+            <span class="material-symbols-outlined text-base">check_box</span>
+            <span class="hidden sm:inline">Todos Presentes</span>
+            <span class="sm:hidden">Pres.</span>
+          </button>
+          <button onclick="marcarTodos(false)"
+            class="h-12 px-4 border-2 border-outline-variant text-secondary font-mono text-xs uppercase flex items-center gap-2 hover:bg-surface-container transition-colors">
+            <span class="material-symbols-outlined text-base">check_box_outline_blank</span>
+            <span class="hidden sm:inline">Todos Ausentes</span>
+            <span class="sm:hidden">Aus.</span>
+          </button>
+          <button onclick="carregarRegistros()"
+            class="h-12 px-4 border-2 border-secondary-container bg-secondary-container text-on-secondary-container font-mono text-xs uppercase flex items-center gap-2 hover:bg-outline-variant transition-colors">
+            <span class="material-symbols-outlined text-base">refresh</span>
+            Consultar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content area -->
+    <div class="p-4 md:p-10">
+
+      <!-- Loading -->
+      <div id="loadingRegistros" class="hidden flex flex-col items-center justify-center py-20 gap-4">
+        <div class="w-10 h-10 border-4 border-outline-variant border-t-primary rounded-full animate-spin"></div>
+        <span class="font-mono text-xs uppercase text-secondary tracking-wider">Carregando registros...</span>
+      </div>
+
+      <!-- Table container -->
+      <div id="tabelaContainer" class="hidden">
+        <!-- Counter + save bar -->
+        <div class="flex items-center justify-between mb-4">
+          <span class="font-mono text-xs uppercase text-secondary tracking-wider" id="contadorRegistros"></span>
+          <button id="btnSalvar" onclick="salvarRegistros()"
+            class="h-12 px-6 bg-primary text-on-primary font-mono text-xs uppercase font-bold flex items-center gap-2 hover:bg-primary-container transition-colors border-2 border-primary disabled:opacity-50 disabled:cursor-not-allowed">
+            <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1">save</span>
+            Salvar Registros
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div class="border-2 border-outline-variant overflow-x-auto">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-inverse-surface">
+                <th class="py-3 px-3 text-left font-mono text-xs uppercase text-inverse-on-surface border-r border-outline-variant/30 w-10 hidden sm:table-cell">#</th>
+                <th class="py-3 px-4 text-left font-mono text-xs uppercase text-inverse-on-surface border-r border-outline-variant/30">Nome</th>
+                <th class="py-3 px-4 text-left font-mono text-xs uppercase text-inverse-on-surface border-r border-outline-variant/30 hidden sm:table-cell">Cargo</th>
+                <th class="py-3 px-4 text-center font-mono text-xs uppercase text-inverse-on-surface border-r border-outline-variant/30 w-20 sm:w-28">Presente</th>
+                <th class="py-3 px-4 text-left font-mono text-xs uppercase text-inverse-on-surface hidden sm:table-cell">Observação</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyRegistros"></tbody>
+          </table>
+        </div>
+
+        <!-- Bottom save bar (repeat for convenience on long lists) -->
+        <div class="flex justify-end mt-4">
+          <button onclick="salvarRegistros()"
+            class="h-12 px-6 bg-primary text-on-primary font-mono text-xs uppercase font-bold flex items-center gap-2 hover:bg-primary-container transition-colors border-2 border-primary">
+            <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1">save</span>
+            Salvar Registros
+          </button>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div id="emptyDia" class="hidden flex flex-col items-center justify-center py-24 gap-4">
+        <span class="material-symbols-outlined text-outline-variant" style="font-size: 4rem;">calendar_today</span>
+        <p class="font-mono text-xs uppercase text-secondary tracking-wider">Selecione uma data e clique em "Consultar"</p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div id="toast-container" class="fixed top-4 right-4 z-[200] w-80"></div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const obraId = params.get('obra_id');
+
+    function mostrarToast(msg, tipo = 'success') {
+      const c = document.getElementById('toast-container');
+      const isOk = tipo === 'success';
+      c.innerHTML = `<div class="border-2 ${isOk ? 'bg-tertiary-fixed-dim border-on-tertiary-fixed-variant text-on-tertiary-fixed-variant' : 'bg-error-container border-error text-on-error-container'} p-4 flex items-center gap-3">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">${isOk ? 'check_circle' : 'error'}</span>
+        <span class="font-mono text-xs">${msg}</span>
+        <button onclick="this.parentElement.parentElement.innerHTML=''" class="ml-auto"><span class="material-symbols-outlined text-sm">close</span></button>
+      </div>`;
+      setTimeout(() => { c.innerHTML = ''; }, 4000);
+    }
+
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (!res.ok) { window.location.href = '/login.html'; return; }
+        const user = await res.json();
+        document.getElementById('userNome').textContent = user.nome;
+        document.getElementById('sideUserNome').textContent = user.nome;
+        document.getElementById('userPapel').textContent = user.papel === 'admin' ? 'Admin' : 'Encarregado';
+        document.getElementById('sideUserRole').textContent = user.papel === 'admin' ? 'Administrador' : 'Encarregado';
+        if (user.papel === 'admin') document.getElementById('linkUsuarios').classList.remove('hidden');
+        return user;
+      } catch { window.location.href = '/login.html'; }
+    }
+
+    async function carregarObra() {
+      try {
+        const res = await fetch(`/api/obras/${obraId}`);
+        if (!res.ok) throw new Error('Obra não encontrada');
+        const obra = await res.json();
+        document.getElementById('obraNome').textContent = obra.nome;
+        document.getElementById('obraInfo').textContent = `${obra.local || 'Local não informado'} | Início: ${formatarData(obra.data_inicio)}`;
+      } catch (err) {
+        document.getElementById('obraNome').textContent = 'Erro ao carregar obra';
+        mostrarToast(err.message, 'danger');
+      }
+    }
+
+    async function carregarRegistros() {
+      const data = document.getElementById('dataRegistro').value;
+      if (!data) { mostrarToast('Selecione uma data', 'danger'); return; }
+
+      document.getElementById('loadingRegistros').classList.remove('hidden');
+      document.getElementById('tabelaContainer').classList.add('hidden');
+      document.getElementById('emptyDia').classList.add('hidden');
+
+      try {
+        const res = await fetch(`/api/obras/${obraId}/registros?data=${data}`);
+        if (!res.ok) throw new Error('Erro ao carregar registros');
+        const result = await res.json();
+        document.getElementById('loadingRegistros').classList.add('hidden');
+
+        const filtro = document.getElementById('filtroNome').value.trim().toLowerCase();
+        let funcionarios = result.registros;
+        if (filtro) funcionarios = funcionarios.filter(f => f.nome.toLowerCase().includes(filtro));
+
+        if (funcionarios.length === 0) {
+          document.getElementById('emptyDia').classList.remove('hidden');
+          document.getElementById('emptyDia').querySelector('p').textContent = filtro ? 'Nenhum funcionário encontrado' : 'Nenhum funcionário cadastrado';
+          return;
+        }
+
+        const tbody = document.getElementById('tbodyRegistros');
+        tbody.innerHTML = funcionarios.map((f, idx) => `
+          <tr class="border-b border-outline-variant hover:bg-surface-container transition-colors">
+            <td class="p-3 text-secondary font-mono text-xs hidden sm:table-cell">${idx + 1}</td>
+            <td class="p-3">
+              <div class="font-semibold">${escapeHtml(f.nome)}</div>
+              <div class="font-mono text-xs text-secondary sm:hidden">${escapeHtml(f.cargo || '-')}</div>
+              <div class="sm:hidden mt-1">
+                <input type="text" class="input-obs w-full h-8 border-2 border-outline-variant bg-surface px-2 font-mono text-xs focus:border-primary" data-func-id="${f.id}" placeholder="Obs (opcional)" value="${escapeHtml(f.registro?.observacao || '')}">
+              </div>
+            </td>
+            <td class="p-3 font-mono text-xs text-secondary hidden sm:table-cell">${escapeHtml(f.cargo || '-')}</td>
+            <td class="p-3">
+              <div class="flex justify-center">
+                <input type="checkbox" class="checkbox-presenca" data-func-id="${f.id}" ${f.presente ? 'checked' : ''}>
+              </div>
+            </td>
+            <td class="p-3 hidden sm:table-cell">
+              <input type="text" class="input-obs w-full h-8 border-2 border-outline-variant bg-surface px-2 font-mono text-xs focus:border-primary" data-func-id="${f.id}" placeholder="Obs (opcional)" value="${escapeHtml(f.registro?.observacao || '')}">
+            </td>
+          </tr>
+        `).join('');
+
+        document.getElementById('contadorRegistros').textContent = `${funcionarios.length} funcionário(s) listados`;
+        document.getElementById('tabelaContainer').classList.remove('hidden');
+      } catch (err) {
+        document.getElementById('loadingRegistros').classList.add('hidden');
+        mostrarToast(err.message, 'danger');
+      }
+    }
+
+    function marcarTodos(presente) {
+      document.querySelectorAll('.checkbox-presenca').forEach(cb => { cb.checked = presente; });
+    }
+
+    async function salvarRegistros() {
+      const data = document.getElementById('dataRegistro').value;
+      if (!data) { mostrarToast('Selecione uma data', 'danger'); return; }
+
+      const checkboxes = document.querySelectorAll('.checkbox-presenca');
+      const presencas = [];
+      checkboxes.forEach(cb => {
+        const funcId = parseInt(cb.dataset.funcId);
+        const allObs = document.querySelectorAll(`.input-obs[data-func-id="${funcId}"]`);
+        const visibleObs = [...allObs].find(inp => inp.offsetParent !== null);
+        presencas.push({ funcionario_id: funcId, presente: cb.checked, observacao: visibleObs ? visibleObs.value.trim() : '' });
+      });
+
+      const btnSalvar = document.getElementById('btnSalvar');
+      btnSalvar.disabled = true;
+
+      try {
+        const res = await fetch(`/api/obras/${obraId}/registros`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data, presencas })
+        });
+        const result = await res.json();
+        btnSalvar.disabled = false;
+        if (!res.ok) { mostrarToast(result.error || 'Erro ao salvar', 'danger'); return; }
+        mostrarToast(result.message || 'Registros salvos com sucesso!');
+      } catch (err) {
+        btnSalvar.disabled = false;
+        mostrarToast('Erro de conexão', 'danger');
+      }
+    }
+
+    document.getElementById('dataRegistro').addEventListener('change', carregarRegistros);
+    document.getElementById('filtroNome').addEventListener('keyup', (e) => { if (e.key === 'Enter') carregarRegistros(); });
+
+    function escapeHtml(text) { if (!text) return ''; const d = document.createElement('div'); d.textContent = text; return d.innerHTML; }
+    function formatarData(dataStr) { if (!dataStr) return '-'; return new Date(dataStr+'T12:00:00').toLocaleDateString('pt-BR'); }
+    async function logout() { await fetch('/api/auth/logout', {method:'POST'}); window.location.href='/login.html'; }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await checkAuth();
+      if (!obraId) { document.getElementById('obraNome').textContent = 'Obra não especificada'; mostrarToast('ID da obra não informado', 'danger'); return; }
+      await carregarObra();
+      document.getElementById('dataRegistro').value = new Date().toISOString().split('T')[0];
+      await carregarRegistros();
+    });
+  </script>
+</body>
+</html>

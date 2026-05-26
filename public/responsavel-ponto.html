@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <title>Registro de Ponto - Responsável</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;900&family=JetBrains+Mono:wght@500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#a20513", "on-primary": "#ffffff", "primary-container": "#c62828", "on-primary-container": "#ffe0dd",
+            "secondary": "#546067", "on-secondary": "#ffffff", "secondary-container": "#d7e4ec",
+            "surface": "#f9f9f9", "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f3f3f3", "surface-container": "#eeeeee",
+            "surface-container-high": "#e8e8e8", "surface-container-highest": "#e2e2e2",
+            "on-surface": "#1a1c1c", "outline": "#8f706c", "outline-variant": "#e4beba",
+            "error": "#ba1a1a", "error-container": "#ffdad6",
+            "inverse-surface": "#2f3131", "inverse-on-surface": "#f1f1f1"
+          },
+          fontFamily: { sans: ['Work Sans','sans-serif'], heading: ['Hanken Grotesk','sans-serif'], mono: ['JetBrains Mono','monospace'] },
+          borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem' }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Work Sans', sans-serif; background-color: #f9f9f9; color: #1a1c1c; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; user-select: none; }
+    input:focus, select:focus { border-color: #a20513 !important; outline: none; box-shadow: none; }
+  </style>
+</head>
+<body class="min-h-screen bg-surface">
+
+  <div id="toast-container" class="fixed top-4 right-4 z-[200] w-80"></div>
+
+  <!-- Top bar -->
+  <header class="fixed top-0 left-0 right-0 z-50 h-16 bg-inverse-surface border-b-2 border-outline-variant flex items-center justify-between px-4 md:px-10">
+    <div class="flex items-center gap-3">
+      <span class="material-symbols-outlined text-inverse-on-surface">engineering</span>
+      <span class="font-heading font-bold text-inverse-on-surface text-lg tracking-tight">PontoWCJ</span>
+      <span class="hidden md:block text-outline-variant mx-2">|</span>
+      <span class="hidden md:block font-mono text-xs text-outline-variant uppercase tracking-wider">Registro de Ponto</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="font-mono text-xs text-inverse-on-surface hidden sm:inline" id="userNome">...</span>
+      <span class="font-mono text-xs bg-secondary-container text-secondary px-2 py-0.5 hidden sm:inline" id="equipeNome"></span>
+      <button onclick="logout()" class="h-9 px-3 border border-outline-variant text-inverse-on-surface font-mono text-xs uppercase flex items-center gap-1 hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined" style="font-size:16px">logout</span>
+        <span class="hidden sm:inline">Sair</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="pt-16 pb-6 min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 py-8">
+
+      <!-- Info banner -->
+      <div class="border-l-4 border-secondary bg-secondary-container/40 px-4 py-3 mb-6 flex items-center gap-3">
+        <span class="material-symbols-outlined text-secondary">info</span>
+        <p class="font-mono text-xs text-secondary">Você está registrando ponto da sua equipe. Apenas funcionários da sua equipe aparecem aqui.</p>
+      </div>
+
+      <!-- Filters -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div>
+          <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Obra</label>
+          <select id="obraSelect" class="h-12 border-2 border-outline bg-surface-container-lowest px-3 w-full font-sans text-sm">
+            <option value="">Carregando obras...</option>
+          </select>
+        </div>
+        <div>
+          <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Data</label>
+          <input type="date" id="dataRegistro" class="h-12 border-2 border-outline bg-surface-container-lowest px-3 w-full font-sans text-sm">
+        </div>
+        <div class="flex items-end gap-2 flex-wrap">
+          <button onclick="carregarRegistros()" class="h-12 px-4 bg-primary text-on-primary font-mono text-xs uppercase hover:bg-primary-container transition-colors flex items-center gap-1">
+            <span class="material-symbols-outlined" style="font-size:16px">search</span>Consultar
+          </button>
+          <button onclick="marcarTodos(true)" class="h-12 px-3 bg-inverse-surface text-inverse-on-surface font-mono text-xs uppercase hover:opacity-80 transition-opacity">
+            Todos P
+          </button>
+          <button onclick="marcarTodos(false)" class="h-12 px-3 border-2 border-error text-error font-mono text-xs uppercase hover:bg-error-container transition-colors">
+            Todos A
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div id="loading" class="hidden flex flex-col items-center py-16 gap-4">
+        <div class="w-10 h-10 border-4 border-outline-variant border-t-primary rounded-full animate-spin"></div>
+        <span class="font-mono text-xs text-secondary uppercase tracking-wider">Carregando...</span>
+      </div>
+
+      <!-- Table container -->
+      <div id="tabelaContainer" class="hidden">
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <span class="font-mono text-xs text-secondary uppercase tracking-wider" id="contadorRegistros"></span>
+          <button onclick="salvarRegistros()" class="h-12 px-6 bg-primary text-on-primary font-mono text-xs uppercase flex items-center gap-2 hover:bg-primary-container transition-colors">
+            <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1">save</span>Salvar Presenças
+          </button>
+        </div>
+        <div class="border-2 border-outline-variant bg-surface-container-lowest overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-inverse-surface text-inverse-on-surface">
+                  <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider w-10">#</th>
+                  <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider">Funcionário</th>
+                  <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider">Cargo</th>
+                  <th class="px-4 py-3 text-center font-mono text-xs uppercase tracking-wider w-24">Presente</th>
+                  <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider">Observação</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyRegistros" class="divide-y divide-outline-variant"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="flex justify-end mt-4">
+          <button onclick="salvarRegistros()" class="h-12 px-6 bg-primary text-on-primary font-mono text-xs uppercase flex items-center gap-2 hover:bg-primary-container transition-colors">
+            <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1">save</span>Salvar Presenças
+          </button>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div id="emptyState" class="hidden flex flex-col items-center py-20 gap-4 text-center">
+        <span class="material-symbols-outlined text-outline-variant" style="font-size:3rem">calendar_month</span>
+        <p class="font-mono text-xs text-secondary uppercase tracking-wider">Selecione obra e data para registrar</p>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    function mostrarToast(msg, tipo) {
+      const c = document.getElementById('toast-container');
+      const colors = { success: '#15803d', danger: '#ba1a1a', warning: '#b45309' };
+      const el = document.createElement('div');
+      el.style.background = colors[tipo] || '#546067';
+      el.className = 'text-white font-mono text-xs px-4 py-3 mb-2';
+      el.textContent = msg;
+      c.appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    }
+
+    async function checkAuth() {
+      const res = await fetch('/api/auth/me');
+      if (!res.ok) { window.location.href = '/login.html'; return; }
+      const user = await res.json();
+      if (user.papel !== 'responsavel') { window.location.href = '/dashboard.html'; return; }
+      document.getElementById('userNome').textContent = user.nome;
+      document.getElementById('equipeNome').textContent = `Equipe #${user.equipe_id}`;
+      const eqRes = await fetch(`/api/equipes`);
+      if (eqRes.ok) {
+        const equipes = await eqRes.json();
+        const minhaEq = equipes.find(e => e.responsavel_id === user.id);
+        if (minhaEq) { document.getElementById('equipeNome').textContent = minhaEq.nome; }
+      }
+      return user;
+    }
+
+    async function carregarObras() {
+      const res = await fetch('/api/obras');
+      const obras = await res.json();
+      const select = document.getElementById('obraSelect');
+      if (obras.length === 0) { select.innerHTML = '<option value="">Nenhuma obra disponível</option>'; return; }
+      select.innerHTML = obras.map(o => `<option value="${o.id}">${esc(o.nome)}</option>`).join('');
+    }
+
+    async function carregarRegistros() {
+      const obraId = document.getElementById('obraSelect').value;
+      const data = document.getElementById('dataRegistro').value;
+      if (!obraId || !data) { mostrarToast('Selecione obra e data', 'danger'); return; }
+
+      document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('tabelaContainer').classList.add('hidden');
+      document.getElementById('emptyState').classList.add('hidden');
+
+      const res = await fetch(`/api/obras/${obraId}/registros?data=${data}`);
+      if (!res.ok) { document.getElementById('loading').classList.add('hidden'); mostrarToast('Erro ao carregar', 'danger'); return; }
+
+      const result = await res.json();
+      document.getElementById('loading').classList.add('hidden');
+
+      if (result.registros.length === 0) {
+        document.getElementById('emptyState').classList.remove('hidden');
+        return;
+      }
+
+      const tbody = document.getElementById('tbodyRegistros');
+      tbody.innerHTML = result.registros.map((f, i) => `
+        <tr class="${i%2===1 ? 'bg-surface-container-low' : ''}">
+          <td class="px-4 py-3 font-mono text-xs text-secondary">${i+1}</td>
+          <td class="px-4 py-3 font-bold">${esc(f.nome)}</td>
+          <td class="px-4 py-3 font-mono text-xs">${esc(f.cargo || '-')}</td>
+          <td class="px-4 py-3 text-center">
+            <input type="checkbox" class="checkbox-presenca w-5 h-5 accent-[#a20513]" data-func-id="${f.id}" ${f.presente ? 'checked' : ''}>
+          </td>
+          <td class="px-4 py-3">
+            <input type="text" class="input-obs w-full border border-outline-variant px-2 py-1 font-mono text-xs bg-surface-container-low" data-func-id="${f.id}" placeholder="Obs" value="${esc(f.registro?.observacao || '')}">
+          </td>
+        </tr>
+      `).join('');
+
+      document.getElementById('contadorRegistros').textContent = `${result.registros.length} funcionário(s) da equipe`;
+      document.getElementById('tabelaContainer').classList.remove('hidden');
+    }
+
+    function marcarTodos(v) { document.querySelectorAll('.checkbox-presenca').forEach(cb => cb.checked = v); }
+
+    async function salvarRegistros() {
+      const obraId = document.getElementById('obraSelect').value;
+      const data = document.getElementById('dataRegistro').value;
+      const presencas = [...document.querySelectorAll('.checkbox-presenca')].map(cb => ({
+        funcionario_id: parseInt(cb.dataset.funcId),
+        presente: cb.checked,
+        observacao: document.querySelector(`.input-obs[data-func-id="${cb.dataset.funcId}"]`)?.value?.trim() || ''
+      }));
+      const res = await fetch(`/api/obras/${obraId}/registros`, {
+        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ data, presencas })
+      });
+      const result = await res.json();
+      mostrarToast(result.message || result.error, res.ok ? 'success' : 'danger');
+    }
+
+    document.getElementById('obraSelect').addEventListener('change', carregarRegistros);
+    document.getElementById('dataRegistro').addEventListener('change', carregarRegistros);
+
+    function esc(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+    async function logout() { await fetch('/api/auth/logout', {method:'POST'}); window.location.href='/login.html'; }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await checkAuth();
+      await carregarObras();
+      document.getElementById('dataRegistro').value = new Date().toISOString().split('T')[0];
+      if (document.getElementById('obraSelect').options.length > 1) await carregarRegistros();
+    });
+  </script>
+</body>
+</html>

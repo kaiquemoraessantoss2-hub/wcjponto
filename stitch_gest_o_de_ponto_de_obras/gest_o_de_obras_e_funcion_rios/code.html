@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Portal do Encarregado - Gestão de Obras</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;900&amp;family=JetBrains+Mono:wght@500&amp;family=Work+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-error-container": "#93000a",
+                "on-surface-variant": "#5b403d",
+                "tertiary-fixed-dim": "#afcbd8",
+                "on-background": "#1a1c1c",
+                "secondary-fixed-dim": "#bbc8d0",
+                "primary-container": "#c62828",
+                "on-surface": "#1a1c1c",
+                "inverse-primary": "#ffb4ac",
+                "secondary-fixed": "#d7e4ec",
+                "primary": "#a20513",
+                "outline-variant": "#e4beba",
+                "on-tertiary-container": "#cfebf9",
+                "surface-container-low": "#f3f3f3",
+                "on-tertiary": "#ffffff",
+                "secondary-container": "#d7e4ec",
+                "surface-variant": "#e2e2e2",
+                "surface-bright": "#f9f9f9",
+                "surface-container-high": "#e8e8e8",
+                "surface-tint": "#b91d20",
+                "on-primary": "#ffffff",
+                "on-secondary-fixed-variant": "#3c494f",
+                "surface": "#f9f9f9",
+                "outline": "#8f706c",
+                "surface-container-highest": "#e2e2e2",
+                "on-secondary-container": "#5a666d",
+                "surface-container-lowest": "#ffffff",
+                "tertiary-container": "#516b77",
+                "surface-dim": "#dadada",
+                "primary-fixed-dim": "#ffb4ac",
+                "surface-container": "#eeeeee",
+                "primary-fixed": "#ffdad6",
+                "secondary": "#546067",
+                "on-tertiary-fixed-variant": "#304a55",
+                "tertiary": "#39535e",
+                "error": "#ba1a1a",
+                "on-error": "#ffffff",
+                "tertiary-fixed": "#cbe7f5",
+                "on-secondary-fixed": "#111d23",
+                "inverse-surface": "#2f3131",
+                "on-primary-fixed": "#410003",
+                "on-primary-fixed-variant": "#93000e",
+                "on-tertiary-fixed": "#021f29",
+                "on-primary-container": "#ffe0dd",
+                "on-secondary": "#ffffff",
+                "inverse-on-surface": "#f1f1f1",
+                "background": "#f9f9f9",
+                "error-container": "#ffdad6"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "spacing": {
+                "stack-sm": "4px",
+                "base": "8px",
+                "stack-lg": "24px",
+                "margin-mobile": "16px",
+                "stack-md": "12px",
+                "margin-desktop": "40px",
+                "gutter": "24px"
+        },
+        "fontFamily": {
+                "body-lg": [
+                        "Work Sans"
+                ],
+                "headline-sm": [
+                        "Hanken Grotesk"
+                ],
+                "label-sm": [
+                        "JetBrains Mono"
+                ],
+                "label-lg": [
+                        "JetBrains Mono"
+                ],
+                "headline-md": [
+                        "Hanken Grotesk"
+                ],
+                "headline-lg-mobile": [
+                        "Hanken Grotesk"
+                ],
+                "headline-lg": [
+                        "Hanken Grotesk"
+                ],
+                "body-md": [
+                        "Work Sans"
+                ]
+        },
+        "fontSize": {
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-sm": [
+                        "22px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "label-sm": [
+                        "11px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "label-lg": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-md": [
+                        "28px",
+                        {
+                                "lineHeight": "36px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-lg": [
+                        "40px",
+                        {
+                                "lineHeight": "48px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+        body { background-color: #f9f9f9; color: #1a1c1c; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined[data-weight="fill"] { font-variation-settings: 'FILL' 1; }
+        
+        /* Form elements to look sturdy */
+        input[type="text"], input[type="date"], select {
+            border: 2px solid #D1D1D1;
+            background-color: #ffffff;
+            height: 48px;
+            padding: 0 16px;
+        }
+        input[type="text"]:focus, input[type="date"]:focus, select:focus {
+            border-color: #5b403d;
+            outline: none;
+            box-shadow: none;
+        }
+        
+        /* Drag and Drop styling hints */
+        .droppable-area { transition: background-color 0.2s; }
+        .droppable-area.drag-over { background-color: #e2e2e2; border-color: #a20513; border-style: dashed; border-width: 2px; }
+        .draggable-item { cursor: grab; }
+        .draggable-item:active { cursor: grabbing; }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden bg-surface">
+<!-- TopAppBar (Web & Mobile, fixed top) -->
+<header class="bg-surface-container-highest dark:bg-surface-container-high border-b-2 border-outline-variant dark:border-outline flex justify-between items-center w-full px-margin-desktop h-16 shrink-0 z-50 fixed top-0 left-0 right-0">
+<div class="flex items-center gap-4">
+<!-- Mobile Menu Toggle -->
+<button class="md:hidden p-2 text-primary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="text-headline-md font-headline-md font-black text-primary dark:text-primary-fixed-dim tracking-tight">Portal do Encarregado</h1>
+</div>
+<div class="flex items-center gap-4">
+<!-- Optional Search on Right -->
+<div class="hidden md:flex relative h-[48px] items-center">
+<span class="material-symbols-outlined absolute left-3 text-secondary">search</span>
+<input class="pl-10 h-full w-64 rounded-DEFAULT border-2 border-outline bg-surface-container-lowest focus:border-on-surface-variant" placeholder="Buscar..." type="text"/>
+</div>
+<button class="h-[48px] w-[48px] flex items-center justify-center hover:bg-secondary-container dark:hover:bg-secondary-fixed-dim transition-colors rounded-full">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" data-icon="notifications">notifications</span>
+</button>
+<button class="h-[48px] w-[48px] flex items-center justify-center hover:bg-secondary-container dark:hover:bg-secondary-fixed-dim transition-colors rounded-full">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" data-icon="settings">settings</span>
+</button>
+</div>
+</header>
+<div class="flex flex-1 pt-16 w-full h-full overflow-hidden">
+<!-- SideNavBar (Desktop Only) -->
+<nav class="hidden md:flex bg-surface-container-low dark:bg-surface-dim border-r-2 border-outline-variant dark:border-outline w-64 h-full flex-col z-40 shrink-0">
+<!-- Header/Profile Area -->
+<div class="p-4 border-b-2 border-outline-variant/50">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-12 h-12 rounded-full bg-secondary-container overflow-hidden border border-outline">
+<img alt="Encarregado Profile" class="w-full h-full object-cover" data-alt="Close up portrait of a tough, experienced construction supervisor wearing a high-visibility orange vest over a thick grey work shirt. He has a rugged face with slight stubble, conveying authority and reliability. The background is slightly blurred showing an industrial construction site under clear daylight. High contrast lighting emphasizes durability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUn78dE3K2JuiT0ZjusxMDlZ1jeEbpYAzJFjw_9u1gXdA96-lIiCYQ5KTggPCCcsyelPFTzJJMa4yyTNp7UMcdHmcXujKqge4620hXuawYBu-KHmHZm_JS7ce_0KlB8RnHMbzms8Ie0diJf0fD2KBxQXFtQkZAq48P925S7eNhMeJQGHo2IO-yQFIJqGiqhIOvh0iUeLSGGczSO_R7ojCDjB_TcRJh9n-45SyI2YALkTEYLJ5hNjj7ec7mj2YlTIMNdSxtJFI0FYiX"/>
+</div>
+<div>
+<div class="text-body-md font-headline-md text-on-surface font-bold">Encarregado Atual</div>
+<div class="text-label-sm font-label-sm text-secondary">Supervisor de Campo</div>
+</div>
+</div>
+<button class="w-full h-[48px] bg-primary text-on-primary font-body-md font-bold rounded-DEFAULT flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors">
+<span class="material-symbols-outlined">add</span>
+                    Adicionar Obra
+                </button>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 py-4 flex flex-col gap-1">
+<a class="text-secondary dark:text-secondary-fixed-dim flex items-center gap-4 px-4 py-3 hover:bg-secondary-container/50 transition-all h-[48px]" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-label-sm font-label-sm">Dashboard</span>
+</a>
+<!-- ACTIVE STATE: Obras -->
+<a class="bg-primary-container text-on-primary-container border-r-4 border-primary dark:border-primary-fixed-dim font-bold flex items-center gap-4 px-4 py-3 transition-all scale-95 duration-150 h-[48px]" href="#">
+<span class="material-symbols-outlined" data-icon="construction" data-weight="fill">construction</span>
+<span class="text-label-sm font-label-sm">Obras</span>
+</a>
+<a class="text-secondary dark:text-secondary-fixed-dim flex items-center gap-4 px-4 py-3 hover:bg-secondary-container/50 transition-all h-[48px]" href="#">
+<span class="material-symbols-outlined" data-icon="engineering">engineering</span>
+<span class="text-label-sm font-label-sm">Responsáveis</span>
+</a>
+<a class="text-secondary dark:text-secondary-fixed-dim flex items-center gap-4 px-4 py-3 hover:bg-secondary-container/50 transition-all h-[48px]" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="text-label-sm font-label-sm">Relatórios</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop bg-surface">
+<div class="max-w-[1400px] mx-auto space-y-gutter">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b-2 border-outline-variant pb-4">
+<div>
+<h2 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg text-on-surface">Gestão de Obras</h2>
+<p class="text-body-md font-body-md text-secondary mt-1">Gerencie canteiros, aloque funcionários e acompanhe o histórico.</p>
+</div>
+<button class="h-[48px] px-6 bg-primary text-on-primary font-body-md font-bold rounded-DEFAULT flex items-center gap-2" onclick="document.getElementById('modal-nova-obra').classList.remove('hidden')">
+<span class="material-symbols-outlined">add_location_alt</span>
+                        Nova Obra
+                    </button>
+</div>
+<!-- BENTO GRID LAYOUT -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- LEFT COLUMN: Obras List (Takes 5 cols on lg) -->
+<div class="lg:col-span-5 space-y-4">
+<h3 class="text-headline-md font-headline-md text-on-surface border-b border-outline pb-2">Obras Ativas</h3>
+<!-- Site Card 1 -->
+<div class="bg-surface-container-lowest border border-outline rounded-DEFAULT overflow-hidden droppable-area" id="obra-alpha">
+<div class="bg-[#2f3131] text-on-secondary p-3 flex justify-between items-center">
+<h4 class="text-body-lg font-headline-md font-bold">Edifício Alpha Tower</h4>
+<span class="bg-surface-container text-on-surface text-label-sm font-label-sm px-2 py-1 rounded-sm">12 FUNC.</span>
+</div>
+<div class="p-4 space-y-3">
+<div class="flex items-start gap-2 text-secondary">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span class="text-label-lg font-label-lg text-sm">Av. Paulista, 1000 - Centro</span>
+</div>
+<div class="flex items-center gap-2 text-secondary">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span class="text-label-lg font-label-lg text-sm">Início: 10/01/2024</span>
+</div>
+<!-- Allocated Workers Preview -->
+<div class="mt-4 pt-4 border-t border-outline-variant">
+<p class="text-label-sm font-label-sm text-secondary mb-2">EQUIPE ATUAL (Arraste para alocar)</p>
+<div class="flex flex-wrap gap-2 min-h-[48px] p-2 bg-surface-container rounded border border-outline-variant/50" ondragover="allowDrop(event)" ondrop="drop(event)">
+<!-- Workers -->
+<div class="flex items-center gap-2 bg-surface-container-lowest border border-outline rounded px-2 py-1 draggable-item" draggable="true" id="worker-1" ondragstart="drag(event)">
+<div class="w-6 h-6 bg-primary rounded-full text-white flex items-center justify-center text-xs font-bold">JS</div>
+<span class="text-label-lg font-label-lg text-sm">João S.</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-lowest border border-outline rounded px-2 py-1 draggable-item" draggable="true" id="worker-2" ondragstart="drag(event)">
+<div class="w-6 h-6 bg-secondary rounded-full text-white flex items-center justify-center text-xs font-bold">MA</div>
+<span class="text-label-lg font-label-lg text-sm">Maria A.</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Site Card 2 -->
+<div class="bg-surface-container-lowest border border-outline rounded-DEFAULT overflow-hidden droppable-area" id="obra-beta">
+<div class="bg-[#2f3131] text-on-secondary p-3 flex justify-between items-center">
+<h4 class="text-body-lg font-headline-md font-bold">Condomínio Beta</h4>
+<span class="bg-surface-container text-on-surface text-label-sm font-label-sm px-2 py-1 rounded-sm">5 FUNC.</span>
+</div>
+<div class="p-4 space-y-3">
+<div class="flex items-start gap-2 text-secondary">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span class="text-label-lg font-label-lg text-sm">Rua das Flores, 250 - Zona Sul</span>
+</div>
+<div class="flex items-center gap-2 text-secondary">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span class="text-label-lg font-label-lg text-sm">Início: 05/03/2024</span>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant">
+<p class="text-label-sm font-label-sm text-secondary mb-2">EQUIPE ATUAL (Arraste para alocar)</p>
+<div class="flex flex-wrap gap-2 min-h-[48px] p-2 bg-surface-container rounded border border-outline-variant/50" ondragover="allowDrop(event)" ondrop="drop(event)">
+<!-- Workers -->
+<div class="flex items-center gap-2 bg-surface-container-lowest border border-outline rounded px-2 py-1 draggable-item" draggable="true" id="worker-3" ondragstart="drag(event)">
+<div class="w-6 h-6 bg-tertiary-container rounded-full text-white flex items-center justify-center text-xs font-bold">CP</div>
+<span class="text-label-lg font-label-lg text-sm">Carlos P.</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: Pool & History (Takes 7 cols on lg) -->
+<div class="lg:col-span-7 flex flex-col gap-gutter">
+<!-- Worker Pool for Allocation -->
+<div class="bg-surface-container-lowest border-2 border-outline rounded-DEFAULT p-4">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-headline-md font-headline-md text-on-surface">Pool de Funcionários Livres</h3>
+<span class="material-symbols-outlined text-secondary">groups</span>
+</div>
+<p class="text-body-md font-body-md text-secondary mb-4">Arraste os funcionários desta lista para os cards das obras à esquerda para realizar a alocação.</p>
+<div class="flex flex-wrap gap-3 min-h-[100px] p-4 bg-surface rounded border-2 border-dashed border-outline-variant droppable-area" id="pool-livres" ondragover="allowDrop(event)" ondrop="drop(event)">
+<!-- Unallocated Workers -->
+<div class="flex items-center gap-2 bg-surface-container-highest border border-outline rounded px-3 py-2 draggable-item shadow-sm" draggable="true" id="worker-4" ondragstart="drag(event)">
+<div class="w-8 h-8 bg-[#5b403d] rounded-full text-white flex items-center justify-center text-sm font-bold">RT</div>
+<div>
+<div class="text-label-lg font-label-lg text-sm font-bold text-on-surface">Roberto T.</div>
+<div class="text-label-sm font-label-sm text-secondary text-[10px]">Pedreiro</div>
+</div>
+<span class="material-symbols-outlined ml-2 text-secondary text-[18px]">drag_indicator</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-highest border border-outline rounded px-3 py-2 draggable-item shadow-sm" draggable="true" id="worker-5" ondragstart="drag(event)">
+<div class="w-8 h-8 bg-[#5b403d] rounded-full text-white flex items-center justify-center text-sm font-bold">AL</div>
+<div>
+<div class="text-label-lg font-label-lg text-sm font-bold text-on-surface">Ana L.</div>
+<div class="text-label-sm font-label-sm text-secondary text-[10px]">Eletricista</div>
+</div>
+<span class="material-symbols-outlined ml-2 text-secondary text-[18px]">drag_indicator</span>
+</div>
+</div>
+</div>
+<!-- Allocation History Table -->
+<div class="bg-surface-container-lowest border-2 border-outline rounded-DEFAULT overflow-hidden flex-1">
+<div class="bg-[#2f3131] text-on-secondary p-4 flex justify-between items-center">
+<h3 class="text-headline-md font-headline-md font-bold">Histórico de Movimentação</h3>
+<button class="text-on-secondary hover:text-primary transition-colors flex items-center gap-1 text-label-sm font-label-sm">
+                                    FILTRAR <span class="material-symbols-outlined text-[18px]">filter_list</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-high border-b-2 border-outline-variant">
+<th class="p-3 text-label-sm font-label-sm text-secondary">FUNCIONÁRIO</th>
+<th class="p-3 text-label-sm font-label-sm text-secondary">OBRA ANTERIOR</th>
+<th class="p-3 text-label-sm font-label-sm text-secondary">OBRA ATUAL</th>
+<th class="p-3 text-label-sm font-label-sm text-secondary">DATA MUDANÇA</th>
+</tr>
+</thead>
+<tbody class="text-body-md font-label-lg text-on-surface">
+<!-- Row 1 -->
+<tr class="border-b border-outline-variant/50 hover:bg-surface-container transition-colors bg-[#f9f9f9]">
+<td class="p-3 py-4 flex items-center gap-2">
+<div class="w-6 h-6 bg-primary rounded-full text-white flex items-center justify-center text-xs font-bold">JS</div>
+                                                João S.
+                                            </td>
+<td class="p-3 text-secondary">Condomínio Beta</td>
+<td class="p-3 font-bold">Edifício Alpha Tower</td>
+<td class="p-3">22/10/2024</td>
+</tr>
+<!-- Row 2 -->
+<tr class="border-b border-outline-variant/50 hover:bg-surface-container transition-colors bg-surface-container-lowest">
+<td class="p-3 py-4 flex items-center gap-2">
+<div class="w-6 h-6 bg-tertiary-container rounded-full text-white flex items-center justify-center text-xs font-bold">CP</div>
+                                                Carlos P.
+                                            </td>
+<td class="p-3 text-secondary">Livre (Pool)</td>
+<td class="p-3 font-bold">Condomínio Beta</td>
+<td class="p-3">20/10/2024</td>
+</tr>
+<!-- Row 3 -->
+<tr class="border-b border-outline-variant/50 hover:bg-surface-container transition-colors bg-[#f9f9f9]">
+<td class="p-3 py-4 flex items-center gap-2">
+<div class="w-6 h-6 bg-[#5b403d] rounded-full text-white flex items-center justify-center text-xs font-bold">RT</div>
+                                                Roberto T.
+                                            </td>
+<td class="p-3 text-secondary">Edifício Alpha Tower</td>
+<td class="p-3 font-bold text-primary">Livre (Pool)</td>
+<td class="p-3">15/10/2024</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- MODAL: Nova Obra -->
+<div class="fixed inset-0 z-[100] hidden flex items-center justify-center" id="modal-nova-obra">
+<!-- Heavy dark overlay -->
+<div class="absolute inset-0 bg-[#1a1c1c]/80 backdrop-blur-sm" onclick="document.getElementById('modal-nova-obra').classList.add('hidden')"></div>
+<div class="relative bg-surface-container-lowest border-2 border-outline rounded-DEFAULT shadow-2xl w-[90%] max-w-md p-6 flex flex-col gap-4">
+<div class="flex justify-between items-center border-b-2 border-outline-variant pb-3">
+<h2 class="text-headline-md font-headline-md font-bold text-on-surface">Registrar Nova Obra</h2>
+<button class="h-10 w-10 flex items-center justify-center text-secondary hover:text-error hover:bg-error-container rounded-full transition-colors" onclick="document.getElementById('modal-nova-obra').classList.add('hidden')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<form class="flex flex-col gap-4">
+<div class="flex flex-col gap-1">
+<label class="text-label-sm font-label-sm text-on-surface-variant">NOME DA OBRA</label>
+<input class="w-full text-body-md font-body-md" placeholder="Ex: Residencial X" required="" type="text"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-label-sm font-label-sm text-on-surface-variant">ENDEREÇO COMPLETO</label>
+<input class="w-full text-body-md font-body-md" placeholder="Rua, Número, Bairro, Cidade" required="" type="text"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-label-sm font-label-sm text-on-surface-variant">DATA DE INÍCIO</label>
+<input class="w-full text-label-lg font-label-lg" required="" type="date"/>
+</div>
+<div class="mt-4 flex gap-3">
+<button class="flex-1 h-[48px] border-2 border-[#5b403d] text-[#5b403d] font-body-md font-bold rounded-DEFAULT hover:bg-surface-container transition-colors" onclick="document.getElementById('modal-nova-obra').classList.add('hidden')" type="button">
+                        Cancelar
+                    </button>
+<button class="flex-1 h-[48px] bg-primary text-on-primary font-body-md font-bold rounded-DEFAULT hover:bg-primary/90 transition-colors" type="submit">
+                        Salvar Obra
+                    </button>
+</div>
+</form>
+</div>
+</div>
+<!-- Bottom Navigation (Mobile Only) -->
+<div class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-highest border-t-2 border-outline-variant z-50 pb-safe">
+<div class="flex justify-around items-center h-16">
+<a class="flex flex-col items-center justify-center w-full h-full text-secondary" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-label-sm mt-1">Dash</span>
+</a>
+<!-- Active Mobile -->
+<a class="flex flex-col items-center justify-center w-full h-full text-primary border-t-4 border-primary bg-primary-container/20" href="#">
+<span class="material-symbols-outlined" data-weight="fill">construction</span>
+<span class="text-[10px] font-label-sm mt-1 font-bold">Obras</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-secondary" href="#">
+<span class="material-symbols-outlined">engineering</span>
+<span class="text-[10px] font-label-sm mt-1">Resp.</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-secondary" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-[10px] font-label-sm mt-1">Relat.</span>
+</a>
+</div>
+</div>
+<script>
+        // Simple Drag and Drop Logic
+        function allowDrop(ev) {
+            ev.preventDefault();
+            ev.currentTarget.classList.add('drag-over');
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            // Remove drag-over styling from all areas
+            document.querySelectorAll('.droppable-area').forEach(el => el.classList.remove('drag-over'));
+            
+            var data = ev.dataTransfer.getData("text");
+            var draggedElement = document.getElementById(data);
+            
+            // Append to the closest valid droppable container
+            // This is a simple implementation for UI demonstration
+            if(ev.currentTarget.classList.contains('droppable-area') || ev.currentTarget.parentElement.classList.contains('droppable-area')) {
+                 let targetContainer = ev.currentTarget.querySelector('.flex.flex-wrap') || ev.currentTarget;
+                 targetContainer.appendChild(draggedElement);
+            }
+        }
+        
+        // Remove styling when drag leaves
+        document.addEventListener('dragleave', (ev) => {
+             if(ev.target.classList && ev.target.classList.contains('droppable-area')) {
+                 ev.target.classList.remove('drag-over');
+             }
+        });
+    </script>
+</body></html>

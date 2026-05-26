@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <title>Monitoramento - PontoWCJ</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;900&family=JetBrains+Mono:wght@500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#a20513", "on-primary": "#ffffff", "primary-container": "#c62828", "on-primary-container": "#ffe0dd",
+            "secondary": "#546067", "on-secondary": "#ffffff", "secondary-container": "#d7e4ec", "on-secondary-container": "#5a666d",
+            "tertiary": "#39535e", "tertiary-fixed-dim": "#afcbd8", "on-tertiary-fixed-variant": "#304a55",
+            "surface": "#f9f9f9", "surface-dim": "#dadada", "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f3f3f3", "surface-container": "#eeeeee",
+            "surface-container-high": "#e8e8e8", "surface-container-highest": "#e2e2e2",
+            "on-surface": "#1a1c1c", "on-surface-variant": "#5b403d",
+            "outline": "#8f706c", "outline-variant": "#e4beba",
+            "error": "#ba1a1a", "on-error": "#ffffff", "error-container": "#ffdad6", "on-error-container": "#93000a",
+            "inverse-surface": "#2f3131", "inverse-on-surface": "#f1f1f1"
+          },
+          fontFamily: { sans: ['Work Sans','sans-serif'], heading: ['Hanken Grotesk','sans-serif'], mono: ['JetBrains Mono','monospace'] },
+          borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem' }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Work Sans', sans-serif; background-color: #f9f9f9; color: #1a1c1c; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; user-select: none; }
+    .nav-link { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; color: #546067; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; text-decoration: none; transition: background-color 0.15s; }
+    .nav-link:hover { background-color: rgba(215,228,236,0.5); }
+    .nav-link.active { background-color: #c62828; color: #ffe0dd; border-right: 4px solid #a20513; font-weight: 700; }
+    input:focus, select:focus { border-color: #a20513 !important; outline: none; box-shadow: none; }
+    .audit-table td, .audit-table th { padding: 4px 6px; white-space: nowrap; }
+    .cell-p { background: #dcfce7; color: #166534; font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+    .cell-f { background: #fee2e2; color: #991b1b; font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+    .cell-d { background: #eeeeee; color: #546067; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+    .cell-n { color: #8f706c; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+  </style>
+</head>
+<body class="min-h-screen bg-surface">
+
+  <div id="toast-container" class="fixed top-4 right-4 z-[200] w-80"></div>
+
+  <!-- Sidebar -->
+  <nav class="hidden md:flex fixed left-0 top-0 h-full w-64 bg-surface-container-low border-r-2 border-outline-variant flex-col z-40 pt-16">
+    <div class="p-4 border-b-2 border-outline-variant mb-2">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-secondary-container rounded-full flex items-center justify-center border-2 border-outline-variant">
+          <span class="material-symbols-outlined text-secondary">person</span>
+        </div>
+        <div>
+          <div class="text-sm font-bold text-primary font-heading" id="sideUserNome">...</div>
+          <div class="text-xs text-secondary font-mono uppercase tracking-wider" id="sideUserRole">Encarregado</div>
+        </div>
+      </div>
+    </div>
+    <div class="flex-1 py-2 flex flex-col">
+      <a href="/dashboard.html" class="nav-link"><span class="material-symbols-outlined">dashboard</span>Dashboard</a>
+      <a href="/obras.html" class="nav-link"><span class="material-symbols-outlined">construction</span>Obras</a>
+      <a href="/responsaveis.html" class="nav-link"><span class="material-symbols-outlined">engineering</span>Responsáveis</a>
+      <a href="/relatorio.html" class="nav-link"><span class="material-symbols-outlined">analytics</span>Relatórios</a>
+      <a href="/monitoramento.html" class="nav-link active"><span class="material-symbols-outlined">monitor_heart</span>Monitoramento</a>
+      <a href="/usuarios.html" class="nav-link hidden" id="linkUsuarios"><span class="material-symbols-outlined">manage_accounts</span>Usuários</a>
+    </div>
+    <div class="p-4 border-t-2 border-outline-variant">
+      <button onclick="logout()" class="w-full h-12 border-2 border-outline text-secondary font-mono text-xs uppercase flex items-center justify-center gap-2 hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined">logout</span>Sair
+      </button>
+    </div>
+  </nav>
+
+  <!-- Top bar -->
+  <header class="fixed top-0 left-0 right-0 md:left-64 z-50 bg-surface-container-highest border-b-2 border-outline-variant flex items-center justify-between px-4 md:px-10 h-16">
+    <div class="flex items-center gap-4">
+      <h1 class="text-xl font-black font-heading text-primary tracking-tight">Monitoramento</h1>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="text-sm font-mono text-secondary hidden md:inline" id="userNome">...</span>
+      <span class="text-xs font-mono bg-surface-container px-2 py-1 text-secondary hidden md:inline" id="userPapel"></span>
+    </div>
+  </header>
+
+  <!-- Mobile bottom nav -->
+  <nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-highest border-t-2 border-outline-variant flex justify-around items-center h-14 z-50">
+    <a href="/dashboard.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span class="text-xs font-mono">Dash</span>
+    </a>
+    <a href="/obras.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
+      <span class="material-symbols-outlined">construction</span>
+      <span class="text-xs font-mono">Obras</span>
+    </a>
+    <a href="/funcionarios.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
+      <span class="material-symbols-outlined">engineering</span>
+      <span class="text-xs font-mono">Func</span>
+    </a>
+    <a href="/monitoramento.html" class="flex flex-col items-center justify-center w-full h-full text-primary">
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">monitor_heart</span>
+      <span class="text-xs font-mono">Monitor</span>
+    </a>
+  </nav>
+
+  <!-- Main content -->
+  <main class="md:ml-64 pt-16 pb-20 md:pb-6 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 py-8">
+
+      <!-- Page header -->
+      <div class="mb-6">
+        <h2 class="text-2xl font-black font-heading text-on-surface tracking-tight">Monitoramento de Presenças</h2>
+        <p class="font-mono text-xs text-secondary uppercase tracking-wider mt-0.5">Acompanhe os registros de ponto por obra e mês</p>
+      </div>
+
+      <!-- Filters -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="md:col-span-2">
+          <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Obra</label>
+          <select id="obraSelect" class="h-12 border-2 border-outline bg-surface-container-lowest px-3 w-full font-sans text-sm">
+            <option value="">Carregando...</option>
+          </select>
+        </div>
+        <div>
+          <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Mês</label>
+          <input type="month" id="mesSelector" class="h-12 border-2 border-outline bg-surface-container-lowest px-3 w-full font-sans text-sm">
+        </div>
+        <div class="flex items-end">
+          <button onclick="carregarMonitoramento()" class="h-12 w-full bg-primary text-on-primary font-mono text-xs uppercase flex items-center justify-center gap-2 hover:bg-primary-container transition-colors">
+            <span class="material-symbols-outlined" style="font-size:16px">search</span>Monitorar
+          </button>
+        </div>
+      </div>
+
+      <!-- Team summary cards -->
+      <div id="cardsEquipes" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"></div>
+
+      <!-- Loading -->
+      <div id="loading" class="hidden flex flex-col items-center py-16 gap-4">
+        <div class="w-10 h-10 border-4 border-outline-variant border-t-primary rounded-full animate-spin"></div>
+        <span class="font-mono text-xs text-secondary uppercase tracking-wider">Carregando...</span>
+      </div>
+
+      <!-- Table container -->
+      <div id="tabelaContainer" class="hidden">
+        <div id="equipeTabs" class="flex gap-1 mb-4 overflow-x-auto pb-1"></div>
+        <div id="equipeTabContent"></div>
+      </div>
+
+      <!-- Empty state -->
+      <div id="emptyState" class="hidden flex flex-col items-center py-20 gap-4">
+        <span class="material-symbols-outlined text-outline-variant" style="font-size:3rem">clipboard_data</span>
+        <p class="font-mono text-xs text-secondary uppercase tracking-wider">Selecione obra e mês para monitorar</p>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    let relatorioCache = null;
+    let equipesCache = [];
+
+    function mostrarToast(msg, tipo) {
+      const c = document.getElementById('toast-container');
+      const colors = { success: '#15803d', danger: '#ba1a1a', warning: '#b45309' };
+      const el = document.createElement('div');
+      el.style.background = colors[tipo] || '#546067';
+      el.className = 'text-white font-mono text-xs px-4 py-3 mb-2';
+      el.textContent = msg;
+      c.appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    }
+
+    async function checkAuth() {
+      const res = await fetch('/api/auth/me');
+      if (!res.ok) { window.location.href = '/login.html'; return; }
+      const user = await res.json();
+      if (user.papel === 'responsavel') { window.location.href = '/responsavel-ponto.html'; return; }
+      document.getElementById('userNome').textContent = user.nome;
+      document.getElementById('userPapel').textContent = user.papel === 'admin' ? 'Admin' : 'Encarregado';
+      document.getElementById('sideUserNome').textContent = user.nome;
+      document.getElementById('sideUserRole').textContent = user.papel === 'admin' ? 'Admin' : 'Encarregado';
+      if (user.papel === 'admin') { document.getElementById('linkUsuarios').classList.remove('hidden'); }
+      return user;
+    }
+
+    async function carregarObras() {
+      const res = await fetch('/api/obras');
+      const obras = await res.json();
+      const select = document.getElementById('obraSelect');
+      if (obras.length === 0) { select.innerHTML = '<option value="">Nenhuma obra</option>'; return; }
+      select.innerHTML = obras.map(o => `<option value="${o.id}">${esc(o.nome)}</option>`).join('');
+      if (obras.length > 0) await carregarMonitoramento();
+    }
+
+    async function carregarEquipes() {
+      const res = await fetch('/api/equipes');
+      if (res.ok) equipesCache = await res.json();
+    }
+
+    async function carregarMonitoramento() {
+      const obraId = document.getElementById('obraSelect').value;
+      const mes = document.getElementById('mesSelector').value;
+      if (!obraId || !mes) { mostrarToast('Selecione obra e mês', 'danger'); return; }
+
+      document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('tabelaContainer').classList.add('hidden');
+      document.getElementById('emptyState').classList.add('hidden');
+      document.getElementById('cardsEquipes').innerHTML = '';
+
+      const res = await fetch(`/api/obras/${obraId}/registros/mensal?mes=${mes}`);
+      if (!res.ok) { document.getElementById('loading').classList.add('hidden'); mostrarToast('Erro ao carregar', 'danger'); return; }
+
+      const report = await res.json();
+      relatorioCache = report;
+      document.getElementById('loading').classList.add('hidden');
+
+      if (!report.funcionarios || report.funcionarios.length === 0) {
+        document.getElementById('emptyState').classList.remove('hidden');
+        document.getElementById('emptyState').querySelector('p').textContent = 'Nenhum registro encontrado';
+        return;
+      }
+
+      await carregarEquipes();
+      renderizarCardsEquipe(report);
+      renderizarTabelaAuditoria(report);
+      document.getElementById('tabelaContainer').classList.remove('hidden');
+    }
+
+    function renderizarCardsEquipe(report) {
+      const container = document.getElementById('cardsEquipes');
+
+      const agrupado = {};
+      for (const f of report.funcionarios) {
+        let eqNome = 'Sem equipe';
+        let respNome = 'N/D';
+        for (const eq of equipesCache) {
+          if (eq.responsavel_nome && eq.total_membros > 0) {
+            eqNome = eq.nome;
+            respNome = eq.responsavel_nome || 'N/D';
+            break;
+          }
+        }
+        if (!agrupado[eqNome]) agrupado[eqNome] = { membros: [], responsavel: respNome, totalPresencas: 0, totalPossivel: 0, diasRegistrados: new Set() };
+        agrupado[eqNome].membros.push(f);
+
+        for (let d = 1; d <= report.diasNoMes; d++) {
+          const dia = f.dias[d];
+          if (dia && dia.presente !== null) {
+            agrupado[eqNome].diasRegistrados.add(d);
+            if (dia.presente) agrupado[eqNome].totalPresencas++;
+            agrupado[eqNome].totalPossivel++;
+          }
+        }
+      }
+
+      container.innerHTML = Object.entries(agrupado).map(([nome, eq]) => {
+        const diasReg = eq.diasRegistrados.size;
+        const totalDias = report.diasNoMes;
+        const pct = totalDias > 0 ? Math.round((diasReg / totalDias) * 100) : 0;
+        const accentClass = pct >= 80 ? 'border-l-green-600' : pct >= 50 ? 'border-l-amber-500' : 'border-l-[#ba1a1a]';
+        const barClass = pct >= 80 ? 'bg-green-600' : pct >= 50 ? 'bg-amber-500' : 'bg-[#ba1a1a]';
+
+        return `
+          <div class="border-2 border-outline-variant bg-surface-container-lowest border-l-4 ${accentClass} p-4">
+            <div class="flex items-center justify-between mb-3">
+              <span class="font-heading font-bold text-on-surface">${esc(nome)}</span>
+              <span class="font-mono text-xs bg-surface-container px-2 py-0.5 text-secondary">${eq.membros.length} membros</span>
+            </div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="font-mono text-secondary">Responsável:</span>
+              <span class="font-mono font-bold text-on-surface">${esc(eq.responsavel)}</span>
+            </div>
+            <div class="flex justify-between text-xs mb-2">
+              <span class="font-mono text-secondary">Dias com registro:</span>
+              <span class="font-mono font-bold text-on-surface">${diasReg}/${totalDias}</span>
+            </div>
+            <div class="h-2 bg-surface-container-high w-full overflow-hidden mb-2">
+              <div class="h-full ${barClass}" style="width:${pct}%"></div>
+            </div>
+            <div class="flex justify-between text-xs">
+              <span class="font-mono text-secondary">Presenças:</span>
+              <span class="font-mono font-bold text-on-surface">${eq.totalPresencas}/${eq.totalPossivel}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderizarTabelaAuditoria(report) {
+      if (!report.audit) {
+        document.getElementById('equipeTabs').innerHTML = '<span class="font-mono text-xs text-secondary">Auditoria disponível apenas para encarregados</span>';
+        document.getElementById('equipeTabContent').innerHTML = '';
+        return;
+      }
+
+      const dias = [];
+      for (let d = 1; d <= report.diasNoMes; d++) dias.push(d);
+
+      const theadHtml = `
+        <tr class="bg-inverse-surface text-inverse-on-surface">
+          <th class="px-3 py-2 text-left font-mono text-xs uppercase tracking-wider" style="min-width:160px;">Funcionário</th>
+          <th class="px-3 py-2 text-left font-mono text-xs uppercase tracking-wider" style="min-width:80px;">Cargo</th>
+          ${dias.map(d => `<th class="text-center font-mono" style="min-width:26px;font-size:10px;">${d}</th>`).join('')}
+          <th class="px-2 py-2 text-center font-mono text-xs uppercase tracking-wider" style="min-width:36px;">P</th>
+          <th class="px-2 py-2 text-center font-mono text-xs uppercase tracking-wider" style="min-width:36px;">F</th>
+        </tr>
+      `;
+
+      const tbodyHtml = report.funcionarios.map(f => {
+        const linhaDias = dias.map(d => {
+          const dia = f.dias[d];
+          const auditReg = report.audit?.find(a => a.funcionario_id === f.id && parseInt(a.data.split('-')[2]) === d);
+          const [ano, mes] = report.mes.split('-').map(Number);
+          const dt = new Date(ano, mes - 1, d);
+          const isDomingo = dt.getDay() === 0;
+
+          if (isDomingo) return `<td class="text-center cell-d">D</td>`;
+          if (!dia || dia.presente === null) return `<td class="text-center cell-n">-</td>`;
+
+          const cellClass = dia.presente ? 'cell-p' : 'cell-f';
+          const letra = dia.presente ? 'P' : 'F';
+          const title = auditReg ? `Registrado por: ${auditReg.registrado_por_nome}` : '';
+          const badge = auditReg ? `<span style="font-size:9px;display:block;opacity:0.7">${auditReg.tipo_registro === 'responsavel' ? 'R' : 'E'}</span>` : '';
+
+          return `<td class="text-center ${cellClass}" title="${title}" style="cursor:help;">${letra}${badge}</td>`;
+        }).join('');
+
+        return `<tr class="border-b border-outline-variant hover:bg-surface-container-low">
+          <td class="px-3 py-2 font-bold text-sm">${esc(f.nome)}</td>
+          <td class="px-3 py-2 font-mono text-xs text-secondary">${esc(f.cargo || '-')}</td>
+          ${linhaDias}
+          <td class="px-2 py-2 text-center font-mono text-xs font-bold" style="color:#166534;">${f.diasTrabalhados}</td>
+          <td class="px-2 py-2 text-center font-mono text-xs font-bold" style="color:#991b1b;">${f.diasAusente}</td>
+        </tr>`;
+      }).join('');
+
+      document.getElementById('equipeTabs').innerHTML = `
+        <div class="font-mono text-xs text-secondary uppercase tracking-wider flex items-center gap-2">
+          <span class="material-symbols-outlined" style="font-size:14px">table_chart</span>
+          Visão Geral — P=Presente · F=Falta · R=Resp · E=Enc · D=Dom
+        </div>
+      `;
+
+      document.getElementById('equipeTabContent').innerHTML = `
+        <div class="border-2 border-outline-variant bg-surface-container-lowest overflow-x-auto">
+          <table class="w-full audit-table border-collapse">
+            <thead>${theadHtml}</thead>
+            <tbody>${tbodyHtml}</tbody>
+          </table>
+        </div>
+        <div class="mt-3 flex flex-wrap gap-3">
+          <span class="font-mono text-xs flex items-center gap-1"><span class="inline-block w-4 h-4 bg-green-100 border border-green-300"></span>P = Presente</span>
+          <span class="font-mono text-xs flex items-center gap-1"><span class="inline-block w-4 h-4 bg-red-100 border border-red-300"></span>F = Falta</span>
+          <span class="font-mono text-xs text-secondary">R = Responsável · E = Encarregado · D = Domingo</span>
+        </div>
+      `;
+    }
+
+    function esc(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+    async function logout() { await fetch('/api/auth/logout', {method:'POST'}); window.location.href='/login.html'; }
+
+    document.getElementById('obraSelect').addEventListener('change', carregarMonitoramento);
+    document.getElementById('mesSelector').addEventListener('change', () => {
+      if (document.getElementById('mesSelector').value) carregarMonitoramento();
+    });
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await checkAuth();
+      const hoje = new Date();
+      document.getElementById('mesSelector').value = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}`;
+      await carregarObras();
+      await carregarEquipes();
+    });
+  </script>
+</body>
+</html>

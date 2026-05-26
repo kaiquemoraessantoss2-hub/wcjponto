@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <title>PontoWCJ - Configuração Inicial</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;900&family=JetBrains+Mono:wght@500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#a20513", "on-primary": "#ffffff", "primary-container": "#c62828", "on-primary-container": "#ffe0dd",
+            "secondary": "#546067", "secondary-container": "#d7e4ec", "on-secondary-container": "#5a666d",
+            "surface": "#f9f9f9", "surface-container-lowest": "#ffffff", "surface-container-low": "#f3f3f3",
+            "surface-container": "#eeeeee", "surface-container-high": "#e8e8e8", "surface-container-highest": "#e2e2e2",
+            "on-surface": "#1a1c1c", "on-surface-variant": "#5b403d",
+            "outline": "#8f706c", "outline-variant": "#e4beba",
+            "error": "#ba1a1a", "error-container": "#ffdad6",
+            "inverse-surface": "#2f3131"
+          },
+          fontFamily: { sans: ['Work Sans','sans-serif'], heading: ['Hanken Grotesk','sans-serif'], mono: ['JetBrains Mono','monospace'] },
+          borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem' }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Work Sans', sans-serif; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    input:focus { border-color: #a20513 !important; outline: none; }
+  </style>
+</head>
+<body class="min-h-screen bg-inverse-surface flex">
+
+  <!-- Brand panel -->
+  <div class="hidden lg:flex flex-col justify-between p-12 w-[400px] flex-shrink-0 bg-primary-container">
+    <div>
+      <div class="w-14 h-14 flex items-center justify-center mb-6 bg-white/15 rounded">
+        <span class="text-white font-black text-2xl font-heading">P</span>
+      </div>
+      <h1 class="text-4xl font-black text-white mb-3 font-heading leading-tight">PontoWCJ</h1>
+      <p class="text-base text-on-primary-container leading-relaxed">
+        Configure o primeiro acesso ao sistema.
+      </p>
+    </div>
+    <div class="space-y-3">
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-on-primary-container/70">admin_panel_settings</span>
+        <span class="text-sm text-on-primary-container/90">Crie sua conta de administrador</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-on-primary-container/70">lock</span>
+        <span class="text-sm text-on-primary-container/90">Esta página só funciona uma vez</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form panel -->
+  <div class="flex-1 flex items-center justify-center p-6">
+    <div class="w-full max-w-sm">
+
+      <!-- Mobile logo -->
+      <div class="flex items-center gap-3 mb-8 lg:hidden">
+        <div class="w-10 h-10 flex items-center justify-center bg-primary rounded">
+          <span class="text-white font-black font-heading">P</span>
+        </div>
+        <span class="text-xl font-black text-white font-heading">PontoWCJ</span>
+      </div>
+
+      <div id="card" class="p-8 bg-surface-container-lowest border-2 border-white/10 rounded-lg">
+        <h2 class="text-2xl font-bold mb-1 font-heading text-on-surface">Configuração Inicial</h2>
+        <p class="text-sm text-secondary mb-6">Crie o primeiro usuário administrador</p>
+
+        <form id="setupForm" class="space-y-4">
+          <div>
+            <label class="block text-[11px] uppercase mb-1.5 font-mono text-on-surface-variant">Nome completo</label>
+            <input id="nome" type="text" placeholder="Seu nome" required
+              class="w-full px-3 py-3 text-sm border border-outline-variant rounded bg-surface text-on-surface" />
+          </div>
+          <div>
+            <label class="block text-[11px] uppercase mb-1.5 font-mono text-on-surface-variant">Email</label>
+            <input id="email" type="email" placeholder="seu@email.com" required autocomplete="email"
+              class="w-full px-3 py-3 text-sm border border-outline-variant rounded bg-surface text-on-surface" />
+          </div>
+          <div>
+            <label class="block text-[11px] uppercase mb-1.5 font-mono text-on-surface-variant">Papel</label>
+            <select id="papel" class="w-full px-3 py-3 text-sm border border-outline-variant rounded bg-surface text-on-surface">
+              <option value="admin">Admin</option>
+              <option value="encarregado">Encarregado</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] uppercase mb-1.5 font-mono text-on-surface-variant">Senha</label>
+            <input id="senha" type="password" placeholder="Mínimo 6 caracteres" required
+              class="w-full px-3 py-3 text-sm border border-outline-variant rounded bg-surface text-on-surface" />
+          </div>
+          <div>
+            <label class="block text-[11px] uppercase mb-1.5 font-mono text-on-surface-variant">Confirmar senha</label>
+            <input id="senha2" type="password" placeholder="Repita a senha" required
+              class="w-full px-3 py-3 text-sm border border-outline-variant rounded bg-surface text-on-surface" />
+          </div>
+
+          <div id="erro" class="hidden flex items-center gap-2 px-3 py-2.5 bg-error-container border border-error rounded text-error text-xs"></div>
+
+          <button type="submit" id="btnSetup"
+            class="w-full h-12 mt-2 bg-primary text-on-primary text-xs uppercase font-mono flex items-center justify-center gap-2 rounded hover:bg-primary-container transition-colors">
+            <span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>
+            Criar Administrador
+          </button>
+        </form>
+      </div>
+
+      <p class="text-xs text-center mt-4 font-mono text-white/30">PONTOWCJ © <span id="ano"></span></p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('ano').textContent = new Date().getFullYear();
+
+    // Check if setup is available
+    fetch('/api/auth/setup-status').then(r => r.json()).then(d => {
+      if (!d.available) {
+        document.getElementById('card').innerHTML = `
+          <div class="text-center py-8">
+            <span class="material-symbols-outlined text-5xl text-outline-variant block mb-3">lock</span>
+            <p class="text-on-surface font-bold mb-2 font-heading text-lg">Sistema já configurado</p>
+            <p class="text-secondary text-sm mb-4">Um administrador já existe no sistema.</p>
+            <a href="/login.html" class="inline-flex items-center gap-2 h-11 px-6 bg-primary text-on-primary text-xs uppercase font-mono rounded">
+              <span class="material-symbols-outlined text-[16px]">login</span>
+              Ir para Login
+            </a>
+          </div>`;
+      }
+    });
+
+    document.getElementById('setupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nome = document.getElementById('nome').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const papel = document.getElementById('papel').value;
+      const senha = document.getElementById('senha').value;
+      const senha2 = document.getElementById('senha2').value;
+      const erroEl = document.getElementById('erro');
+
+      erroEl.classList.add('hidden');
+
+      if (senha !== senha2) {
+        erroEl.textContent = 'As senhas não coincidem.';
+        erroEl.classList.remove('hidden');
+        return;
+      }
+      if (senha.length < 6) {
+        erroEl.textContent = 'Senha deve ter ao menos 6 caracteres.';
+        erroEl.classList.remove('hidden');
+        return;
+      }
+
+      const btn = document.getElementById('btnSetup');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="material-symbols-outlined text-[16px]">progress_activity</span> Criando...';
+
+      const res = await fetch('/api/auth/setup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, email, senha, papel })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        erroEl.textContent = data.error || 'Erro ao criar usuário.';
+        erroEl.classList.remove('hidden');
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">admin_panel_settings</span> Criar Administrador';
+        return;
+      }
+
+      document.getElementById('card').innerHTML = `
+        <div class="text-center py-8">
+          <span class="material-symbols-outlined text-5xl text-[#2e7d32] block mb-3">check_circle</span>
+          <p class="text-on-surface font-bold mb-2 font-heading text-lg">Conta criada!</p>
+          <p class="text-secondary text-sm mb-4">Usuário <strong>${data.nome}</strong> criado com sucesso.</p>
+          <a href="/login.html" class="inline-flex items-center gap-2 h-11 px-6 bg-primary text-on-primary text-xs uppercase font-mono rounded">
+            <span class="material-symbols-outlined text-[16px]">login</span>
+            Ir para Login
+          </a>
+        </div>`;
+    });
+  </script>
+</body>
+</html>

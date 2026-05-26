@@ -1,0 +1,334 @@
+:root {
+  --cor-primaria: #E65100;
+  --cor-primaria-escura: #BF360C;
+  --cor-secundaria: #1A237E;
+  --cor-sucesso: #2E7D32;
+  --cor-perigo: #C62828;
+  --cor-aviso: #F9A825;
+  --cor-fundo: #F5F5F5;
+  --cor-card: #FFFFFF;
+  --cor-texto: #212121;
+  --cor-texto-secundario: #616161;
+  --cor-borda: #E0E0E0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
+  min-height: 100vh;
+}
+
+.login-page {
+  background: linear-gradient(135deg, var(--cor-secundaria) 0%, #283593 50%, var(--cor-primaria-escura) 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.login-card .logo {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-card .logo-icon {
+  width: 72px;
+  height: 72px;
+  background: var(--cor-primaria);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 2rem;
+  color: white;
+}
+
+.login-card h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--cor-texto);
+  margin: 0;
+}
+
+.login-card p {
+  color: var(--cor-texto-secundario);
+  font-size: 0.9rem;
+  margin: 0.25rem 0 0;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.navbar-brand .badge {
+  font-size: 0.65rem;
+  vertical-align: middle;
+}
+
+.card-obra {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+  height: 100%;
+}
+
+.card-obra:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.card-obra .card-header {
+  background: var(--cor-secundaria);
+  color: white;
+  border-radius: 12px 12px 0 0 !important;
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+}
+
+.card-obra .card-body {
+  padding: 1.25rem;
+}
+
+.card-obra .info-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--cor-texto-secundario);
+  margin-bottom: 0.15rem;
+}
+
+.card-obra .info-value {
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.registro-header {
+  background: linear-gradient(135deg, var(--cor-secundaria), #283593);
+  color: white;
+  padding: 1.5rem 0;
+  margin-bottom: 1.5rem;
+}
+
+.registro-header h4 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.registro-header .data-info {
+  opacity: 0.9;
+  font-size: 0.9rem;
+}
+
+.table-presenca {
+  font-size: 0.9rem;
+}
+
+.table-presenca th {
+  background: var(--cor-secundaria);
+  color: white;
+  font-weight: 500;
+  border: none;
+  padding: 0.65rem 0.75rem;
+}
+
+.table-presenca td {
+  vertical-align: middle;
+  padding: 0.5rem 0.75rem;
+}
+
+.table-presenca .form-check-input {
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
+}
+
+.table-presenca .form-check-input:checked {
+  background-color: var(--cor-sucesso);
+  border-color: var(--cor-sucesso);
+}
+
+.table-presenca tr:hover {
+  background-color: rgba(26, 35, 126, 0.04);
+}
+
+.relatorio-header {
+  background: linear-gradient(135deg, var(--cor-primaria), var(--cor-primaria-escura));
+  color: white;
+  padding: 1.5rem 0;
+  margin-bottom: 1.5rem;
+}
+
+.relatorio-header h4 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.resumo-card {
+  border: none;
+  border-radius: 12px;
+  text-align: center;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.resumo-card .numero {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.resumo-card .rotulo {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--cor-texto-secundario);
+  margin-top: 0.35rem;
+}
+
+.table-relatorio {
+  font-size: 0.8rem;
+}
+
+.table-relatorio th {
+  background: var(--cor-secundaria);
+  color: white;
+  font-weight: 500;
+  border: none;
+  padding: 0.5rem;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table-relatorio th.funcionario-col {
+  text-align: left;
+  min-width: 160px;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
+.table-relatorio td {
+  padding: 0.35rem 0.5rem;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table-relatorio td.funcionario-nome {
+  text-align: left;
+  font-weight: 500;
+  position: sticky;
+  left: 0;
+  background: white;
+  z-index: 1;
+}
+
+.table-relatorio .presenca-sim {
+  color: var(--cor-sucesso);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.table-relatorio .presenca-nao {
+  color: var(--cor-perigo);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.table-relatorio .presenca-nula {
+  color: var(--cor-borda);
+}
+
+.table-relatorio .dia-util {
+  background: #FAFAFA;
+}
+
+.table-relatorio .dia-nao-util {
+  background: #EEEEEE;
+  color: #BDBDBD;
+}
+
+.table-relatorio-wrapper {
+  overflow-x: auto;
+  max-width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.btn-primary {
+  background-color: var(--cor-primaria) !important;
+  border-color: var(--cor-primaria) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--cor-primaria-escura) !important;
+  border-color: var(--cor-primaria-escura) !important;
+}
+
+.btn-outline-primary {
+  color: var(--cor-primaria) !important;
+  border-color: var(--cor-primaria) !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--cor-primaria) !important;
+  color: white !important;
+}
+
+.spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.alert-fixed {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10000;
+  min-width: 280px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+@media (max-width: 768px) {
+  .login-card {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+
+  .table-relatorio {
+    font-size: 0.7rem;
+  }
+
+  .table-relatorio th.funcionario-col,
+  .table-relatorio td.funcionario-nome {
+    min-width: 120px;
+  }
+
+  .resumo-card .numero {
+    font-size: 1.5rem;
+  }
+}

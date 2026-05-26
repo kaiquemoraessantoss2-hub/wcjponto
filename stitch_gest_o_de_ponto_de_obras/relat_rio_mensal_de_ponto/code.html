@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Relatório Mensal de Ponto</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;900&amp;family=JetBrains+Mono:wght@500&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-error-container": "#93000a",
+                "on-surface-variant": "#5b403d",
+                "tertiary-fixed-dim": "#afcbd8",
+                "on-background": "#1a1c1c",
+                "secondary-fixed-dim": "#bbc8d0",
+                "primary-container": "#c62828",
+                "on-surface": "#1a1c1c",
+                "inverse-primary": "#ffb4ac",
+                "secondary-fixed": "#d7e4ec",
+                "primary": "#a20513",
+                "outline-variant": "#e4beba",
+                "on-tertiary-container": "#cfebf9",
+                "surface-container-low": "#f3f3f3",
+                "on-tertiary": "#ffffff",
+                "secondary-container": "#d7e4ec",
+                "surface-variant": "#e2e2e2",
+                "surface-bright": "#f9f9f9",
+                "surface-container-high": "#e8e8e8",
+                "surface-tint": "#b91d20",
+                "on-primary": "#ffffff",
+                "on-secondary-fixed-variant": "#3c494f",
+                "surface": "#f9f9f9",
+                "outline": "#8f706c",
+                "surface-container-highest": "#e2e2e2",
+                "on-secondary-container": "#5a666d",
+                "surface-container-lowest": "#ffffff",
+                "tertiary-container": "#516b77",
+                "surface-dim": "#dadada",
+                "primary-fixed-dim": "#ffb4ac",
+                "surface-container": "#eeeeee",
+                "primary-fixed": "#ffdad6",
+                "secondary": "#546067",
+                "on-tertiary-fixed-variant": "#304a55",
+                "tertiary": "#39535e",
+                "error": "#ba1a1a",
+                "on-error": "#ffffff",
+                "tertiary-fixed": "#cbe7f5",
+                "on-secondary-fixed": "#111d23",
+                "inverse-surface": "#2f3131",
+                "on-primary-fixed": "#410003",
+                "on-primary-fixed-variant": "#93000e",
+                "on-tertiary-fixed": "#021f29",
+                "on-primary-container": "#ffe0dd",
+                "on-secondary": "#ffffff",
+                "inverse-on-surface": "#f1f1f1",
+                "background": "#f9f9f9",
+                "error-container": "#ffdad6"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "spacing": {
+                "stack-sm": "4px",
+                "base": "8px",
+                "stack-lg": "24px",
+                "margin-mobile": "16px",
+                "stack-md": "12px",
+                "margin-desktop": "40px",
+                "gutter": "24px"
+        },
+        "fontFamily": {
+                "body-lg": [
+                        "Work Sans"
+                ],
+                "headline-sm": [
+                        "Hanken Grotesk"
+                ],
+                "label-sm": [
+                        "JetBrains Mono"
+                ],
+                "label-lg": [
+                        "JetBrains Mono"
+                ],
+                "headline-md": [
+                        "Hanken Grotesk"
+                ],
+                "headline-lg-mobile": [
+                        "Hanken Grotesk"
+                ],
+                "headline-lg": [
+                        "Hanken Grotesk"
+                ],
+                "body-md": [
+                        "Work Sans"
+                ]
+        },
+        "fontSize": {
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-sm": [
+                        "22px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "label-sm": [
+                        "11px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "label-lg": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-md": [
+                        "28px",
+                        {
+                                "lineHeight": "36px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-lg": [
+                        "40px",
+                        {
+                                "lineHeight": "48px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+        /* Custom scrollbar for data tables to match heavy industrial theme */
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #eeeeee; /* surface-container */
+            border-left: 1px solid #D1D1D1;
+            border-top: 1px solid #D1D1D1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #5f5e5e; /* secondary */
+            border: 2px solid #eeeeee;
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #1a1c1c; /* on-surface */
+        }
+        /* Sticky Column for table */
+        .sticky-col {
+            position: sticky;
+            left: 0;
+            z-index: 10;
+            box-shadow: 2px 0 4px -2px rgba(0,0,0,0.1);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface h-screen w-screen overflow-hidden flex font-body-md text-body-md">
+<!-- Shared Component: SideNavBar -->
+<nav class="hidden md:flex bg-surface-container-low dark:bg-surface-dim docked h-screen left-0 w-64 border-r-2 border-outline-variant dark:border-outline flat no shadows flex-col pt-16 z-40 fixed left-0 top-0 h-full">
+<div class="px-4 mb-8 flex items-center gap-3">
+<div class="w-12 h-12 rounded bg-surface-container-high border-2 border-outline overflow-hidden flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" style="font-size: 24px;">person</span>
+</div>
+<div>
+<h2 class="text-headline-md font-headline-md text-primary text-base leading-tight">Encarregado Atual</h2>
+<p class="text-label-sm font-label-sm uppercase text-secondary mt-1">Supervisor de Campo</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 mt-4">
+<!-- Inactive Tab -->
+<a class="text-secondary dark:text-secondary-fixed-dim flex items-center gap-4 px-4 py-3 hover:bg-secondary-container/50 hover:bg-secondary-container dark:hover:bg-secondary-fixed-dim transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-label-sm font-label-sm uppercase">Dashboard</span>
+</a>
+<!-- Inactive Tab -->
+<a class="text-secondary dark:text-secondary-fixed-dim flex items-center gap-4 px-4 py-3 hover:bg-secondary-container/50 hover:bg-secondary-container dark:hover:bg-secondary-fixed-dim transition-all" href="#">
+<span class="material-symbols-outlined">construction</span>
+<span class="text-label-sm font-label-sm uppercase">Obras</span>
+</a>
+<!-- Inactive Tab -->
+<a class="text-secondary dark:text-secondary-fixed-dim flex items-center gap-4 px-4 py-3 hover:bg-secondary-container/50 hover:bg-secondary-container dark:hover:bg-secondary-fixed-dim transition-all" href="#">
+<span class="material-symbols-outlined">engineering</span>
+<span class="text-label-sm font-label-sm uppercase">Responsáveis</span>
+</a>
+<!-- ACTIVE TAB (Semantic Match: Relatório Mensal de Ponto -> Relatórios) -->
+<a class="bg-primary-container text-on-primary-container border-r-4 border-primary dark:border-primary-fixed-dim font-bold flex items-center gap-4 px-4 py-3 scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-label-sm font-label-sm uppercase">Relatórios</span>
+</a>
+</div>
+<div class="mt-auto p-4">
+<button class="w-full bg-surface-container-highest border border-outline-variant text-on-surface h-[48px] font-label-sm text-label-sm uppercase flex items-center justify-center gap-2 hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">add</span>
+                Adicionar Obra
+            </button>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col md:ml-64 h-screen overflow-hidden bg-background">
+<!-- Shared Component: TopAppBar -->
+<header class="bg-surface-container-highest dark:bg-surface-container-high docked full-width top-0 border-b-2 border-outline-variant dark:border-outline flat no shadows flex justify-between items-center w-full px-margin-desktop h-16 shrink-0 z-30">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim font-bold md:hidden">menu</span>
+<h1 class="text-headline-md font-headline-md font-black text-primary dark:text-primary-fixed-dim tracking-tight">Portal do Encarregado</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary">search</span>
+<input class="h-10 pl-10 pr-4 bg-surface border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none text-body-md w-64 placeholder:text-secondary" placeholder="Buscar..." type="text"/>
+</div>
+<button class="w-10 h-10 flex items-center justify-center text-secondary dark:text-secondary-fixed-dim hover:bg-secondary-container dark:hover:bg-secondary-fixed-dim transition-colors rounded-full">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center text-secondary dark:text-secondary-fixed-dim hover:bg-secondary-container dark:hover:bg-secondary-fixed-dim transition-colors rounded-full">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<!-- Page Content -->
+<main class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop flex flex-col gap-gutter relative">
+<!-- Page Header & Actions -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-outline-variant pb-4">
+<div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface">Relatório Mensal de Ponto</h2>
+<p class="font-body-md text-body-md text-secondary mt-1">Conferência final de presença e horas trabalhadas na obra.</p>
+</div>
+<div class="flex gap-3 w-full md:w-auto">
+<button class="flex-1 md:flex-none h-[48px] px-6 bg-surface border-2 border-secondary text-secondary font-label-sm text-label-sm uppercase flex items-center justify-center gap-2 hover:bg-surface-container transition-colors focus:ring-2 focus:ring-primary focus:ring-offset-2">
+<span class="material-symbols-outlined text-[20px]">download</span>
+                        Exportar PDF
+                    </button>
+<button class="flex-1 md:flex-none h-[48px] px-6 bg-primary text-on-primary font-label-sm text-label-sm uppercase flex items-center justify-center gap-2 hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+<span class="material-symbols-outlined text-[20px]">verified</span>
+                        Validar Folha
+                    </button>
+</div>
+</div>
+<!-- Context & Filters Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-base">
+<!-- Status Summary (Bento item 1) -->
+<div class="bg-surface-container-lowest border-2 border-outline-variant p-4 flex flex-col justify-between">
+<span class="font-label-sm text-label-sm uppercase text-secondary mb-2">Status da Obra</span>
+<div class="flex items-end gap-4">
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-headline-md leading-none text-on-surface">142</span>
+<span class="font-label-sm text-label-sm uppercase text-secondary">Ativos</span>
+</div>
+<div class="w-px h-8 bg-outline-variant"></div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-headline-md leading-none text-error">12</span>
+<span class="font-label-sm text-label-sm uppercase text-secondary">Faltas</span>
+</div>
+</div>
+</div>
+<!-- Filters Form (Bento item 2 & 3 combined) -->
+<div class="md:col-span-2 bg-surface-container-lowest border-2 border-outline-variant p-4 flex flex-col justify-center">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm uppercase text-on-surface-variant">Mês de Referência</label>
+<select class="h-10 border-2 border-outline-variant bg-surface text-body-md font-body-md focus:border-primary focus:ring-0 outline-none w-full">
+<option>Outubro 2023</option>
+<option>Setembro 2023</option>
+</select>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm uppercase text-on-surface-variant">Obra Selecionada</label>
+<select class="h-10 border-2 border-outline-variant bg-surface text-body-md font-body-md focus:border-primary focus:ring-0 outline-none w-full">
+<option>Canteiro Norte - Fase 2</option>
+<option>Edifício Alpha</option>
+</select>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm uppercase text-on-surface-variant">Buscar Funcionário</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-secondary text-[20px]">search</span>
+<input class="h-10 pl-9 pr-2 border-2 border-outline-variant bg-surface text-body-md font-body-md focus:border-primary focus:ring-0 outline-none w-full" placeholder="Nome ou Matrícula" type="text"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Heavy Data Table Container -->
+<div class="bg-surface-container-lowest border-2 border-outline-variant overflow-hidden flex flex-col flex-1 min-h-[400px]">
+<!-- Table Toolbar/Legend -->
+<div class="bg-surface-container-low border-b-2 border-outline-variant px-4 py-3 flex items-center justify-between gap-4">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded bg-surface border border-outline flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[16px]">check</span>
+</div>
+<span class="font-label-sm text-label-sm uppercase text-secondary">Presente</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded bg-secondary-container border border-outline flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface text-[16px]">close</span>
+</div>
+<span class="font-label-sm text-label-sm uppercase text-secondary">Falta</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded bg-primary-container border border-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container text-[16px]">swap_horiz</span>
+</div>
+<span class="font-label-sm text-label-sm uppercase text-secondary">Transferido</span>
+</div>
+</div>
+<span class="font-label-lg text-label-lg text-secondary">Mostrando 1-15 de 142</span>
+</div>
+<!-- Scrollable Table Area -->
+<div class="overflow-x-auto overflow-y-auto flex-1">
+<table class="w-full text-left border-collapse min-w-max">
+<thead class="bg-inverse-surface text-inverse-on-surface font-label-sm text-label-sm uppercase sticky top-0 z-20">
+<tr>
+<th class="py-2 px-4 border-b-2 border-outline-variant sticky-col bg-inverse-surface border-r border-outline-variant min-w-[200px]">
+                                    Funcionário
+                                </th>
+<!-- Days 1-31 Columns -->
+<!-- Simulating loop for brevity, showing 1-10 and then dots to 31 -->
+<th class="py-2 px-1 text-center border-b-2 border-r border-outline-variant/30 min-w-[32px]">1</th>
+<th class="py-2 px-1 text-center border-b-2 border-r border-outline-variant/30 min-w-[32px]">2</th>
+<th class="py-2 px-1 text-center border-b-2 border-r border-outline-variant/30 min-w-[32px]">3</th>
+<th class="py-2 px-1 text-center border-b-2 border-r border-outline-variant/30 min-w-[32px]">4</th>
+<th class="py-2 px-1 text-center border-b-2 border-r border-outline-variant/30 min-w-[32px]">5</th>
+<th class="py-2 px-1 text-center border-b-2 border-r border-outline-variant/30 min-w-[32px]">6</th>
+<th class="py-2 px-1 text-center border-b-2 border-r border-outline-variant/30 bg-surface-variant/20 min-w-[32px]" title="Domingo">7</th>
+<th class="py-2 px-1 text-center border-b-2 border-r border-outline-variant/30 min-w-[32px]">8</th>
+<th class="py-2 px-1 text-center border-b-2 border-r border-outline-variant/30 min-w-[32px]">9</th>
+<th class="py-2 px-1 text-center border-b-2 border-r border-outline-variant/30 min-w-[32px]">10</th>
+<th class="py-2 px-4 text-center border-b-2 border-r border-outline-variant/30 text-secondary-fixed-dim">...</th>
+<th class="py-2 px-1 text-center border-b-2 border-r border-outline-variant/30 min-w-[32px]">30</th>
+<th class="py-2 px-1 text-center border-b-2 border-r border-outline-variant/30 min-w-[32px]">31</th>
+<!-- Summary Columns -->
+<th class="py-2 px-4 text-right border-b-2 border-l-2 border-outline-variant bg-inverse-surface">Total Dias</th>
+<th class="py-2 px-4 text-right border-b-2 border-outline-variant bg-inverse-surface">Total Horas</th>
+</tr>
+</thead>
+<tbody class="font-label-lg text-label-lg bg-surface-container-lowest">
+<!-- Row 1 -->
+<tr class="border-b border-outline-variant hover:bg-surface-container transition-colors">
+<td class="py-2 px-4 sticky-col bg-surface-container-lowest border-r border-outline-variant flex flex-col justify-center min-h-[56px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)] group-hover:bg-surface-container">
+<span class="font-body-md text-body-md font-semibold text-on-surface leading-tight">Antônio Silva</span>
+<span class="font-label-sm text-label-sm uppercase text-secondary">Pedreiro - Mat: 0492</span>
+</td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30 bg-surface-container-low"></td> <!-- Sunday -->
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-on-surface text-[20px]">close</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-4 text-center border-r border-outline-variant/30 text-secondary">...</td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-4 text-right border-l-2 border-outline-variant font-bold">25</td>
+<td class="py-2 px-4 text-right">200h</td>
+</tr>
+<!-- Row 2 Zebra Stripe -->
+<tr class="border-b border-outline-variant bg-surface hover:bg-surface-container transition-colors">
+<td class="py-2 px-4 sticky-col bg-surface border-r border-outline-variant flex flex-col justify-center min-h-[56px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]">
+<span class="font-body-md text-body-md font-semibold text-on-surface leading-tight">Carlos Mendes</span>
+<span class="font-label-sm text-label-sm uppercase text-secondary">Ajudante - Mat: 0511</span>
+</td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30 bg-primary-container text-on-primary-container"><span class="material-symbols-outlined text-[20px]">swap_horiz</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30 bg-primary-container text-on-primary-container"><span class="material-symbols-outlined text-[20px]">swap_horiz</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30 bg-surface-container-low"></td> <!-- Sunday -->
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-4 text-center border-r border-outline-variant/30 text-secondary">...</td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-on-surface text-[20px]">close</span></td>
+<td class="py-2 px-4 text-right border-l-2 border-outline-variant font-bold">23</td>
+<td class="py-2 px-4 text-right">184h</td>
+</tr>
+<!-- Row 3 -->
+<tr class="border-b border-outline-variant hover:bg-surface-container transition-colors">
+<td class="py-2 px-4 sticky-col bg-surface-container-lowest border-r border-outline-variant flex flex-col justify-center min-h-[56px] shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]">
+<span class="font-body-md text-body-md font-semibold text-on-surface leading-tight">Marcos Silva</span>
+<span class="font-label-sm text-label-sm uppercase text-secondary">Carpinteiro - Mat: 0210</span>
+</td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30 bg-surface-container-low"></td> <!-- Sunday -->
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-4 text-center border-r border-outline-variant/30 text-secondary">...</td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-primary text-[20px]">check</span></td>
+<td class="py-2 px-4 text-right border-l-2 border-outline-variant font-bold">26</td>
+<td class="py-2 px-4 text-right">208h</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+</div>
+</body></html>

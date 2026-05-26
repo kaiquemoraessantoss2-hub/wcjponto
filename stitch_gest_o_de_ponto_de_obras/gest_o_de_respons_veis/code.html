@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gestão de Responsáveis - Portal do Encarregado</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Work+Sans:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "on-error-container": "#93000a",
+                "on-surface-variant": "#5b403d",
+                "tertiary-fixed-dim": "#afcbd8",
+                "on-background": "#1a1c1c",
+                "secondary-fixed-dim": "#bbc8d0",
+                "primary-container": "#c62828",
+                "on-surface": "#1a1c1c",
+                "inverse-primary": "#ffb4ac",
+                "secondary-fixed": "#d7e4ec",
+                "primary": "#a20513",
+                "outline-variant": "#e4beba",
+                "on-tertiary-container": "#cfebf9",
+                "surface-container-low": "#f3f3f3",
+                "on-tertiary": "#ffffff",
+                "secondary-container": "#d7e4ec",
+                "surface-variant": "#e2e2e2",
+                "surface-bright": "#f9f9f9",
+                "surface-container-high": "#e8e8e8",
+                "surface-tint": "#b91d20",
+                "on-primary": "#ffffff",
+                "on-secondary-fixed-variant": "#3c494f",
+                "surface": "#f9f9f9",
+                "outline": "#8f706c",
+                "surface-container-highest": "#e2e2e2",
+                "on-secondary-container": "#5a666d",
+                "surface-container-lowest": "#ffffff",
+                "tertiary-container": "#516b77",
+                "surface-dim": "#dadada",
+                "primary-fixed-dim": "#ffb4ac",
+                "surface-container": "#eeeeee",
+                "primary-fixed": "#ffdad6",
+                "secondary": "#546067",
+                "on-tertiary-fixed-variant": "#304a55",
+                "tertiary": "#39535e",
+                "error": "#ba1a1a",
+                "on-error": "#ffffff",
+                "tertiary-fixed": "#cbe7f5",
+                "on-secondary-fixed": "#111d23",
+                "inverse-surface": "#2f3131",
+                "on-primary-fixed": "#410003",
+                "on-primary-fixed-variant": "#93000e",
+                "on-tertiary-fixed": "#021f29",
+                "on-primary-container": "#ffe0dd",
+                "on-secondary": "#ffffff",
+                "inverse-on-surface": "#f1f1f1",
+                "background": "#f9f9f9",
+                "error-container": "#ffdad6"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "spacing": {
+                "stack-sm": "4px",
+                "base": "8px",
+                "stack-lg": "24px",
+                "margin-mobile": "16px",
+                "stack-md": "12px",
+                "margin-desktop": "40px",
+                "gutter": "24px"
+        },
+        "fontFamily": {
+                "body-lg": [
+                        "Work Sans"
+                ],
+                "headline-sm": [
+                        "Hanken Grotesk"
+                ],
+                "label-sm": [
+                        "JetBrains Mono"
+                ],
+                "label-lg": [
+                        "JetBrains Mono"
+                ],
+                "headline-md": [
+                        "Hanken Grotesk"
+                ],
+                "headline-lg-mobile": [
+                        "Hanken Grotesk"
+                ],
+                "headline-lg": [
+                        "Hanken Grotesk"
+                ],
+                "body-md": [
+                        "Work Sans"
+                ]
+        },
+        "fontSize": {
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-sm": [
+                        "22px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "label-sm": [
+                        "11px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "label-lg": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-md": [
+                        "28px",
+                        {
+                                "lineHeight": "36px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-lg": [
+                        "40px",
+                        {
+                                "lineHeight": "48px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+        /* Base styles to enforce the heavy-duty industrial feel */
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-surface-container-highest border-b-2 border-outline-variant flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 shadow-none">
+<div class="text-headline-md font-headline-md font-black text-primary tracking-tight">Portal do Encarregado</div>
+<div class="flex items-center gap-base">
+<!-- Search Bar on Right -->
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-lowest border-2 border-outline-variant rounded focus:border-primary focus:ring-0 outline-none text-body-md font-body-md h-[48px] w-64 transition-colors" placeholder="Buscar..." type="text"/>
+</div>
+<!-- Trailing Icons -->
+<button aria-label="Notificações" class="w-[48px] h-[48px] flex items-center justify-center rounded hover:bg-secondary-container transition-colors text-secondary">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button aria-label="Configurações" class="w-[48px] h-[48px] flex items-center justify-center rounded hover:bg-secondary-container transition-colors text-secondary">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden md:flex fixed left-0 top-0 h-full flex-col pt-16 z-40 w-64 bg-surface-container-low border-r-2 border-outline-variant">
+<!-- Profile Header -->
+<div class="p-4 border-b-2 border-outline-variant flex flex-col gap-2">
+<div class="w-12 h-12 bg-secondary-container rounded-full flex items-center justify-center border-2 border-outline-variant">
+<span class="material-symbols-outlined text-secondary">person</span>
+</div>
+<div>
+<h2 class="text-body-lg font-headline-md font-bold text-primary">Encarregado Atual</h2>
+<p class="text-label-sm font-label-sm text-secondary uppercase tracking-wider">Supervisor de Campo</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex flex-col py-4 gap-2 flex-grow">
+<a class="text-secondary flex items-center gap-4 px-4 py-3 hover:bg-secondary-container/50 transition-all text-label-sm font-label-sm uppercase" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<a class="text-secondary flex items-center gap-4 px-4 py-3 hover:bg-secondary-container/50 transition-all text-label-sm font-label-sm uppercase" href="#">
+<span class="material-symbols-outlined">construction</span>
+                Obras
+            </a>
+<!-- ACTIVE TAB: Responsáveis -->
+<a class="bg-primary-container text-on-primary-container border-r-4 border-primary font-bold flex items-center gap-4 px-4 py-3 scale-95 transition-transform duration-150 text-label-sm font-label-sm uppercase" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">engineering</span>
+                Responsáveis
+            </a>
+<a class="text-secondary flex items-center gap-4 px-4 py-3 hover:bg-secondary-container/50 transition-all text-label-sm font-label-sm uppercase" href="#">
+<span class="material-symbols-outlined">analytics</span>
+                Relatórios
+            </a>
+</div>
+<!-- Call to Action -->
+<div class="p-4 border-t-2 border-outline-variant">
+<button class="w-full bg-primary text-on-primary h-[48px] rounded font-label-sm text-label-sm uppercase flex items-center justify-center gap-2 hover:bg-primary-fixed hover:text-on-primary-fixed-variant transition-colors shadow-sm">
+<span class="material-symbols-outlined">add</span>
+                Adicionar Obra
+            </button>
+</div>
+</nav>
+<!-- Mobile Bottom Navigation Shell -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-highest border-t-2 border-outline-variant flex justify-around items-center h-16 z-50">
+<a class="flex flex-col items-center justify-center w-full h-full text-secondary hover:bg-secondary-container" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-secondary hover:bg-secondary-container" href="#">
+<span class="material-symbols-outlined">construction</span>
+</a>
+<!-- ACTIVE TAB -->
+<a class="flex flex-col items-center justify-center w-full h-full text-on-primary-container bg-primary-container border-t-4 border-primary box-border" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">engineering</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-secondary hover:bg-secondary-container" href="#">
+<span class="material-symbols-outlined">analytics</span>
+</a>
+</nav>
+<!-- Main Content Canvas -->
+<main class="pt-16 md:pl-64 pb-20 md:pb-0 min-h-screen">
+<div class="max-w-7xl mx-auto p-margin-mobile md:p-margin-desktop flex flex-col gap-gutter">
+<!-- Page Header & Global Action -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b-2 border-outline-variant pb-6">
+<div>
+<h1 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg-mobile md:font-headline-lg text-on-surface">Gestão de Responsáveis</h1>
+<p class="text-body-md font-body-md text-secondary mt-1">Gerencie os líderes de equipe autorizados a registrar ponto nas obras.</p>
+</div>
+<!-- Primary Action for this specific page -->
+<button class="bg-primary text-on-primary h-[48px] px-6 rounded font-label-sm text-label-sm uppercase flex items-center gap-2 hover:bg-primary-container hover:text-on-primary-container transition-colors w-full md:w-auto justify-center shadow-sm">
+<span class="material-symbols-outlined">person_add</span>
+                    Adicionar Responsável
+                </button>
+</div>
+<!-- Bento Grid List of Managers -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Manager Card 1 (Active, Multiple Sites) -->
+<div class="bg-surface-container-lowest border-2 border-outline-variant rounded flex flex-col p-5 gap-5 hover:border-primary transition-colors">
+<!-- Header -->
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-surface-container rounded-full flex items-center justify-center border-2 border-outline">
+<span class="material-symbols-outlined text-secondary">person</span>
+</div>
+<div>
+<h3 class="text-headline-md font-headline-md text-on-surface leading-tight">Carlos Silva</h3>
+<p class="text-label-lg font-label-lg text-secondary mt-1">MAT: #4092-A</p>
+</div>
+</div>
+<span class="bg-tertiary-fixed-dim text-on-tertiary-fixed-variant px-2 py-1 rounded text-label-sm font-label-sm uppercase flex items-center gap-1 border border-tertiary-fixed">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                            Ativo
+                        </span>
+</div>
+<!-- Assigned Sites -->
+<div class="bg-surface p-4 rounded border-2 border-outline-variant flex-grow">
+<h4 class="text-label-sm font-label-sm text-secondary mb-3 uppercase tracking-wider">Obras Atribuídas</h4>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3 bg-surface-container-lowest p-2 border-2 border-outline-variant rounded">
+<div class="bg-primary-container text-on-primary-container p-1 rounded">
+<span class="material-symbols-outlined text-[18px] block">construction</span>
+</div>
+<span class="text-body-md font-body-md text-on-surface font-semibold">Torre Sul - Expansão</span>
+</div>
+<div class="flex items-center gap-3 bg-surface-container-lowest p-2 border-2 border-outline-variant rounded">
+<div class="bg-primary-container text-on-primary-container p-1 rounded">
+<span class="material-symbols-outlined text-[18px] block">construction</span>
+</div>
+<span class="text-body-md font-body-md text-on-surface font-semibold">Galpão Logístico B</span>
+</div>
+</div>
+</div>
+<!-- Permission Warning Indicator -->
+<div class="flex items-center gap-3 text-on-surface-variant bg-surface-variant p-3 rounded border border-outline-variant">
+<span class="material-symbols-outlined text-[20px]">security</span>
+<p class="text-body-md font-body-md text-sm leading-tight">Acesso de registro de ponto <strong>restrito</strong> às obras listadas acima.</p>
+</div>
+<!-- Actions -->
+<div class="flex gap-2 mt-2">
+<button class="flex-1 h-[48px] border-2 border-outline text-on-surface font-label-sm text-label-sm uppercase rounded flex items-center justify-center gap-2 hover:bg-surface-container hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+                            Editar
+                        </button>
+<button aria-label="Remover" class="w-[48px] h-[48px] border-2 border-outline text-error font-label-sm text-label-sm rounded flex items-center justify-center hover:bg-error-container hover:border-error transition-colors">
+<span class="material-symbols-outlined text-[20px]">person_remove</span>
+</button>
+</div>
+</div>
+<!-- Manager Card 2 (Active, Single Site) -->
+<div class="bg-surface-container-lowest border-2 border-outline-variant rounded flex flex-col p-5 gap-5 hover:border-primary transition-colors">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-surface-container rounded-full flex items-center justify-center border-2 border-outline">
+<span class="material-symbols-outlined text-secondary">person</span>
+</div>
+<div>
+<h3 class="text-headline-md font-headline-md text-on-surface leading-tight">Roberto Almeida</h3>
+<p class="text-label-lg font-label-lg text-secondary mt-1">MAT: #5103-B</p>
+</div>
+</div>
+<span class="bg-tertiary-fixed-dim text-on-tertiary-fixed-variant px-2 py-1 rounded text-label-sm font-label-sm uppercase flex items-center gap-1 border border-tertiary-fixed">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                            Ativo
+                        </span>
+</div>
+<div class="bg-surface p-4 rounded border-2 border-outline-variant flex-grow">
+<h4 class="text-label-sm font-label-sm text-secondary mb-3 uppercase tracking-wider">Obras Atribuídas</h4>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3 bg-surface-container-lowest p-2 border-2 border-outline-variant rounded">
+<div class="bg-primary-container text-on-primary-container p-1 rounded">
+<span class="material-symbols-outlined text-[18px] block">construction</span>
+</div>
+<span class="text-body-md font-body-md text-on-surface font-semibold">Fundação Central</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant bg-surface-variant p-3 rounded border border-outline-variant">
+<span class="material-symbols-outlined text-[20px]">security</span>
+<p class="text-body-md font-body-md text-sm leading-tight">Acesso de registro de ponto <strong>restrito</strong> às obras listadas acima.</p>
+</div>
+<div class="flex gap-2 mt-2">
+<button class="flex-1 h-[48px] border-2 border-outline text-on-surface font-label-sm text-label-sm uppercase rounded flex items-center justify-center gap-2 hover:bg-surface-container hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+                            Editar
+                        </button>
+<button aria-label="Remover" class="w-[48px] h-[48px] border-2 border-outline text-error font-label-sm text-label-sm rounded flex items-center justify-center hover:bg-error-container hover:border-error transition-colors">
+<span class="material-symbols-outlined text-[20px]">person_remove</span>
+</button>
+</div>
+</div>
+<!-- Manager Card 3 (Inactive) -->
+<div class="bg-surface-container-lowest border-2 border-outline-variant rounded flex flex-col p-5 gap-5 opacity-75 hover:opacity-100 transition-opacity grayscale hover:grayscale-0">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-surface-container rounded-full flex items-center justify-center border-2 border-outline">
+<span class="material-symbols-outlined text-secondary">person</span>
+</div>
+<div>
+<h3 class="text-headline-md font-headline-md text-on-surface leading-tight">Marcos Santos</h3>
+<p class="text-label-lg font-label-lg text-secondary mt-1">MAT: #2099-C</p>
+</div>
+</div>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-label-sm font-label-sm uppercase flex items-center gap-1 border border-outline-variant">
+<span class="material-symbols-outlined text-[14px]">cancel</span>
+                            Inativo
+                        </span>
+</div>
+<div class="bg-surface p-4 rounded border-2 border-outline-variant flex-grow flex items-center justify-center text-center">
+<p class="text-body-md font-body-md text-secondary">Nenhuma obra atribuída no momento.</p>
+</div>
+<div class="flex items-center gap-3 text-secondary bg-surface-container p-3 rounded border border-outline-variant">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+<p class="text-body-md font-body-md text-sm leading-tight">Sem permissão de acesso ao sistema.</p>
+</div>
+<div class="flex gap-2 mt-2">
+<button class="flex-1 h-[48px] border-2 border-outline text-on-surface font-label-sm text-label-sm uppercase rounded flex items-center justify-center gap-2 hover:bg-surface-container hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">restore</span>
+                            Reativar
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

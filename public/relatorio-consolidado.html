@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <title>Relatório Consolidado - PontoWCJ</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;900&family=JetBrains+Mono:wght@500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#a20513", "on-primary": "#ffffff", "primary-container": "#c62828", "on-primary-container": "#ffe0dd",
+            "secondary": "#546067", "on-secondary": "#ffffff", "secondary-container": "#d7e4ec", "on-secondary-container": "#5a666d",
+            "tertiary": "#39535e", "tertiary-fixed-dim": "#afcbd8", "on-tertiary-fixed-variant": "#304a55",
+            "surface": "#f9f9f9", "surface-dim": "#dadada", "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f3f3f3", "surface-container": "#eeeeee",
+            "surface-container-high": "#e8e8e8", "surface-container-highest": "#e2e2e2",
+            "on-surface": "#1a1c1c", "on-surface-variant": "#5b403d",
+            "outline": "#8f706c", "outline-variant": "#e4beba",
+            "error": "#ba1a1a", "on-error": "#ffffff", "error-container": "#ffdad6", "on-error-container": "#93000a",
+            "inverse-surface": "#2f3131", "inverse-on-surface": "#f1f1f1"
+          },
+          fontFamily: { sans: ['Work Sans','sans-serif'], heading: ['Hanken Grotesk','sans-serif'], mono: ['JetBrains Mono','monospace'] },
+          borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem' }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Work Sans', sans-serif; background-color: #f9f9f9; color: #1a1c1c; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; user-select: none; }
+    .nav-link { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; color: #546067; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; text-decoration: none; transition: background-color 0.15s; }
+    .nav-link:hover { background-color: rgba(215,228,236,0.5); }
+    .nav-link.active { background-color: #c62828; color: #ffe0dd; border-right: 4px solid #a20513; font-weight: 700; }
+    input:focus, select:focus { border-color: #a20513 !important; outline: none; box-shadow: none; }
+    @media print {
+      nav, header, .no-print { display: none !important; }
+      main { margin-left: 0 !important; padding-top: 0 !important; }
+      .print-title { display: block !important; }
+    }
+    .print-title { display: none; }
+  </style>
+</head>
+<body class="bg-surface">
+
+  <!-- Sidebar -->
+  <nav class="hidden md:flex fixed left-0 top-0 h-full w-64 bg-surface-container-low border-r-2 border-outline-variant flex-col z-40 pt-16">
+    <div class="p-4 border-b-2 border-outline-variant mb-2">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-secondary-container rounded-full flex items-center justify-center border-2 border-outline-variant">
+          <span class="material-symbols-outlined text-secondary">person</span>
+        </div>
+        <div>
+          <div class="text-sm font-bold text-primary font-heading" id="sideUserNome">...</div>
+          <div class="text-xs text-secondary font-mono uppercase tracking-wider" id="sideUserRole">Encarregado</div>
+        </div>
+      </div>
+    </div>
+    <div class="flex-1 py-2 flex flex-col">
+      <a href="/dashboard.html" class="nav-link"><span class="material-symbols-outlined">dashboard</span>Dashboard</a>
+      <a href="/obras.html" class="nav-link"><span class="material-symbols-outlined">construction</span>Obras</a>
+      <a href="/responsaveis.html" class="nav-link"><span class="material-symbols-outlined">engineering</span>Responsáveis</a>
+      <a href="/relatorio-consolidado.html" class="nav-link active"><span class="material-symbols-outlined">summarize</span>Relatório Consolidado</a>
+      <a href="/usuarios.html" class="nav-link hidden" id="linkUsuarios"><span class="material-symbols-outlined">manage_accounts</span>Usuários</a>
+    </div>
+    <div class="p-4 border-t-2 border-outline-variant">
+      <button onclick="logout()" class="w-full h-12 border-2 border-outline text-secondary font-mono text-xs uppercase flex items-center gap-2 justify-center hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined">logout</span>Sair
+      </button>
+    </div>
+  </nav>
+
+  <!-- Top Header -->
+  <header class="fixed top-0 left-0 right-0 md:left-64 z-50 bg-surface-container-highest border-b-2 border-outline-variant flex items-center justify-between px-4 md:px-10 h-16 no-print">
+    <div>
+      <h1 class="text-lg font-black font-heading text-primary tracking-tight">Relatório Consolidado</h1>
+      <div class="text-xs font-mono text-secondary">Dias trabalhados por funcionário — todas as obras</div>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="text-sm font-mono text-secondary hidden md:inline" id="userNome">...</span>
+      <span class="text-xs font-mono bg-surface-container px-2 py-1 text-secondary hidden md:inline" id="userPapel"></span>
+    </div>
+  </header>
+
+  <!-- Bottom nav (mobile) -->
+  <nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-highest border-t-2 border-outline-variant flex justify-around items-center h-14 z-50 no-print">
+    <a href="/dashboard.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span class="text-xs font-mono">Dash</span>
+    </a>
+    <a href="/obras.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
+      <span class="material-symbols-outlined">construction</span>
+      <span class="text-xs font-mono">Obras</span>
+    </a>
+    <a href="/responsaveis.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
+      <span class="material-symbols-outlined">engineering</span>
+      <span class="text-xs font-mono">Resp</span>
+    </a>
+    <a href="/relatorio-consolidado.html" class="flex flex-col items-center justify-center w-full h-full text-primary">
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">summarize</span>
+      <span class="text-xs font-mono font-bold">Relat</span>
+    </a>
+  </nav>
+
+  <!-- Main -->
+  <main class="md:ml-64 pt-16 pb-16 md:pb-0 min-h-screen bg-surface">
+
+    <!-- Filters -->
+    <div class="bg-surface-container-low border-b border-outline-variant px-4 md:px-10 py-4 no-print">
+      <div class="flex flex-wrap items-end gap-3">
+        <div class="flex flex-col gap-1">
+          <label class="font-mono text-xs uppercase text-secondary tracking-wider">Mês</label>
+          <input type="month" id="mesSelector" class="h-12 border-2 border-outline-variant bg-surface px-3 font-mono text-sm text-on-surface w-40">
+        </div>
+        <div class="flex items-end gap-2 flex-wrap">
+          <button onclick="gerarRelatorio()" class="h-12 px-4 bg-primary border-2 border-primary text-on-primary font-mono text-xs uppercase flex items-center gap-2 hover:bg-primary-container transition-colors">
+            <span class="material-symbols-outlined text-base">summarize</span>
+            Gerar Relatório
+          </button>
+          <button onclick="exportarCSV()" class="h-12 px-4 border-2 border-outline-variant text-secondary font-mono text-xs uppercase flex items-center gap-2 hover:bg-surface-container transition-colors">
+            <span class="material-symbols-outlined text-base">download</span>
+            CSV
+          </button>
+          <button onclick="window.print()" class="h-12 px-4 border-2 border-outline-variant text-secondary font-mono text-xs uppercase flex items-center gap-2 hover:bg-surface-container transition-colors">
+            <span class="material-symbols-outlined text-base">print</span>
+            Imprimir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-4 md:p-10">
+
+      <!-- Print title -->
+      <div class="print-title mb-6">
+        <h2 class="text-2xl font-black font-heading text-primary" id="printTitulo"></h2>
+        <p class="font-mono text-sm text-secondary">Relatório Consolidado de Ponto — Todas as Obras</p>
+      </div>
+
+      <!-- Loading -->
+      <div id="loading" class="hidden flex flex-col items-center justify-center py-20 gap-4">
+        <div class="w-10 h-10 border-4 border-outline-variant border-t-primary rounded-full animate-spin"></div>
+        <span class="font-mono text-xs uppercase text-secondary tracking-wider">Gerando relatório...</span>
+      </div>
+
+      <!-- Summary cards -->
+      <div id="resumoCards" class="hidden grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"></div>
+
+      <!-- Table -->
+      <div id="tabelaContainer" class="hidden border-2 border-outline-variant overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="bg-inverse-surface text-inverse-on-surface">
+              <th class="py-3 px-4 text-left font-mono text-xs uppercase border-r border-outline-variant/30">Funcionário</th>
+              <th class="py-3 px-4 text-left font-mono text-xs uppercase border-r border-outline-variant/30 hidden md:table-cell">Cargo</th>
+              <th class="py-3 px-3 text-right font-mono text-xs uppercase border-r border-outline-variant/30 w-24">Trabalhados</th>
+              <th class="py-3 px-3 text-right font-mono text-xs uppercase border-r border-outline-variant/30 w-20">Faltas</th>
+              <th class="py-3 px-4 text-left font-mono text-xs uppercase">Obras</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Empty -->
+      <div id="empty" class="flex flex-col items-center justify-center py-24 gap-4">
+        <span class="material-symbols-outlined text-outline-variant" style="font-size: 4rem;">summarize</span>
+        <p class="font-mono text-xs uppercase text-secondary tracking-wider">Selecione um mês e clique em "Gerar Relatório"</p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed top-4 right-4 z-[200] w-80"></div>
+
+  <script>
+    let relatorioAtual = null;
+
+    function toast(msg, tipo = 'success') {
+      const c = document.getElementById('toast');
+      const ok = tipo === 'success';
+      c.innerHTML = `<div class="border-2 ${ok ? 'bg-tertiary-fixed-dim border-on-tertiary-fixed-variant text-on-tertiary-fixed-variant' : 'bg-error-container border-error text-on-error-container'} p-4 flex items-center gap-3">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">${ok ? 'check_circle' : 'error'}</span>
+        <span class="font-mono text-xs">${msg}</span>
+        <button onclick="this.parentElement.parentElement.innerHTML=''" class="ml-auto"><span class="material-symbols-outlined text-sm">close</span></button>
+      </div>`;
+      setTimeout(() => { c.innerHTML = ''; }, 4000);
+    }
+
+    function esc(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+    function nomeDoMes(mes) {
+      const [y, m] = mes.split('-');
+      return new Date(y, m - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+    }
+
+    async function checkAuth() {
+      const res = await fetch('/api/auth/me');
+      if (!res.ok) { window.location.href = '/login.html'; return; }
+      const u = await res.json();
+      document.getElementById('userNome').textContent = u.nome;
+      document.getElementById('sideUserNome').textContent = u.nome;
+      const label = u.papel === 'admin' ? 'Administrador' : u.papel === 'encarregado' ? 'Encarregado' : 'Responsável';
+      document.getElementById('userPapel').textContent = label;
+      document.getElementById('sideUserRole').textContent = label;
+      if (u.papel === 'admin') document.getElementById('linkUsuarios').classList.remove('hidden');
+    }
+
+    async function gerarRelatorio() {
+      const mes = document.getElementById('mesSelector').value;
+      if (!mes) { toast('Selecione um mês', 'danger'); return; }
+
+      document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('resumoCards').classList.add('hidden');
+      document.getElementById('tabelaContainer').classList.add('hidden');
+      document.getElementById('empty').classList.add('hidden');
+
+      try {
+        const res = await fetch(`/api/relatorio/consolidado?mes=${mes}`);
+        if (!res.ok) throw new Error('Erro ao carregar relatório');
+        const data = await res.json();
+        relatorioAtual = data;
+
+        document.getElementById('loading').classList.add('hidden');
+
+        if (!data.funcionarios || data.funcionarios.length === 0) {
+          document.getElementById('empty').classList.remove('hidden');
+          document.getElementById('empty').querySelector('p').textContent = 'Nenhum registro encontrado para este mês';
+          return;
+        }
+
+        renderResumo(data);
+        renderTabela(data);
+        document.getElementById('resumoCards').classList.remove('hidden');
+        document.getElementById('tabelaContainer').classList.remove('hidden');
+        document.getElementById('printTitulo').textContent = `Relatório de ${nomeDoMes(mes).charAt(0).toUpperCase() + nomeDoMes(mes).slice(1)}`;
+      } catch (e) {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('empty').classList.remove('hidden');
+        toast(e.message, 'danger');
+      }
+    }
+
+    function renderResumo(data) {
+      const totalTrab = data.funcionarios.reduce((s, f) => s + f.total_dias_trabalhados, 0);
+      const totalFalt = data.funcionarios.reduce((s, f) => s + f.total_dias_ausente, 0);
+      const obrasSet = new Set(data.funcionarios.flatMap(f => f.obras.map(o => o.obra_id)));
+
+      document.getElementById('resumoCards').innerHTML = `
+        <div class="bg-surface-container-lowest border-2 border-outline-variant p-4">
+          <span class="font-mono text-xs uppercase text-secondary block mb-1">Funcionários</span>
+          <span class="text-3xl font-black font-heading text-on-surface">${data.funcionarios.length}</span>
+        </div>
+        <div class="bg-surface-container-lowest border-2 border-outline-variant p-4">
+          <span class="font-mono text-xs uppercase text-secondary block mb-1">Obras</span>
+          <span class="text-3xl font-black font-heading text-on-surface">${obrasSet.size}</span>
+        </div>
+        <div class="bg-surface-container-lowest border-2 border-outline-variant p-4">
+          <span class="font-mono text-xs uppercase text-secondary block mb-1">Total Presenças</span>
+          <span class="text-3xl font-black font-heading text-green-700">${totalTrab}</span>
+        </div>
+        <div class="bg-surface-container-lowest border-2 border-outline-variant p-4">
+          <span class="font-mono text-xs uppercase text-secondary block mb-1">Total Faltas</span>
+          <span class="text-3xl font-black font-heading text-error">${totalFalt}</span>
+        </div>
+      `;
+    }
+
+    function renderTabela(data) {
+      const tbody = document.getElementById('tbody');
+      tbody.innerHTML = data.funcionarios.map((f, i) => {
+        const obrasHtml = f.obras.map(o =>
+          `<span class="inline-flex items-center gap-1 font-mono text-xs bg-surface-container px-2 py-0.5 border border-outline-variant mr-1 mb-1">
+            <span class="text-green-700 font-bold">${o.dias_trabalhados}P</span>
+            <span class="text-secondary">/</span>
+            <span class="text-error font-bold">${o.dias_ausente}F</span>
+            <span class="text-secondary truncate max-w-[100px]">${esc(o.obra_nome)}</span>
+          </span>`
+        ).join('');
+
+        return `
+          <tr class="border-b border-outline-variant ${i % 2 === 0 ? '' : 'bg-surface-container-low/50'} hover:bg-surface-container transition-colors">
+            <td class="py-3 px-4 border-r border-outline-variant">
+              <div class="font-semibold text-sm">${esc(f.nome)}</div>
+              <div class="font-mono text-xs text-secondary md:hidden">${esc(f.cargo || '-')}</div>
+            </td>
+            <td class="py-3 px-4 border-r border-outline-variant hidden md:table-cell font-mono text-xs text-secondary uppercase">${esc(f.cargo || '-')}</td>
+            <td class="py-3 px-3 text-right border-r border-outline-variant font-black font-heading text-xl text-green-700">${f.total_dias_trabalhados}</td>
+            <td class="py-3 px-3 text-right border-r border-outline-variant font-black font-heading text-xl text-error">${f.total_dias_ausente}</td>
+            <td class="py-3 px-4">
+              <div class="flex flex-wrap">${obrasHtml}</div>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    function exportarCSV() {
+      if (!relatorioAtual) return;
+      const { mes, funcionarios } = relatorioAtual;
+      let csv = 'Funcionário,Cargo,Dias Trabalhados,Dias Ausente,Obras\n';
+      for (const f of funcionarios) {
+        const obrasStr = f.obras.map(o => `${o.obra_nome}(${o.dias_trabalhados}P/${o.dias_ausente}F)`).join(' | ');
+        csv += `"${f.nome}","${f.cargo || ''}",${f.total_dias_trabalhados},${f.total_dias_ausente},"${obrasStr}"\n`;
+      }
+      const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `consolidado_${mes}.csv`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    async function logout() { await fetch('/api/auth/logout', { method: 'POST' }); window.location.href = '/login.html'; }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await checkAuth();
+      const hoje = new Date();
+      document.getElementById('mesSelector').value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+    });
+  </script>
+</body>
+</html>

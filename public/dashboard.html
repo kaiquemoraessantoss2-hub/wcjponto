@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <title>Dashboard - PontoWCJ</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;900&family=JetBrains+Mono:wght@500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#a20513", "on-primary": "#ffffff", "primary-container": "#c62828", "on-primary-container": "#ffe0dd",
+            "secondary": "#546067", "on-secondary": "#ffffff", "secondary-container": "#d7e4ec", "on-secondary-container": "#5a666d",
+            "tertiary": "#39535e", "tertiary-fixed-dim": "#afcbd8", "on-tertiary-fixed-variant": "#304a55",
+            "surface": "#f9f9f9", "surface-dim": "#dadada", "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f3f3f3", "surface-container": "#eeeeee",
+            "surface-container-high": "#e8e8e8", "surface-container-highest": "#e2e2e2",
+            "on-surface": "#1a1c1c", "on-surface-variant": "#5b403d",
+            "outline": "#8f706c", "outline-variant": "#e4beba",
+            "error": "#ba1a1a", "on-error": "#ffffff", "error-container": "#ffdad6", "on-error-container": "#93000a",
+            "inverse-surface": "#2f3131", "inverse-on-surface": "#f1f1f1"
+          },
+          fontFamily: { sans: ['Work Sans','sans-serif'], heading: ['Hanken Grotesk','sans-serif'], mono: ['JetBrains Mono','monospace'] },
+          borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem' }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Work Sans', sans-serif; background-color: #f9f9f9; color: #1a1c1c; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; user-select: none; }
+    .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .nav-link { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; color: #546067; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; text-decoration: none; transition: background-color 0.15s; }
+    .nav-link:hover { background-color: rgba(215,228,236,0.5); }
+    .nav-link.active { background-color: #c62828; color: #ffe0dd; border-right: 4px solid #a20513; font-weight: 700; }
+    input:focus, select:focus { border-color: #a20513 !important; outline: none; box-shadow: none; }
+    .obra-card:hover { border-color: #a20513; }
+    .bar-col { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+    .bar-wrap { width: 100%; height: 120px; display: flex; flex-direction: column; justify-content: flex-end; }
+    .bar-inner { width: 100%; border-radius: 2px 2px 0 0; min-height: 2px; }
+  </style>
+</head>
+<body class="min-h-screen bg-surface">
+
+  <div id="toast-container" class="fixed top-4 right-4 z-[200] w-80"></div>
+
+  <!-- Sidebar -->
+  <nav class="hidden md:flex fixed left-0 top-0 h-full w-64 bg-surface-container-low border-r-2 border-outline-variant flex-col z-40 pt-16">
+    <div class="p-4 border-b-2 border-outline-variant">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-secondary-container rounded-full flex items-center justify-center border-2 border-outline-variant overflow-hidden">
+          <span id="sidebar-avatar-icon" class="material-symbols-outlined text-secondary">person</span>
+          <img id="sidebar-avatar-img" style="display:none;width:100%;height:100%;object-fit:cover;" alt="Foto">
+        </div>
+        <div>
+          <div class="text-sm font-bold text-primary font-heading" id="sideUserNome">...</div>
+          <div class="text-xs text-secondary font-mono uppercase tracking-wider" id="sideUserRole">Encarregado</div>
+        </div>
+      </div>
+    </div>
+    <div class="flex-1 py-2 flex flex-col">
+      <a href="/dashboard.html" class="nav-link active"><span class="material-symbols-outlined fill">dashboard</span>Dashboard</a>
+      <a href="/obras.html" class="nav-link"><span class="material-symbols-outlined">construction</span>Obras</a>
+      <a href="/funcionarios.html" class="nav-link"><span class="material-symbols-outlined">groups</span>Funcionários</a>
+      <a href="/responsaveis.html" class="nav-link"><span class="material-symbols-outlined">engineering</span>Responsáveis</a>
+      <a href="/relatorio.html" class="nav-link"><span class="material-symbols-outlined">analytics</span>Relatórios</a>
+      <a href="/usuarios.html" class="nav-link hidden" id="linkUsuarios"><span class="material-symbols-outlined">manage_accounts</span>Usuários</a>
+    </div>
+    <div class="p-4 border-t-2 border-outline-variant">
+      <button onclick="abrirModalObra()" class="w-full h-12 bg-primary text-on-primary font-mono text-xs uppercase flex items-center justify-center gap-2 hover:bg-primary-container hover:text-on-primary-container transition-colors">
+        <span class="material-symbols-outlined">add</span>Adicionar Obra
+      </button>
+    </div>
+  </nav>
+
+  <!-- Top bar -->
+  <header class="fixed top-0 left-0 right-0 md:left-64 z-50 bg-surface-container-highest border-b-2 border-outline-variant flex items-center justify-between px-4 md:px-10 h-16">
+    <div class="flex items-center gap-4">
+      <span class="md:hidden text-secondary material-symbols-outlined">menu</span>
+      <h1 class="text-xl font-black font-heading text-primary tracking-tight">Portal do Encarregado</h1>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="hidden md:flex relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary" style="font-size:18px">search</span>
+        <input class="pl-9 pr-4 h-10 bg-surface border-2 border-outline-variant w-56 font-sans text-sm" placeholder="Buscar..." type="text" id="searchBar">
+      </div>
+      <button id="btn-notif" class="w-10 h-10 flex items-center justify-center hover:bg-secondary-container transition-colors text-secondary relative">
+        <span class="material-symbols-outlined">notifications</span>
+        <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-primary rounded-full"></span>
+      </button>
+      <button id="btn-settings" class="w-10 h-10 hidden sm:flex items-center justify-center hover:bg-secondary-container transition-colors text-secondary">
+        <span class="material-symbols-outlined">settings</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile bottom nav -->
+  <nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-highest border-t-2 border-outline-variant flex justify-around items-center h-14 z-50">
+    <a href="/dashboard.html" class="flex flex-col items-center justify-center w-full h-full text-primary border-t-4 border-primary bg-primary-container/10">
+      <span class="material-symbols-outlined fill">dashboard</span>
+      <span class="text-xs font-mono font-bold">Dash</span>
+    </a>
+    <a href="/obras.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
+      <span class="material-symbols-outlined">construction</span>
+      <span class="text-xs font-mono">Obras</span>
+    </a>
+    <a href="/funcionarios.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
+      <span class="material-symbols-outlined">groups</span>
+      <span class="text-xs font-mono">Func</span>
+    </a>
+    <a href="/relatorio.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
+      <span class="material-symbols-outlined">analytics</span>
+      <span class="text-xs font-mono">Relat</span>
+    </a>
+  </nav>
+
+  <!-- Main content -->
+  <main class="md:ml-64 pt-16 pb-20 md:pb-6 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 md:px-10 py-8">
+
+      <!-- Page header -->
+      <div class="mb-8">
+        <h2 class="text-3xl md:text-4xl font-black font-heading text-on-surface tracking-tight">Visão Geral</h2>
+        <p class="text-secondary mt-1">Resumo das operações e força de trabalho ativa hoje.</p>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-surface-container-lowest border-2 border-outline-variant p-6 flex items-start justify-between">
+          <div>
+            <p class="font-mono text-xs text-on-surface-variant uppercase mb-1">Obras sob gestão</p>
+            <p class="text-4xl font-black font-heading text-on-surface" id="stat-obras">—</p>
+          </div>
+          <div class="w-12 h-12 bg-secondary-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-secondary-container">domain</span>
+          </div>
+        </div>
+        <div class="bg-surface-container-lowest border-2 border-outline-variant p-6 flex items-start justify-between">
+          <div>
+            <p class="font-mono text-xs text-on-surface-variant uppercase mb-1">Funcionários Ativos</p>
+            <p class="text-4xl font-black font-heading text-on-surface" id="stat-funcionarios">—</p>
+          </div>
+          <div class="w-12 h-12 bg-secondary-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-secondary-container">groups</span>
+          </div>
+        </div>
+        <div class="bg-surface-container-lowest border-2 border-outline-variant border-b-4 border-b-primary p-6 flex items-start justify-between">
+          <div>
+            <p class="font-mono text-xs text-on-surface-variant uppercase mb-1">Taxa de Presença (Hoje)</p>
+            <div class="flex items-baseline gap-2">
+              <p class="text-4xl font-black font-heading text-on-surface" id="stat-presenca">—</p>
+              <span class="font-mono text-xs text-green-700 bg-green-50 px-2 py-0.5 uppercase hidden" id="stat-delta"></span>
+            </div>
+          </div>
+          <div class="w-12 h-12 bg-primary-container flex items-center justify-center">
+            <span class="material-symbols-outlined fill text-on-primary-container">check_circle</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main grid: obras (left 8) + side panels (right 4) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Obras Ativas -->
+        <div class="lg:col-span-8 bg-surface-container-lowest border-2 border-outline-variant overflow-hidden flex flex-col">
+          <div class="bg-surface-container-high border-b-2 border-outline-variant px-6 py-4 flex justify-between items-center">
+            <h3 class="text-lg font-bold font-heading text-on-surface">Obras Ativas</h3>
+            <a href="/obras.html" class="font-mono text-xs text-primary uppercase hover:underline">Ver Todas</a>
+          </div>
+          <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4" id="obrasGrid">
+            <div class="col-span-2 flex items-center justify-center py-10">
+              <div class="w-8 h-8 border-4 border-outline-variant border-t-primary rounded-full animate-spin"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Side panels -->
+        <div class="lg:col-span-4 flex flex-col gap-6">
+
+          <!-- Weekly presence chart -->
+          <div class="bg-surface-container-lowest border-2 border-outline-variant p-6">
+            <h3 class="font-bold text-on-surface mb-4">Presença Semanal</h3>
+            <div class="flex items-end gap-2 border-b border-outline-variant pb-2" id="chartSemanal" style="height:140px">
+              <!-- bars rendered by JS -->
+            </div>
+            <div class="flex justify-between mt-2" id="chartLabels">
+              <span class="font-mono text-xs text-secondary uppercase">Seg</span>
+              <span class="font-mono text-xs text-secondary uppercase">Ter</span>
+              <span class="font-mono text-xs text-secondary uppercase">Qua</span>
+              <span class="font-mono text-xs text-secondary uppercase">Qui</span>
+              <span class="font-mono text-xs text-secondary uppercase">Sex</span>
+            </div>
+          </div>
+
+          <!-- Recent activity -->
+          <div class="bg-surface-container-lowest border-2 border-outline-variant flex flex-col">
+            <div class="bg-surface-container-high border-b-2 border-outline-variant px-4 py-3 flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary" style="font-size:18px">swap_horiz</span>
+              <h3 class="font-bold text-on-surface text-sm">Movimentações Recentes</h3>
+            </div>
+            <div class="p-4 flex flex-col gap-3" id="recentActivity">
+              <div class="flex items-center justify-center py-6">
+                <span class="font-mono text-xs text-secondary">Carregando...</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal Nova Obra -->
+  <div id="modal-obra" class="hidden fixed inset-0 bg-black/60 z-[100] items-center justify-center p-4">
+    <div class="bg-surface-container-lowest border-2 border-outline-variant w-full max-w-md">
+      <div class="flex items-center justify-between px-6 py-4 border-b-2 border-outline-variant bg-inverse-surface">
+        <h3 class="font-heading font-bold text-inverse-on-surface">Nova Obra</h3>
+        <button onclick="fecharModal('modal-obra')" class="text-inverse-on-surface material-symbols-outlined hover:opacity-70">close</button>
+      </div>
+      <form id="formObra" class="p-6 flex flex-col gap-4">
+        <div>
+          <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Nome da Obra *</label>
+          <input type="text" id="obraNome" required class="h-12 border-2 border-outline bg-surface-container-lowest px-3 w-full font-sans text-sm">
+        </div>
+        <div>
+          <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Local</label>
+          <input type="text" id="obraLocal" class="h-12 border-2 border-outline bg-surface-container-lowest px-3 w-full font-sans text-sm" placeholder="Endereço da obra">
+        </div>
+        <div>
+          <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Data de Início</label>
+          <input type="date" id="obraDataInicio" class="h-12 border-2 border-outline bg-surface-container-lowest px-3 w-full font-sans text-sm">
+        </div>
+        <div id="secaoEncarregadosDash">
+          <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Encarregados</label>
+          <div id="encarregadosCheckboxes" class="border-2 border-outline bg-surface-container-lowest p-3 max-h-36 overflow-y-auto flex flex-col gap-2"></div>
+        </div>
+        <div id="erroFormObra" class="hidden bg-error-container text-on-error-container font-mono text-xs px-3 py-2 border border-error"></div>
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="fecharModal('modal-obra')" class="flex-1 h-12 border-2 border-outline text-secondary font-mono text-xs uppercase hover:bg-surface-container transition-colors">Cancelar</button>
+          <button type="submit" class="flex-1 h-12 bg-primary text-on-primary font-mono text-xs uppercase hover:bg-primary-container transition-colors">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/header-actions.js"></script>
+  <script>
+    let usuarioAtual = null;
+    function abrirModal(id) { const m=document.getElementById(id); m.classList.remove('hidden'); m.classList.add('flex'); }
+    function fecharModal(id) { const m=document.getElementById(id); m.classList.add('hidden'); m.classList.remove('flex'); }
+    function abrirModalObra() {
+      abrirModal('modal-obra');
+      const secao = document.getElementById('secaoEncarregadosDash');
+      if (secao) secao.style.display = usuarioAtual?.papel === 'admin' ? '' : 'none';
+      if (usuarioAtual?.papel === 'admin') carregarEncarregadosCheckbox();
+    }
+
+    function mostrarToast(msg, tipo) {
+      const c = document.getElementById('toast-container');
+      const colors = { success: '#15803d', danger: '#ba1a1a', warning: '#b45309' };
+      const el = document.createElement('div');
+      el.style.background = colors[tipo] || '#546067';
+      el.className = 'text-white font-mono text-xs px-4 py-3 mb-2';
+      el.textContent = msg;
+      c.appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    }
+
+    function esc(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+    function fmtData(d) { if (!d) return ''; try { return new Date(d + 'T00:00:00').toLocaleDateString('pt-BR'); } catch { return d; } }
+
+    async function checkAuth() {
+      const res = await fetch('/api/auth/me');
+      if (!res.ok) { window.location.href = '/login.html'; return; }
+      usuarioAtual = await res.json();
+      if (usuarioAtual.papel === 'responsavel') { window.location.href = '/responsavel-ponto.html'; return; }
+      document.getElementById('sideUserNome').textContent = usuarioAtual.nome;
+      document.getElementById('sideUserRole').textContent = usuarioAtual.papel === 'admin' ? 'Admin' : 'Encarregado';
+      if (usuarioAtual.papel === 'admin') document.getElementById('linkUsuarios').classList.remove('hidden');
+      return usuarioAtual;
+    }
+
+    function initials(nome) {
+      return nome.split(' ').slice(0, 2).map(p => p[0]).join('').toUpperCase();
+    }
+
+    const COLORS = ['#546067','#39535e','#a20513','#5b403d','#304a55'];
+
+    async function carregarDashboard() {
+      const [obrasRes, statsRes] = await Promise.all([
+        fetch('/api/obras'),
+        fetch('/api/dashboard')
+      ]);
+
+      const obras = obrasRes.ok ? await obrasRes.json() : [];
+      const stats = statsRes.ok ? await statsRes.json() : {};
+
+      document.getElementById('stat-obras').textContent = stats.total_obras ?? obras.length;
+      document.getElementById('stat-funcionarios').textContent = stats.total_funcionarios ?? '—';
+
+      if (stats.presenca_hoje !== null && stats.presenca_hoje !== undefined) {
+        document.getElementById('stat-presenca').textContent = stats.presenca_hoje + '%';
+      } else {
+        document.getElementById('stat-presenca').textContent = 'N/D';
+      }
+
+      renderObras(obras);
+      renderChart(stats.presenca_semanal || []);
+      renderRecentActivity(obras);
+    }
+
+    function renderObras(obras) {
+      const grid = document.getElementById('obrasGrid');
+      if (obras.length === 0) {
+        grid.innerHTML = `<div class="col-span-2 text-center py-10 font-mono text-xs text-secondary">Nenhuma obra cadastrada</div>`;
+        return;
+      }
+      grid.innerHTML = obras.slice(0, 4).map((o, i) => {
+        const funcCount = o.total_funcionarios || 0;
+        const encarregado = o.encarregados_nomes ? o.encarregados_nomes.split(',')[0].trim() : 'Não atribuído';
+        return `
+          <div class="border border-outline-variant p-4 obra-card cursor-pointer transition-colors hover:border-primary" onclick="window.location='/obras.html'">
+            <div class="flex justify-between items-start mb-4">
+              <div>
+                <h4 class="font-bold text-on-surface hover:text-primary transition-colors">${esc(o.nome)}</h4>
+                <p class="font-mono text-xs text-on-surface-variant mt-1 uppercase">Resp: ${esc(encarregado)}</p>
+              </div>
+              ${o.local ? `<span class="bg-inverse-surface text-inverse-on-surface font-mono text-xs px-2 py-1 uppercase whitespace-nowrap">${esc(o.local.split(',')[0] || 'OBRA')}</span>` : ''}
+            </div>
+            <div class="flex justify-between items-end border-t border-outline-variant pt-3">
+              <div>
+                <p class="font-mono text-xs text-secondary mb-1 uppercase">Efetivo Atual</p>
+                <p class="text-lg font-bold text-on-surface">${funcCount} <span class="text-sm text-secondary font-normal">funcionários</span></p>
+              </div>
+              ${o.data_inicio ? `<span class="font-mono text-xs text-secondary">${fmtData(o.data_inicio)}</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderChart(semanal) {
+      const chart = document.getElementById('chartSemanal');
+      const dias = ['Seg','Ter','Qua','Qui','Sex'];
+      const hoje = new Date();
+      const diasDaSemana = [];
+      for (let i = 4; i >= 0; i--) {
+        const d = new Date(hoje);
+        d.setDate(hoje.getDate() - ((hoje.getDay() + 6 - i) % 7 + (hoje.getDay() === 0 ? 1 : 0)));
+      }
+
+      if (semanal.length === 0) {
+        chart.innerHTML = `<div class="w-full flex items-end justify-center gap-2 h-full">` +
+          ['Seg','Ter','Qua','Qui','Sex'].map((d, i) => `
+            <div class="bar-col">
+              <div class="bar-wrap"><div class="bar-inner bg-surface-container-high w-full" style="height:${20 + i*15}%"></div></div>
+            </div>
+          `).join('') + `</div>`;
+        return;
+      }
+
+      const maxTotal = Math.max(...semanal.map(s => s.total || 1), 1);
+      const bars = semanal.slice(-5).map((s, i) => {
+        const pct = s.total > 0 ? Math.round(((s.presentes || 0) / s.total) * 100) : 0;
+        const height = Math.max(4, pct);
+        const isToday = s.data === new Date().toISOString().split('T')[0];
+        const barColor = isToday ? '#c62828' : '#bbc8d0';
+        const dt = new Date(s.data + 'T00:00:00');
+        const nomeDia = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][dt.getDay()];
+        return `
+          <div class="bar-col">
+            <div class="bar-wrap"><div class="bar-inner" style="height:${height}%;background:${barColor}"></div></div>
+            <span class="font-mono text-xs ${isToday ? 'text-on-surface font-bold' : 'text-secondary'} uppercase">${nomeDia}</span>
+          </div>
+        `;
+      });
+      chart.innerHTML = bars.join('');
+      document.getElementById('chartLabels').innerHTML = '';
+    }
+
+    function renderRecentActivity(obras) {
+      const container = document.getElementById('recentActivity');
+      if (obras.length === 0) {
+        container.innerHTML = `<p class="font-mono text-xs text-secondary text-center py-4">Sem atividade recente</p>`;
+        return;
+      }
+      container.innerHTML = obras.slice(0, 3).map((o, i) => {
+        const ini = initials(o.nome);
+        const color = COLORS[i % COLORS.length];
+        return `
+          <div class="flex items-start gap-3 p-3 bg-surface-container-low border border-outline-variant">
+            <div class="w-8 h-8 flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background:${color}">
+              ${ini}
+            </div>
+            <div>
+              <p class="text-sm text-on-surface leading-tight"><span class="font-bold">${esc(o.nome)}</span></p>
+              ${o.local ? `<p class="font-mono text-xs text-on-surface-variant mt-1 uppercase">${esc(o.local)}</p>` : ''}
+              ${o.data_inicio ? `<p class="text-xs text-secondary mt-1">Início: ${fmtData(o.data_inicio)}</p>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function carregarEncarregadosCheckbox() {
+      const res = await fetch('/api/auth/usuarios');
+      if (!res.ok) return;
+      const usuarios = await res.json();
+      const container = document.getElementById('encarregadosCheckboxes');
+      container.innerHTML = usuarios.filter(u => u.papel === 'encarregado').map(u => `
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" name="encarregados" value="${u.id}" class="w-4 h-4 accent-[#a20513]">
+          <span class="text-sm">${esc(u.nome)}</span>
+        </label>
+      `).join('');
+    }
+
+    document.getElementById('formObra').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const erroEl = document.getElementById('erroFormObra');
+      erroEl.classList.add('hidden');
+
+      const encarregadoIds = [...document.querySelectorAll('input[name="encarregados"]:checked')]
+        .map(c => parseInt(c.value));
+
+      const body = {
+        nome: document.getElementById('obraNome').value.trim(),
+        local: document.getElementById('obraLocal').value.trim(),
+        data_inicio: document.getElementById('obraDataInicio').value,
+        encarregado_ids: encarregadoIds
+      };
+
+      const res = await fetch('/api/obras', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        erroEl.textContent = err.error || 'Erro ao criar obra';
+        erroEl.classList.remove('hidden');
+        return;
+      }
+
+      fecharModal('modal-obra');
+      document.getElementById('formObra').reset();
+      mostrarToast('Obra criada com sucesso!', 'success');
+      await carregarDashboard();
+    });
+
+    async function logout() { await fetch('/api/auth/logout', { method: 'POST' }); window.location.href = '/login.html'; }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await checkAuth();
+      await carregarDashboard();
+    });
+  </script>
+</body>
+</html>

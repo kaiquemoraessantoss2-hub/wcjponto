@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <title>Usuários - PontoWCJ</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;900&family=JetBrains+Mono:wght@500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#a20513", "on-primary": "#ffffff", "primary-container": "#c62828", "on-primary-container": "#ffe0dd",
+            "secondary": "#546067", "on-secondary": "#ffffff", "secondary-container": "#d7e4ec", "on-secondary-container": "#5a666d",
+            "tertiary": "#39535e", "tertiary-fixed-dim": "#afcbd8", "on-tertiary-fixed-variant": "#304a55",
+            "surface": "#f9f9f9", "surface-dim": "#dadada", "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f3f3f3", "surface-container": "#eeeeee",
+            "surface-container-high": "#e8e8e8", "surface-container-highest": "#e2e2e2",
+            "on-surface": "#1a1c1c", "on-surface-variant": "#5b403d",
+            "outline": "#8f706c", "outline-variant": "#e4beba",
+            "error": "#ba1a1a", "on-error": "#ffffff", "error-container": "#ffdad6", "on-error-container": "#93000a",
+            "inverse-surface": "#2f3131", "inverse-on-surface": "#f1f1f1"
+          },
+          fontFamily: { sans: ['Work Sans','sans-serif'], heading: ['Hanken Grotesk','sans-serif'], mono: ['JetBrains Mono','monospace'] },
+          borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem' }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Work Sans', sans-serif; background-color: #f9f9f9; color: #1a1c1c; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; user-select: none; }
+    .nav-link { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; color: #546067; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; text-decoration: none; transition: background-color 0.15s; }
+    .nav-link:hover { background-color: rgba(215,228,236,0.5); }
+    .nav-link.active { background-color: #c62828; color: #ffe0dd; border-right: 4px solid #a20513; font-weight: 700; }
+    input:focus, select:focus, textarea:focus { border-color: #a20513 !important; outline: none; box-shadow: none; }
+  </style>
+</head>
+<body class="min-h-screen bg-surface">
+
+  <div id="toast-container" class="fixed top-4 right-4 z-[200] w-80"></div>
+
+  <!-- Sidebar -->
+  <nav class="hidden md:flex fixed left-0 top-0 h-full w-64 bg-surface-container-low border-r-2 border-outline-variant flex-col z-40 pt-16">
+    <div class="p-4 border-b-2 border-outline-variant mb-2">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-secondary-container rounded-full flex items-center justify-center border-2 border-outline-variant">
+          <span class="material-symbols-outlined text-secondary">person</span>
+        </div>
+        <div>
+          <div class="text-sm font-bold text-primary font-heading" id="sideUserNome">...</div>
+          <div class="text-xs text-secondary font-mono uppercase tracking-wider" id="sideUserRole">Admin</div>
+        </div>
+      </div>
+    </div>
+    <div class="flex-1 py-2 flex flex-col">
+      <a href="/dashboard.html" class="nav-link"><span class="material-symbols-outlined">dashboard</span>Dashboard</a>
+      <a href="/obras.html" class="nav-link"><span class="material-symbols-outlined">construction</span>Obras</a>
+      <a href="/funcionarios.html" class="nav-link"><span class="material-symbols-outlined">groups</span>Funcionários</a>
+      <a href="/responsaveis.html" class="nav-link"><span class="material-symbols-outlined">engineering</span>Responsáveis</a>
+      <a href="/relatorio.html" class="nav-link"><span class="material-symbols-outlined">analytics</span>Relatórios</a>
+      <a href="/usuarios.html" class="nav-link active"><span class="material-symbols-outlined">manage_accounts</span>Usuários</a>
+    </div>
+    <div class="p-4 border-t-2 border-outline-variant">
+      <button onclick="logout()" class="w-full h-12 border-2 border-outline text-secondary font-mono text-xs uppercase flex items-center justify-center gap-2 hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined">logout</span>Sair
+      </button>
+    </div>
+  </nav>
+
+  <!-- Top bar -->
+  <header class="fixed top-0 left-0 right-0 md:left-64 z-50 bg-surface-container-highest border-b-2 border-outline-variant flex items-center justify-between px-4 md:px-10 h-16">
+    <div class="flex items-center gap-4">
+      <h1 class="text-xl font-black font-heading text-primary tracking-tight">Usuários do Sistema</h1>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="text-sm font-mono text-secondary hidden md:inline" id="userNome">...</span>
+      <span class="text-xs font-mono bg-surface-container px-2 py-1 text-secondary hidden md:inline" id="userPapel"></span>
+    </div>
+  </header>
+
+  <!-- Mobile bottom nav -->
+  <nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-highest border-t-2 border-outline-variant flex justify-around items-center h-14 z-50">
+    <a href="/dashboard.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span class="text-xs font-mono">Dash</span>
+    </a>
+    <a href="/obras.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
+      <span class="material-symbols-outlined">construction</span>
+      <span class="text-xs font-mono">Obras</span>
+    </a>
+    <a href="/funcionarios.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
+      <span class="material-symbols-outlined">engineering</span>
+      <span class="text-xs font-mono">Func</span>
+    </a>
+    <a href="/relatorio.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
+      <span class="material-symbols-outlined">analytics</span>
+      <span class="text-xs font-mono">Relat</span>
+    </a>
+  </nav>
+
+  <!-- Main content -->
+  <main class="md:ml-64 pt-16 pb-20 md:pb-6 min-h-screen">
+    <div class="max-w-5xl mx-auto px-4 md:px-8 py-8">
+
+      <!-- Page header -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+          <h2 class="text-2xl font-black font-heading text-on-surface tracking-tight">Usuários</h2>
+          <p class="font-mono text-xs text-secondary uppercase tracking-wider mt-0.5">Encarregados e administradores</p>
+        </div>
+        <button onclick="abrirModal('modal-usuario')" class="h-12 px-6 bg-primary text-on-primary font-mono text-xs uppercase flex items-center gap-2 hover:bg-primary-container transition-colors">
+          <span class="material-symbols-outlined text-base">add</span>Novo Usuário
+        </button>
+      </div>
+
+      <!-- Loading -->
+      <div id="loading" class="flex flex-col items-center justify-center py-20 gap-4">
+        <div class="w-10 h-10 border-4 border-outline-variant border-t-primary rounded-full animate-spin"></div>
+        <span class="font-mono text-xs text-secondary uppercase tracking-wider">Carregando...</span>
+      </div>
+
+      <!-- Table -->
+      <div id="tableContainer" class="hidden border-2 border-outline-variant bg-surface-container-lowest overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="bg-inverse-surface text-inverse-on-surface">
+                <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider">#</th>
+                <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider">Nome</th>
+                <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider">Email</th>
+                <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider">Papel</th>
+                <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider">Criado em</th>
+                <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyUsuarios" class="divide-y divide-outline-variant"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal Novo Usuário -->
+  <div id="modal-usuario" class="hidden fixed inset-0 bg-black/60 z-[100] items-center justify-center p-4">
+    <div class="bg-surface-container-lowest border-2 border-outline-variant w-full max-w-md">
+      <div class="flex items-center justify-between px-6 py-4 border-b-2 border-outline-variant bg-inverse-surface">
+        <h3 class="font-heading font-bold text-inverse-on-surface">Novo Usuário</h3>
+        <button onclick="fecharModal('modal-usuario')" class="text-inverse-on-surface material-symbols-outlined hover:opacity-70">close</button>
+      </div>
+      <form id="formUsuario" class="p-6 flex flex-col gap-4">
+        <div>
+          <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Nome <span class="text-error">*</span></label>
+          <input type="text" id="inputNome" required class="h-12 border-2 border-outline bg-surface-container-lowest px-3 w-full font-sans text-sm">
+        </div>
+        <div>
+          <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Email <span class="text-error">*</span></label>
+          <input type="email" id="inputEmail" required class="h-12 border-2 border-outline bg-surface-container-lowest px-3 w-full font-sans text-sm">
+        </div>
+        <div>
+          <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Senha <span class="text-error">*</span></label>
+          <input type="password" id="inputSenha" required minlength="4" class="h-12 border-2 border-outline bg-surface-container-lowest px-3 w-full font-sans text-sm">
+          <p class="font-mono text-xs text-secondary mt-1">Mínimo 4 caracteres</p>
+        </div>
+        <div>
+          <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Papel</label>
+          <select id="inputPapel" class="h-12 border-2 border-outline bg-surface-container-lowest px-3 w-full font-sans text-sm">
+            <option value="encarregado">Encarregado</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+        <div id="erroModal" class="hidden bg-error-container text-on-error-container font-mono text-xs px-3 py-2 border border-error"></div>
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="fecharModal('modal-usuario')" class="flex-1 h-12 border-2 border-outline text-secondary font-mono text-xs uppercase hover:bg-surface-container transition-colors">Cancelar</button>
+          <button type="submit" class="flex-1 h-12 bg-primary text-on-primary font-mono text-xs uppercase hover:bg-primary-container transition-colors">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function abrirModal(id) { const m=document.getElementById(id); m.classList.remove('hidden'); m.classList.add('flex'); }
+    function fecharModal(id) { const m=document.getElementById(id); m.classList.add('hidden'); m.classList.remove('flex'); }
+
+    function mostrarToast(msg, tipo) {
+      const c = document.getElementById('toast-container');
+      const colors = { success: '#15803d', danger: '#ba1a1a', warning: '#b45309' };
+      const el = document.createElement('div');
+      el.style.background = colors[tipo] || '#546067';
+      el.className = 'text-white font-mono text-xs px-4 py-3 mb-2';
+      el.textContent = msg;
+      c.appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await checkAuth();
+      await carregarUsuarios();
+    });
+
+    async function checkAuth() {
+      const res = await fetch('/api/auth/me');
+      if (!res.ok) { window.location.href = '/login.html'; return; }
+      const user = await res.json();
+      if (user.papel !== 'admin') { window.location.href = '/dashboard.html'; return; }
+      document.getElementById('userNome').textContent = user.nome;
+      document.getElementById('userPapel').textContent = 'Admin';
+      document.getElementById('sideUserNome').textContent = user.nome;
+      document.getElementById('sideUserRole').textContent = 'Admin';
+    }
+
+    async function carregarUsuarios() {
+      document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('tableContainer').classList.add('hidden');
+
+      const res = await fetch('/api/auth/usuarios');
+      const usuarios = await res.json();
+      document.getElementById('loading').classList.add('hidden');
+
+      const tbody = document.getElementById('tbodyUsuarios');
+      tbody.innerHTML = usuarios.map((u, i) => `
+        <tr class="${i%2===1 ? 'bg-surface-container-low' : ''}">
+          <td class="px-4 py-3 font-mono text-xs text-secondary">${u.id}</td>
+          <td class="px-4 py-3 font-bold">${esc(u.nome)}</td>
+          <td class="px-4 py-3 font-mono text-xs">${esc(u.email)}</td>
+          <td class="px-4 py-3">
+            <span class="${u.papel === 'admin' ? 'bg-primary text-on-primary' : 'bg-secondary-container text-secondary'} font-mono text-xs px-2 py-0.5">
+              ${u.papel === 'admin' ? 'Admin' : 'Encarregado'}
+            </span>
+          </td>
+          <td class="px-4 py-3 font-mono text-xs">${fmtData(u.created_at)}</td>
+          <td class="px-4 py-3">
+            <button onclick="excluir(${u.id}, '${esc(u.nome)}')" class="border border-error text-error hover:bg-error-container font-mono text-xs px-2 py-1 flex items-center gap-1 transition-colors">
+              <span class="material-symbols-outlined" style="font-size:14px">delete</span>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+      document.getElementById('tableContainer').classList.remove('hidden');
+    }
+
+    document.getElementById('formUsuario').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const erroEl = document.getElementById('erroModal');
+      erroEl.classList.add('hidden');
+
+      const body = {
+        nome: document.getElementById('inputNome').value.trim(),
+        email: document.getElementById('inputEmail').value.trim(),
+        senha: document.getElementById('inputSenha').value,
+        papel: document.getElementById('inputPapel').value
+      };
+
+      const res = await fetch('/api/auth/usuarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        erroEl.textContent = err.error || 'Erro ao criar usuário';
+        erroEl.classList.remove('hidden');
+        return;
+      }
+
+      fecharModal('modal-usuario');
+      document.getElementById('formUsuario').reset();
+      mostrarToast('Usuário criado com sucesso!', 'success');
+      await carregarUsuarios();
+    });
+
+    async function excluir(id, nome) {
+      if (!confirm(`Excluir usuário "${nome}"?`)) return;
+      const res = await fetch(`/api/auth/usuarios/${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const err = await res.json();
+        mostrarToast(err.error || 'Erro ao excluir', 'danger');
+        return;
+      }
+      mostrarToast('Usuário excluído', 'success');
+      await carregarUsuarios();
+    }
+
+    function esc(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+    function fmtData(d) { if (!d) return '-'; return new Date(d).toLocaleDateString('pt-BR'); }
+    async function logout() { await fetch('/api/auth/logout', {method:'POST'}); window.location.href='/login.html'; }
+  </script>
+</body>
+</html>

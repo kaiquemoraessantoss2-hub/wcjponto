@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <title>PontoWCJ - Login</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;900&family=JetBrains+Mono:wght@500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#a20513", "on-primary": "#ffffff", "primary-container": "#c62828", "on-primary-container": "#ffe0dd",
+            "secondary": "#546067", "on-secondary": "#ffffff", "secondary-container": "#d7e4ec", "on-secondary-container": "#5a666d",
+            "tertiary": "#39535e", "tertiary-fixed-dim": "#afcbd8", "on-tertiary-fixed-variant": "#304a55",
+            "surface": "#f9f9f9", "surface-dim": "#dadada", "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f3f3f3", "surface-container": "#eeeeee",
+            "surface-container-high": "#e8e8e8", "surface-container-highest": "#e2e2e2",
+            "on-surface": "#1a1c1c", "on-surface-variant": "#5b403d",
+            "outline": "#8f706c", "outline-variant": "#e4beba",
+            "error": "#ba1a1a", "on-error": "#ffffff", "error-container": "#ffdad6", "on-error-container": "#93000a",
+            "inverse-surface": "#2f3131", "inverse-on-surface": "#f1f1f1"
+          },
+          fontFamily: { sans: ['Work Sans','sans-serif'], heading: ['Hanken Grotesk','sans-serif'], mono: ['JetBrains Mono','monospace'] },
+          borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem' }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Work Sans', sans-serif; }
+    input:focus { border-color: #a20513 !important; outline: none; box-shadow: none; }
+  </style>
+</head>
+<body class="min-h-screen bg-surface-container-low flex">
+
+  <!-- Left brand panel (hidden on mobile) -->
+  <div class="hidden md:flex md:w-1/2 lg:w-[55%] bg-inverse-surface text-inverse-on-surface flex-col justify-between p-12 relative overflow-hidden">
+    <!-- Subtle grid texture -->
+    <div class="absolute inset-0 opacity-5" style="background-image: repeating-linear-gradient(0deg,#fff 0,#fff 1px,transparent 1px,transparent 40px), repeating-linear-gradient(90deg,#fff 0,#fff 1px,transparent 1px,transparent 40px);"></div>
+
+    <!-- Brand mark -->
+    <div class="relative z-10">
+      <div class="flex items-center gap-4 mb-16">
+        <div class="w-16 h-16 bg-primary flex items-center justify-center flex-shrink-0">
+          <span class="text-on-primary font-heading font-black text-4xl leading-none">P</span>
+        </div>
+        <div>
+          <h1 class="font-heading font-black text-3xl text-inverse-on-surface tracking-tight leading-none">PontoWCJ</h1>
+          <p class="font-mono text-xs text-inverse-on-surface/60 uppercase tracking-widest mt-1">Controle de Ponto</p>
+        </div>
+      </div>
+
+      <!-- Feature list -->
+      <div class="space-y-6">
+        <div class="flex items-start gap-4">
+          <div class="w-8 h-8 border border-inverse-on-surface/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <svg class="w-4 h-4 text-primary-container" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <div class="font-heading font-bold text-inverse-on-surface text-sm">Registro de Presença</div>
+            <div class="font-mono text-xs text-inverse-on-surface/50 mt-0.5">Lançamento diário por obra e funcionário</div>
+          </div>
+        </div>
+        <div class="flex items-start gap-4">
+          <div class="w-8 h-8 border border-inverse-on-surface/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <svg class="w-4 h-4 text-primary-container" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+          </div>
+          <div>
+            <div class="font-heading font-bold text-inverse-on-surface text-sm">Gestão de Obras</div>
+            <div class="font-mono text-xs text-inverse-on-surface/50 mt-0.5">Múltiplas obras com equipes independentes</div>
+          </div>
+        </div>
+        <div class="flex items-start gap-4">
+          <div class="w-8 h-8 border border-inverse-on-surface/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <svg class="w-4 h-4 text-primary-container" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+          <div>
+            <div class="font-heading font-bold text-inverse-on-surface text-sm">Relatórios Precisos</div>
+            <div class="font-mono text-xs text-inverse-on-surface/50 mt-0.5">Exportação e análise de histórico de ponto</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer tagline -->
+    <div class="relative z-10">
+      <div class="border-t border-inverse-on-surface/20 pt-6">
+        <p class="font-mono text-xs text-inverse-on-surface/40 uppercase tracking-widest">Controle de Ponto para Obras — WCJ Construções</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right login panel -->
+  <div class="flex-1 flex items-center justify-center p-6 bg-surface-container-lowest">
+    <div class="w-full max-w-sm">
+
+      <!-- Mobile-only brand -->
+      <div class="md:hidden flex flex-col items-center mb-10">
+        <div class="w-16 h-16 bg-primary flex items-center justify-center mb-4">
+          <span class="text-on-primary font-heading font-black text-4xl leading-none">P</span>
+        </div>
+        <h1 class="font-heading font-black text-2xl text-on-surface tracking-tight">PontoWCJ</h1>
+        <p class="font-mono text-xs text-secondary uppercase tracking-widest mt-1">Controle de Ponto para Obras</p>
+      </div>
+
+      <!-- Form header -->
+      <div class="mb-8">
+        <h2 class="font-heading font-black text-2xl text-on-surface">Acesso ao sistema</h2>
+        <p class="font-mono text-xs text-secondary uppercase tracking-wider mt-1">Insira suas credenciais para continuar</p>
+      </div>
+
+      <!-- Login form -->
+      <form id="formLogin" class="flex flex-col gap-5">
+
+        <div class="flex flex-col gap-1.5">
+          <label for="email" class="font-mono text-xs uppercase text-on-surface-variant tracking-wider">E-mail</label>
+          <input
+            type="email"
+            id="email"
+            class="w-full h-12 border-2 border-outline-variant bg-surface px-4 font-sans text-sm focus:border-primary"
+            placeholder="seu@email.com"
+            required
+            autofocus
+          >
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="senha" class="font-mono text-xs uppercase text-on-surface-variant tracking-wider">Senha</label>
+          <input
+            type="password"
+            id="senha"
+            class="w-full h-12 border-2 border-outline-variant bg-surface px-4 font-sans text-sm focus:border-primary"
+            placeholder="Sua senha"
+            required
+          >
+        </div>
+
+        <!-- Error message -->
+        <div id="erroLogin" class="hidden border-2 border-error bg-error-container text-on-error-container px-4 py-3 font-mono text-xs"></div>
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          id="btnLogin"
+          class="w-full h-12 bg-primary text-on-primary font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-primary-container transition-colors disabled:opacity-60 disabled:cursor-not-allowed mt-1"
+        >
+          <!-- Spinner (hidden by default) -->
+          <svg id="spinnerLogin" class="hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+          </svg>
+          Entrar
+        </button>
+      </form>
+
+
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('formLogin').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const senha = document.getElementById('senha').value;
+      const erroEl = document.getElementById('erroLogin');
+      const btnLogin = document.getElementById('btnLogin');
+      const spinner = document.getElementById('spinnerLogin');
+
+      erroEl.classList.add('hidden');
+      btnLogin.disabled = true;
+      spinner.classList.remove('hidden');
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, senha })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          erroEl.textContent = data.error || 'Erro ao fazer login';
+          erroEl.classList.remove('hidden');
+          btnLogin.disabled = false;
+          spinner.classList.add('hidden');
+          return;
+        }
+        if (data.papel === 'responsavel') {
+          window.location.href = '/responsavel-ponto.html';
+        } else {
+          window.location.href = '/dashboard.html';
+        }
+      } catch (err) {
+        erroEl.textContent = 'Erro de conexão com o servidor';
+        erroEl.classList.remove('hidden');
+        btnLogin.disabled = false;
+        spinner.classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
