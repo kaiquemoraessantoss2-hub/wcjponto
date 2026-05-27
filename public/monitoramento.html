@@ -314,7 +314,7 @@
       const tbodyHtml = report.funcionarios.map(f => {
         const linhaDias = dias.map(d => {
           const dia = f.dias[d];
-          const auditReg = report.audit?.find(a => a.funcionario_id === f.id && parseInt(a.data.split('-')[2]) === d);
+          const auditReg = report.audit?.find(a => Number(a.funcionario_id) === Number(f.id) && parseInt(a.data.split('-')[2]) === d);
           const [ano, mes] = report.mes.split('-').map(Number);
           const dt = new Date(ano, mes - 1, d);
           const isDomingo = dt.getDay() === 0;

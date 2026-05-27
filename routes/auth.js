@@ -93,7 +93,7 @@ router.get('/notifications', isAuthenticated, async (req, res) => {
   try {
     const { data } = await supabase
       .from('registros_ponto')
-      .select('id, data, presente, updated_at, funcionarios(nome), obras(nome)')
+      .select('id, data, presente, updated_at, funcionarios!funcionario_id(nome), obras(nome)')
       .order('updated_at', { ascending: false })
       .limit(15);
     res.json(data || []);

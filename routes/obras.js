@@ -147,7 +147,7 @@ router.get('/:id/funcionarios', isAuthenticated, async (req, res) => {
   }
 
   const { data } = await supabase.from('registros_ponto')
-    .select('funcionario_id, funcionarios(*)').eq('obra_id', req.params.id);
+    .select('funcionario_id, funcionarios!funcionario_id(*)').eq('obra_id', req.params.id);
 
   const seenIds = new Set();
   const funcionarios = [];
