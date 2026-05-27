@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <title>Relatório Consolidado - PontoWCJ</title>
+  <title>Presenças — PontoWCJ</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;900&family=JetBrains+Mono:wght@500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
@@ -43,6 +43,10 @@
       .print-title { display: block !important; }
     }
     .print-title { display: none; }
+    .func-card { transition: box-shadow 0.15s; }
+    .func-card:hover { box-shadow: 0 2px 8px rgba(162,5,19,0.10); }
+    .obras-row { display: none; }
+    .obras-row.open { display: table-row; }
   </style>
 </head>
 <body class="bg-surface">
@@ -51,8 +55,9 @@
   <nav class="hidden md:flex fixed left-0 top-0 h-full w-64 bg-surface-container-low border-r-2 border-outline-variant flex-col z-40 pt-16">
     <div class="p-4 border-b-2 border-outline-variant mb-2">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-secondary-container rounded-full flex items-center justify-center border-2 border-outline-variant">
-          <span class="material-symbols-outlined text-secondary">person</span>
+        <div class="w-10 h-10 bg-secondary-container rounded-full flex items-center justify-center border-2 border-outline-variant overflow-hidden">
+          <span id="sidebar-avatar-icon" class="material-symbols-outlined text-secondary">person</span>
+          <img id="sidebar-avatar-img" style="display:none;width:100%;height:100%;object-fit:cover;" alt="Foto">
         </div>
         <div>
           <div class="text-sm font-bold text-primary font-heading" id="sideUserNome">...</div>
@@ -63,9 +68,10 @@
     <div class="flex-1 py-2 flex flex-col">
       <a href="/dashboard.html" class="nav-link"><span class="material-symbols-outlined">dashboard</span>Dashboard</a>
       <a href="/obras.html" class="nav-link"><span class="material-symbols-outlined">construction</span>Obras</a>
+      <a href="/funcionarios.html" class="nav-link"><span class="material-symbols-outlined">groups</span>Funcionários</a>
       <a href="/responsaveis.html" class="nav-link"><span class="material-symbols-outlined">engineering</span>Responsáveis</a>
-      <a href="/relatorio-consolidado.html" class="nav-link active"><span class="material-symbols-outlined">summarize</span>Relatório Consolidado</a>
-      <a href="/presencas.html" class="nav-link"><span class="material-symbols-outlined">fact_check</span>Presenças</a>
+      <a href="/relatorio.html" class="nav-link"><span class="material-symbols-outlined">analytics</span>Relatórios</a>
+      <a href="/presencas.html" class="nav-link active"><span class="material-symbols-outlined fill" style="font-variation-settings:'FILL' 1">fact_check</span>Presenças</a>
       <a href="/usuarios.html" class="nav-link hidden" id="linkUsuarios"><span class="material-symbols-outlined">manage_accounts</span>Usuários</a>
     </div>
     <div class="p-4 border-t-2 border-outline-variant">
@@ -77,17 +83,25 @@
 
   <!-- Top Header -->
   <header class="fixed top-0 left-0 right-0 md:left-64 z-50 bg-surface-container-highest border-b-2 border-outline-variant flex items-center justify-between px-4 md:px-10 h-16 no-print">
-    <div>
-      <h1 class="text-lg font-black font-heading text-primary tracking-tight">Relatório Consolidado</h1>
-      <div class="text-xs font-mono text-secondary">Dias trabalhados por funcionário — todas as obras</div>
+    <div class="flex items-center gap-4">
+      <span class="md:hidden text-secondary material-symbols-outlined cursor-pointer" id="btn-hamburger">menu</span>
+      <div>
+        <h1 class="text-lg font-black font-heading text-primary tracking-tight">Presenças dos Funcionários</h1>
+        <div class="text-xs font-mono text-secondary hidden md:block">Total de dias por funcionário — todas as obras</div>
+      </div>
     </div>
     <div class="flex items-center gap-3">
-      <span class="text-sm font-mono text-secondary hidden md:inline" id="userNome">...</span>
-      <span class="text-xs font-mono bg-surface-container px-2 py-1 text-secondary hidden md:inline" id="userPapel"></span>
+      <button id="btn-notif" class="w-10 h-10 flex items-center justify-center hover:bg-secondary-container transition-colors text-secondary relative">
+        <span class="material-symbols-outlined">notifications</span>
+        <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-primary rounded-full"></span>
+      </button>
+      <button id="btn-settings" class="w-10 h-10 hidden sm:flex items-center justify-center hover:bg-secondary-container transition-colors text-secondary">
+        <span class="material-symbols-outlined">settings</span>
+      </button>
     </div>
   </header>
 
-  <!-- Bottom nav (mobile) -->
+  <!-- Mobile bottom nav -->
   <nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-highest border-t-2 border-outline-variant flex justify-around items-center h-14 z-50 no-print">
     <a href="/dashboard.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
       <span class="material-symbols-outlined">dashboard</span>
@@ -97,31 +111,34 @@
       <span class="material-symbols-outlined">construction</span>
       <span class="text-xs font-mono">Obras</span>
     </a>
-    <a href="/responsaveis.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
-      <span class="material-symbols-outlined">engineering</span>
-      <span class="text-xs font-mono">Resp</span>
+    <a href="/relatorio.html" class="flex flex-col items-center justify-center w-full h-full text-secondary">
+      <span class="material-symbols-outlined">analytics</span>
+      <span class="text-xs font-mono">Relat</span>
     </a>
-    <a href="/relatorio-consolidado.html" class="flex flex-col items-center justify-center w-full h-full text-primary">
-      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">summarize</span>
-      <span class="text-xs font-mono font-bold">Relat</span>
+    <a href="/presencas.html" class="flex flex-col items-center justify-center w-full h-full text-primary border-t-4 border-primary bg-primary-container/10">
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">fact_check</span>
+      <span class="text-xs font-mono font-bold">Pres</span>
     </a>
   </nav>
 
   <!-- Main -->
   <main class="md:ml-64 pt-16 pb-16 md:pb-0 min-h-screen bg-surface">
 
-    <!-- Filters -->
+    <!-- Filters bar -->
     <div class="bg-surface-container-low border-b border-outline-variant px-4 md:px-10 py-4 no-print">
       <div class="flex flex-wrap items-end gap-3">
         <div class="flex flex-col gap-1">
           <label class="font-mono text-xs uppercase text-secondary tracking-wider">Mês</label>
-          <input type="month" id="mesSelector" class="h-12 border-2 border-outline-variant bg-surface px-3 font-mono text-sm text-on-surface w-40">
+          <input type="month" id="mesSelector" class="h-12 border-2 border-outline-variant bg-surface px-3 font-mono text-sm text-on-surface w-40" onchange="carregarPresencas()">
         </div>
-        <div class="flex items-end gap-2 flex-wrap">
-          <button onclick="gerarRelatorio()" class="h-12 px-4 bg-primary border-2 border-primary text-on-primary font-mono text-xs uppercase flex items-center gap-2 hover:bg-primary-container transition-colors">
-            <span class="material-symbols-outlined text-base">summarize</span>
-            Gerar Relatório
-          </button>
+        <div class="flex flex-col gap-1 flex-1 min-w-[180px]">
+          <label class="font-mono text-xs uppercase text-secondary tracking-wider">Buscar funcionário</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary" style="font-size:18px">search</span>
+            <input type="text" id="searchInput" placeholder="Nome do funcionário..." class="pl-9 pr-4 h-12 border-2 border-outline-variant bg-surface w-full font-sans text-sm" oninput="filtrarTabela()">
+          </div>
+        </div>
+        <div class="flex items-end gap-2">
           <button onclick="exportarCSV()" class="h-12 px-4 border-2 border-outline-variant text-secondary font-mono text-xs uppercase flex items-center gap-2 hover:bg-surface-container transition-colors">
             <span class="material-symbols-outlined text-base">download</span>
             CSV
@@ -139,13 +156,13 @@
       <!-- Print title -->
       <div class="print-title mb-6">
         <h2 class="text-2xl font-black font-heading text-primary" id="printTitulo"></h2>
-        <p class="font-mono text-sm text-secondary">Relatório Consolidado de Ponto — Todas as Obras</p>
+        <p class="font-mono text-sm text-secondary">Presenças dos Funcionários — Todas as Obras</p>
       </div>
 
       <!-- Loading -->
       <div id="loading" class="hidden flex flex-col items-center justify-center py-20 gap-4">
         <div class="w-10 h-10 border-4 border-outline-variant border-t-primary rounded-full animate-spin"></div>
-        <span class="font-mono text-xs uppercase text-secondary tracking-wider">Gerando relatório...</span>
+        <span class="font-mono text-xs uppercase text-secondary tracking-wider">Carregando presenças...</span>
       </div>
 
       <!-- Summary cards -->
@@ -153,14 +170,18 @@
 
       <!-- Table -->
       <div id="tabelaContainer" class="hidden border-2 border-outline-variant overflow-x-auto">
-        <table class="w-full border-collapse">
+        <table class="w-full border-collapse" id="tabelaPrincial">
           <thead>
             <tr class="bg-inverse-surface text-inverse-on-surface">
               <th class="py-3 px-4 text-left font-mono text-xs uppercase border-r border-outline-variant/30">Funcionário</th>
               <th class="py-3 px-4 text-left font-mono text-xs uppercase border-r border-outline-variant/30 hidden md:table-cell">Cargo</th>
-              <th class="py-3 px-3 text-right font-mono text-xs uppercase border-r border-outline-variant/30 w-24">Trabalhados</th>
-              <th class="py-3 px-3 text-right font-mono text-xs uppercase border-r border-outline-variant/30 w-20">Faltas</th>
-              <th class="py-3 px-4 text-left font-mono text-xs uppercase">Obras</th>
+              <th class="py-3 px-3 text-center font-mono text-xs uppercase border-r border-outline-variant/30 w-28">
+                <span class="text-green-300">Presenças</span>
+              </th>
+              <th class="py-3 px-3 text-center font-mono text-xs uppercase border-r border-outline-variant/30 w-24">
+                <span class="text-red-300">Faltas</span>
+              </th>
+              <th class="py-3 px-4 text-center font-mono text-xs uppercase w-16 no-print">Obras</th>
             </tr>
           </thead>
           <tbody id="tbody"></tbody>
@@ -169,8 +190,8 @@
 
       <!-- Empty -->
       <div id="empty" class="flex flex-col items-center justify-center py-24 gap-4">
-        <span class="material-symbols-outlined text-outline-variant" style="font-size: 4rem;">summarize</span>
-        <p class="font-mono text-xs uppercase text-secondary tracking-wider">Selecione um mês e clique em "Gerar Relatório"</p>
+        <span class="material-symbols-outlined text-outline-variant" style="font-size: 4rem;">fact_check</span>
+        <p class="font-mono text-xs uppercase text-secondary tracking-wider" id="emptyMsg">Carregando dados...</p>
       </div>
 
     </div>
@@ -180,7 +201,7 @@
   <div id="toast" class="fixed top-4 right-4 z-[200] w-80"></div>
 
   <script>
-    let relatorioAtual = null;
+    let dadosAtual = null;
 
     function toast(msg, tipo = 'success') {
       const c = document.getElementById('toast');
@@ -197,52 +218,54 @@
 
     function nomeDoMes(mes) {
       const [y, m] = mes.split('-');
-      return new Date(y, m - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+      const s = new Date(y, m - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+      return s.charAt(0).toUpperCase() + s.slice(1);
     }
 
     async function checkAuth() {
       const res = await fetch('/api/auth/me');
-      if (!res.ok) { window.location.href = '/login.html'; return; }
+      if (!res.ok) { window.location.href = '/login.html'; return null; }
       const u = await res.json();
-      document.getElementById('userNome').textContent = u.nome;
       document.getElementById('sideUserNome').textContent = u.nome;
       const label = u.papel === 'admin' ? 'Administrador' : u.papel === 'encarregado' ? 'Encarregado' : 'Responsável';
-      document.getElementById('userPapel').textContent = label;
       document.getElementById('sideUserRole').textContent = label;
       if (u.papel === 'admin') document.getElementById('linkUsuarios').classList.remove('hidden');
+      return u;
     }
 
-    async function gerarRelatorio() {
+    async function carregarPresencas() {
       const mes = document.getElementById('mesSelector').value;
-      if (!mes) { toast('Selecione um mês', 'danger'); return; }
+      if (!mes) return;
 
       document.getElementById('loading').classList.remove('hidden');
       document.getElementById('resumoCards').classList.add('hidden');
       document.getElementById('tabelaContainer').classList.add('hidden');
       document.getElementById('empty').classList.add('hidden');
+      document.getElementById('searchInput').value = '';
 
       try {
         const res = await fetch(`/api/relatorio/consolidado?mes=${mes}`);
-        if (!res.ok) throw new Error('Erro ao carregar relatório');
+        if (!res.ok) throw new Error('Erro ao carregar presenças');
         const data = await res.json();
-        relatorioAtual = data;
+        dadosAtual = data;
 
         document.getElementById('loading').classList.add('hidden');
 
         if (!data.funcionarios || data.funcionarios.length === 0) {
           document.getElementById('empty').classList.remove('hidden');
-          document.getElementById('empty').querySelector('p').textContent = 'Nenhum registro encontrado para este mês';
+          document.getElementById('emptyMsg').textContent = 'Nenhum registro encontrado para este mês';
           return;
         }
 
         renderResumo(data);
-        renderTabela(data);
+        renderTabela(data.funcionarios);
         document.getElementById('resumoCards').classList.remove('hidden');
         document.getElementById('tabelaContainer').classList.remove('hidden');
-        document.getElementById('printTitulo').textContent = `Relatório de ${nomeDoMes(mes).charAt(0).toUpperCase() + nomeDoMes(mes).slice(1)}`;
+        document.getElementById('printTitulo').textContent = nomeDoMes(mes);
       } catch (e) {
         document.getElementById('loading').classList.add('hidden');
         document.getElementById('empty').classList.remove('hidden');
+        document.getElementById('emptyMsg').textContent = 'Erro ao carregar dados';
         toast(e.message, 'danger');
       }
     }
@@ -250,7 +273,8 @@
     function renderResumo(data) {
       const totalTrab = data.funcionarios.reduce((s, f) => s + f.total_dias_trabalhados, 0);
       const totalFalt = data.funcionarios.reduce((s, f) => s + f.total_dias_ausente, 0);
-      const obrasSet = new Set(data.funcionarios.flatMap(f => f.obras.map(o => o.obra_id)));
+      const totalObras = new Set(data.funcionarios.flatMap(f => f.obras.map(o => o.obra_id))).size;
+      const txPresenca = totalTrab + totalFalt > 0 ? Math.round(totalTrab / (totalTrab + totalFalt) * 100) : 0;
 
       document.getElementById('resumoCards').innerHTML = `
         <div class="bg-surface-container-lowest border-2 border-outline-variant p-4">
@@ -259,51 +283,90 @@
         </div>
         <div class="bg-surface-container-lowest border-2 border-outline-variant p-4">
           <span class="font-mono text-xs uppercase text-secondary block mb-1">Obras</span>
-          <span class="text-3xl font-black font-heading text-on-surface">${obrasSet.size}</span>
+          <span class="text-3xl font-black font-heading text-on-surface">${totalObras}</span>
         </div>
         <div class="bg-surface-container-lowest border-2 border-outline-variant p-4">
           <span class="font-mono text-xs uppercase text-secondary block mb-1">Total Presenças</span>
           <span class="text-3xl font-black font-heading text-green-700">${totalTrab}</span>
         </div>
         <div class="bg-surface-container-lowest border-2 border-outline-variant p-4">
-          <span class="font-mono text-xs uppercase text-secondary block mb-1">Total Faltas</span>
-          <span class="text-3xl font-black font-heading text-error">${totalFalt}</span>
+          <span class="font-mono text-xs uppercase text-secondary block mb-1">Taxa Presença</span>
+          <span class="text-3xl font-black font-heading ${txPresenca >= 80 ? 'text-green-700' : txPresenca >= 60 ? 'text-yellow-700' : 'text-error'}">${txPresenca}%</span>
         </div>
       `;
     }
 
-    function renderTabela(data) {
+    function renderTabela(funcionarios) {
       const tbody = document.getElementById('tbody');
-      tbody.innerHTML = data.funcionarios.map((f, i) => {
-        const obrasHtml = f.obras.map(o =>
-          `<span class="inline-flex items-center gap-1 font-mono text-xs bg-surface-container px-2 py-0.5 border border-outline-variant mr-1 mb-1">
-            <span class="text-green-700 font-bold">${o.dias_trabalhados}P</span>
-            <span class="text-secondary">/</span>
-            <span class="text-error font-bold">${o.dias_ausente}F</span>
-            <span class="text-secondary truncate max-w-[100px]">${esc(o.obra_nome)}</span>
-          </span>`
-        ).join('');
+      tbody.innerHTML = funcionarios.map((f, i) => {
+        const rowId = `obras-row-${f.id}`;
+        const obrasHtml = f.obras.map(o => `
+          <div class="flex items-center gap-3 py-1 border-b border-outline-variant/40 last:border-0">
+            <span class="material-symbols-outlined text-secondary" style="font-size:16px">location_city</span>
+            <span class="font-sans text-sm flex-1">${esc(o.obra_nome)}</span>
+            <span class="font-mono text-xs text-green-700 font-bold w-12 text-right">${o.dias_trabalhados}P</span>
+            <span class="font-mono text-xs text-error w-12 text-right">${o.dias_ausente}F</span>
+          </div>
+        `).join('');
 
+        const bgRow = i % 2 === 0 ? '' : 'bg-surface-container-low/50';
         return `
-          <tr class="border-b border-outline-variant ${i % 2 === 0 ? '' : 'bg-surface-container-low/50'} hover:bg-surface-container transition-colors">
+          <tr class="${bgRow} border-b border-outline-variant hover:bg-surface-container/60 transition-colors func-row" data-nome="${esc(f.nome.toLowerCase())}">
             <td class="py-3 px-4 border-r border-outline-variant">
               <div class="font-semibold text-sm">${esc(f.nome)}</div>
-              <div class="font-mono text-xs text-secondary md:hidden">${esc(f.cargo || '-')}</div>
+              <div class="font-mono text-xs text-secondary md:hidden">${esc(f.cargo || '—')}</div>
             </td>
-            <td class="py-3 px-4 border-r border-outline-variant hidden md:table-cell font-mono text-xs text-secondary uppercase">${esc(f.cargo || '-')}</td>
-            <td class="py-3 px-3 text-right border-r border-outline-variant font-black font-heading text-xl text-green-700">${f.total_dias_trabalhados}</td>
-            <td class="py-3 px-3 text-right border-r border-outline-variant font-black font-heading text-xl text-error">${f.total_dias_ausente}</td>
-            <td class="py-3 px-4">
-              <div class="flex flex-wrap">${obrasHtml}</div>
+            <td class="py-3 px-4 border-r border-outline-variant hidden md:table-cell font-mono text-xs text-secondary uppercase">${esc(f.cargo || '—')}</td>
+            <td class="py-3 px-3 text-center border-r border-outline-variant">
+              <span class="font-black font-heading text-2xl text-green-700">${f.total_dias_trabalhados}</span>
+              <div class="font-mono text-xs text-secondary">dias</div>
+            </td>
+            <td class="py-3 px-3 text-center border-r border-outline-variant">
+              <span class="font-black font-heading text-2xl text-error">${f.total_dias_ausente}</span>
+              <div class="font-mono text-xs text-secondary">faltas</div>
+            </td>
+            <td class="py-3 px-4 text-center no-print">
+              <button onclick="toggleObras('${rowId}')" class="h-8 w-8 flex items-center justify-center mx-auto border border-outline-variant hover:bg-surface-container transition-colors text-secondary" title="Ver obras">
+                <span class="material-symbols-outlined text-sm" id="icon-${rowId}">expand_more</span>
+              </button>
+            </td>
+          </tr>
+          <tr class="obras-row border-b-2 border-outline-variant bg-surface-container-lowest" id="${rowId}">
+            <td colspan="5" class="px-6 py-3">
+              <div class="font-mono text-xs uppercase text-secondary mb-2 tracking-wider">Detalhamento por obra</div>
+              ${obrasHtml}
             </td>
           </tr>`;
       }).join('');
     }
 
+    function toggleObras(rowId) {
+      const row = document.getElementById(rowId);
+      const icon = document.getElementById('icon-' + rowId);
+      if (!row) return;
+      const open = row.classList.toggle('open');
+      if (icon) icon.textContent = open ? 'expand_less' : 'expand_more';
+    }
+
+    function filtrarTabela() {
+      const termo = document.getElementById('searchInput').value.toLowerCase().trim();
+      const rows = document.querySelectorAll('#tbody .func-row');
+      rows.forEach(row => {
+        const nome = row.dataset.nome || '';
+        const visible = !termo || nome.includes(termo);
+        row.style.display = visible ? '' : 'none';
+        // hide the obras detail row too
+        const nextRow = row.nextElementSibling;
+        if (nextRow && nextRow.classList.contains('obras-row')) {
+          if (!visible) nextRow.style.display = 'none';
+        }
+      });
+    }
+
     function exportarCSV() {
-      if (!relatorioAtual) return;
-      const { mes, funcionarios } = relatorioAtual;
-      let csv = 'Funcionário,Cargo,Dias Trabalhados,Dias Ausente,Obras\n';
+      if (!dadosAtual) return;
+      const { mes, funcionarios } = dadosAtual;
+      let csv = 'Funcionário,Cargo,Total Presenças,Total Faltas,Obras\n';
       for (const f of funcionarios) {
         const obrasStr = f.obras.map(o => `${o.obra_nome}(${o.dias_trabalhados}P/${o.dias_ausente}F)`).join(' | ');
         csv += `"${f.nome}","${f.cargo || ''}",${f.total_dias_trabalhados},${f.total_dias_ausente},"${obrasStr}"\n`;
@@ -311,7 +374,7 @@
       const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = `consolidado_${mes}.csv`;
+      link.download = `presencas_${mes}.csv`;
       link.click();
       URL.revokeObjectURL(link.href);
     }
@@ -321,7 +384,9 @@
     document.addEventListener('DOMContentLoaded', async () => {
       await checkAuth();
       const hoje = new Date();
-      document.getElementById('mesSelector').value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+      const mes = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+      document.getElementById('mesSelector').value = mes;
+      await carregarPresencas();
     });
   </script>
   <script src="/js/header-actions.js"></script>

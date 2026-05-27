@@ -64,6 +64,7 @@
       <a href="/funcionarios.html" class="nav-link"><span class="material-symbols-outlined">groups</span>Funcionários</a>
       <a href="/responsaveis.html" class="nav-link active"><span class="material-symbols-outlined fill">engineering</span>Responsáveis</a>
       <a href="/relatorio.html" class="nav-link"><span class="material-symbols-outlined">analytics</span>Relatórios</a>
+      <a href="/presencas.html" class="nav-link"><span class="material-symbols-outlined">fact_check</span>Presenças</a>
       <a href="/usuarios.html" class="nav-link hidden" id="linkUsuarios"><span class="material-symbols-outlined">manage_accounts</span>Usuários</a>
     </div>
     <div class="p-4 border-t-2 border-outline-variant">
@@ -146,6 +147,38 @@
     </div>
   </main>
 
+  <!-- Modal Editar Responsável -->
+  <div id="modal-editar-responsavel" class="hidden fixed inset-0 bg-black/60 z-[100] items-center justify-center p-4">
+    <div class="bg-surface-container-lowest border-2 border-outline-variant w-full max-w-md">
+      <div class="flex items-center justify-between px-6 py-4 border-b-2 border-outline-variant bg-inverse-surface">
+        <h3 class="font-heading font-bold text-inverse-on-surface">Editar Responsável</h3>
+        <button onclick="fecharModal('modal-editar-responsavel')" class="text-inverse-on-surface material-symbols-outlined hover:opacity-70">close</button>
+      </div>
+      <form id="formEditarResponsavel" class="p-6 flex flex-col gap-4">
+        <input type="hidden" id="editRespId">
+        <div>
+          <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Nome *</label>
+          <input type="text" id="editRespNome" required class="h-12 border-2 border-outline bg-surface-container-lowest px-3 w-full font-sans text-sm">
+        </div>
+        <div>
+          <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Cargo</label>
+          <input type="text" id="editRespCargo" class="h-12 border-2 border-outline bg-surface-container-lowest px-3 w-full font-sans text-sm">
+        </div>
+        <div>
+          <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-2">Obras Atribuídas</label>
+          <div id="editRespObras" class="border-2 border-outline bg-surface-container-low p-3 max-h-40 overflow-y-auto flex flex-col gap-1">
+            <span class="font-mono text-xs text-secondary">Carregando obras...</span>
+          </div>
+        </div>
+        <div id="erroEditResp" class="hidden bg-error-container text-on-error-container font-mono text-xs px-3 py-2 border border-error"></div>
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="fecharModal('modal-editar-responsavel')" class="flex-1 h-12 border-2 border-outline text-secondary font-mono text-xs uppercase hover:bg-surface-container transition-colors">Cancelar</button>
+          <button type="submit" class="flex-1 h-12 bg-primary text-on-primary font-mono text-xs uppercase hover:bg-primary-container transition-colors">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Modal Adicionar Responsável (criar funcionario com is_responsavel) -->
   <div id="modal-responsavel" class="hidden fixed inset-0 bg-black/60 z-[100] items-center justify-center p-4">
     <div class="bg-surface-container-lowest border-2 border-outline-variant w-full max-w-md">
@@ -161,6 +194,12 @@
         <div>
           <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Cargo</label>
           <input type="text" id="respCargo" class="h-12 border-2 border-outline bg-surface-container-lowest px-3 w-full font-sans text-sm" placeholder="Ex: Mestre de Obras">
+        </div>
+        <div>
+          <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Obra Responsável</label>
+          <select id="respObra" class="h-12 border-2 border-outline bg-surface-container-lowest px-3 w-full font-sans text-sm">
+            <option value="">— Selecione uma obra —</option>
+          </select>
         </div>
         <div>
           <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Email *</label>
@@ -210,7 +249,6 @@
     }
 
     function renderCard(r) {
-      const isAtivo = !!r.equipe_nome;
       const obras = r.obras_nomes ? r.obras_nomes.split('||').filter(Boolean) : [];
       const obrasHtml = obras.length > 0
         ? obras.map(o => `
@@ -223,39 +261,22 @@
           `).join('')
         : `<p class="text-sm text-secondary text-center py-4">Nenhuma obra atribuída no momento.</p>`;
 
-      const statusBadge = isAtivo
-        ? `<span class="bg-[#afcbd8] text-[#304a55] px-2 py-1 font-mono text-xs uppercase flex items-center gap-1 border border-[#afcbd8]">
-            <span class="material-symbols-outlined" style="font-size:14px">check_circle</span>Ativo
-           </span>`
-        : `<span class="bg-secondary-container text-on-secondary-container px-2 py-1 font-mono text-xs uppercase flex items-center gap-1 border border-outline-variant">
-            <span class="material-symbols-outlined" style="font-size:14px">cancel</span>Inativo
-           </span>`;
+      const statusBadge = `<span class="bg-[#afcbd8] text-[#304a55] px-2 py-1 font-mono text-xs uppercase flex items-center gap-1 border border-[#afcbd8]">
+          <span class="material-symbols-outlined" style="font-size:14px">check_circle</span>Ativo
+         </span>`;
 
-      const permInfo = isAtivo
+      const permInfo = obras.length > 0
         ? `<div class="flex items-center gap-3 text-on-surface-variant bg-surface-variant p-3 border border-outline-variant">
             <span class="material-symbols-outlined" style="font-size:20px">security</span>
             <p class="text-sm leading-tight">Acesso de registro de ponto <strong>restrito</strong> às obras listadas acima.</p>
            </div>`
         : `<div class="flex items-center gap-3 text-secondary bg-surface-container p-3 border border-outline-variant">
-            <span class="material-symbols-outlined" style="font-size:20px">lock</span>
-            <p class="text-sm leading-tight">Sem permissão de acesso ao sistema.</p>
+            <span class="material-symbols-outlined" style="font-size:20px">info</span>
+            <p class="text-sm leading-tight">Nenhuma obra atribuída ainda.</p>
            </div>`;
 
-      const actionButtons = isAtivo
-        ? `<button class="flex-1 h-12 border-2 border-outline text-on-surface font-mono text-xs uppercase flex items-center justify-center gap-2 hover:bg-surface-container hover:border-primary transition-colors" onclick="editarResponsavel(${r.id})">
-            <span class="material-symbols-outlined" style="font-size:18px">edit</span>Editar
-           </button>
-           <button class="w-12 h-12 border-2 border-outline text-error flex items-center justify-center hover:bg-error-container hover:border-error transition-colors" onclick="excluirResponsavel(${r.id}, '${esc(r.nome)}')" title="Remover responsável">
-            <span class="material-symbols-outlined" style="font-size:20px">person_remove</span>
-           </button>`
-        : `<button class="flex-1 h-12 border-2 border-outline text-on-surface font-mono text-xs uppercase flex items-center justify-center gap-2 hover:bg-surface-container hover:border-primary transition-colors" onclick="editarResponsavel(${r.id})">
-            <span class="material-symbols-outlined" style="font-size:18px">restore</span>Reativar
-           </button>`;
-
-      const inactiveClass = !isAtivo ? 'opacity-75 grayscale hover:opacity-100 hover:grayscale-0 transition-all' : '';
-
       return `
-        <div class="bg-surface-container-lowest border-2 border-outline-variant flex flex-col p-5 gap-5 hover:border-primary transition-colors ${inactiveClass}">
+        <div class="bg-surface-container-lowest border-2 border-outline-variant flex flex-col p-5 gap-5 hover:border-primary transition-colors">
           <div class="flex justify-between items-start">
             <div class="flex items-center gap-3">
               <div class="w-12 h-12 bg-surface-container flex items-center justify-center border-2 border-outline">
@@ -264,7 +285,6 @@
               <div>
                 <h3 class="text-xl font-bold font-heading text-on-surface leading-tight">${esc(r.nome)}</h3>
                 <p class="font-mono text-xs text-secondary mt-1">${r.cargo ? esc(r.cargo) : 'Cód. #' + r.id}</p>
-                ${r.equipe_nome ? `<p class="font-mono text-xs text-secondary mt-0.5">Equipe: ${esc(r.equipe_nome)}</p>` : ''}
               </div>
             </div>
             ${statusBadge}
@@ -274,7 +294,14 @@
             <div class="flex flex-col gap-2">${obrasHtml}</div>
           </div>
           ${permInfo}
-          <div class="flex gap-2">${actionButtons}</div>
+          <div class="flex gap-2">
+            <button class="flex-1 h-12 border-2 border-outline text-on-surface font-mono text-xs uppercase flex items-center justify-center gap-2 hover:bg-surface-container hover:border-primary transition-colors" onclick="editarResponsavel(${r.id})">
+              <span class="material-symbols-outlined" style="font-size:18px">edit</span>Editar
+            </button>
+            <button class="w-12 h-12 border-2 border-outline text-error flex items-center justify-center hover:bg-error-container hover:border-error transition-colors" onclick="excluirResponsavel(${r.id}, '${esc(r.nome)}')" title="Remover responsável">
+              <span class="material-symbols-outlined" style="font-size:20px">person_remove</span>
+            </button>
+          </div>
         </div>
       `;
     }
@@ -312,8 +339,88 @@
       location.reload();
     }
 
-    function editarResponsavel(id) {
-      mostrarToast('Edição disponível em breve', 'warning');
+    let todasObras = [];
+
+    async function editarResponsavel(id) {
+      document.getElementById('editRespId').value = id;
+      document.getElementById('erroEditResp').classList.add('hidden');
+      document.getElementById('editRespObras').innerHTML = '<span class="font-mono text-xs text-secondary">Carregando...</span>';
+
+      const [respRes, obrasRes, respObrasRes] = await Promise.all([
+        fetch(`/api/funcionarios/${id}`),
+        fetch('/api/obras'),
+        fetch(`/api/funcionarios/responsaveis/${id}/obras`)
+      ]);
+
+      const resp = respRes.ok ? await respRes.json() : null;
+      todasObras = obrasRes.ok ? await obrasRes.json() : [];
+      const obrasAtribuidas = respObrasRes.ok ? await respObrasRes.json() : [];
+      const atribuidasIds = new Set(obrasAtribuidas.map(o => o.id));
+
+      if (resp) {
+        document.getElementById('editRespNome').value = resp.nome || '';
+        document.getElementById('editRespCargo').value = resp.cargo || '';
+      }
+
+      const container = document.getElementById('editRespObras');
+      if (todasObras.length === 0) {
+        container.innerHTML = '<span class="font-mono text-xs text-secondary">Nenhuma obra cadastrada</span>';
+      } else {
+        container.innerHTML = todasObras.map(o => `
+          <label class="flex items-center gap-2 cursor-pointer hover:bg-surface-container p-1">
+            <input type="checkbox" class="edit-obra-cb w-4 h-4 accent-[#a20513]" value="${o.id}" ${atribuidasIds.has(o.id) ? 'checked' : ''}>
+            <span class="text-sm">${esc(o.nome)}</span>
+          </label>
+        `).join('');
+      }
+
+      abrirModal('modal-editar-responsavel');
+    }
+
+    document.getElementById('formEditarResponsavel').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const erroEl = document.getElementById('erroEditResp');
+      erroEl.classList.add('hidden');
+
+      const id = document.getElementById('editRespId').value;
+      const obra_ids = [...document.querySelectorAll('.edit-obra-cb:checked')].map(cb => parseInt(cb.value));
+
+      const res = await fetch(`/api/funcionarios/responsaveis/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nome: document.getElementById('editRespNome').value.trim(),
+          cargo: document.getElementById('editRespCargo').value.trim(),
+          obra_ids
+        })
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        erroEl.textContent = err.error || 'Erro ao salvar';
+        erroEl.classList.remove('hidden');
+        return;
+      }
+
+      fecharModal('modal-editar-responsavel');
+      mostrarToast('Responsável atualizado!', 'success');
+      document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('cardsGrid').classList.add('hidden');
+      await carregarResponsaveis();
+    });
+
+    async function carregarObrasDropdown() {
+      const res = await fetch('/api/obras');
+      if (!res.ok) return;
+      const obras = await res.json();
+      const sel = document.getElementById('respObra');
+      sel.innerHTML = '<option value="">— Selecione uma obra —</option>';
+      obras.forEach(o => {
+        const opt = document.createElement('option');
+        opt.value = o.id;
+        opt.textContent = o.nome;
+        sel.appendChild(opt);
+      });
     }
 
     document.getElementById('formResponsavel').addEventListener('submit', async (e) => {
@@ -321,12 +428,13 @@
       const erroEl = document.getElementById('erroResp');
       erroEl.classList.add('hidden');
 
+      const obra_id = document.getElementById('respObra').value;
       const body = {
         nome: document.getElementById('respNome').value.trim(),
         cargo: document.getElementById('respCargo').value.trim(),
         email: document.getElementById('respEmail').value.trim(),
         senha: document.getElementById('respSenha').value,
-        is_responsavel: true
+        obra_id: obra_id || null
       };
 
       const res = await fetch('/api/funcionarios/responsaveis', {
@@ -354,6 +462,7 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
       await checkAuth();
+      await carregarObrasDropdown();
       await carregarResponsaveis();
     });
   </script>

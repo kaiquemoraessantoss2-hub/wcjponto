@@ -161,4 +161,41 @@ router.get('/:id/funcionarios', isAuthenticated, async (req, res) => {
   res.json(funcionarios);
 });
 
+router.get('/:id/funcionarios-lista', isAuthenticated, async (req, res) => {
+  try {
+    const { data: all, error: errAll } = await supabase.from('funcionarios')
+      .select('id, nome').neq('is_responsavel', 1).order('nome');
+    if (errAll) return res.status(500).json({ error: 'Erro ao buscar funcionários: ' + errAll.message });
+
+    let assignedSet = new Set();
+    try {
+      const { data: assigned } = await supabase.from('obra_funcionarios')
+        .select('funcionario_id').eq('obra_id', req.params.id);
+      assignedSet = new Set((assigned || []).map(r => r.funcionario_id));
+    } catch (_) {}
+
+    res.json((all || []).map(f => ({ ...f, atribuido: assignedSet.has(f.id) })));
+  } catch (e) {
+    res.status(500).json({ error: 'Erro interno: ' + e.message });
+  }
+});
+
+router.post('/:id/funcionarios-atribuir', isAuthenticated, async (req, res) => {
+  if (!['admin', 'encarregado'].includes(req.session.papel)) {
+    return res.status(403).json({ error: 'Acesso negado' });
+  }
+
+  const { funcionario_ids } = req.body;
+
+  await supabase.from('obra_funcionarios').delete().eq('obra_id', req.params.id);
+
+  if (Array.isArray(funcionario_ids) && funcionario_ids.length > 0) {
+    await supabase.from('obra_funcionarios').insert(
+      funcionario_ids.map(fid => ({ obra_id: parseInt(req.params.id), funcionario_id: parseInt(fid) }))
+    );
+  }
+
+  res.json({ message: 'Equipe da obra atualizada' });
+});
+
 module.exports = router;

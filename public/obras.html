@@ -64,6 +64,7 @@
       <a href="/funcionarios.html" class="nav-link"><span class="material-symbols-outlined">groups</span>Funcionários</a>
       <a href="/responsaveis.html" class="nav-link"><span class="material-symbols-outlined">engineering</span>Responsáveis</a>
       <a href="/relatorio.html" class="nav-link"><span class="material-symbols-outlined">analytics</span>Relatórios</a>
+      <a href="/presencas.html" class="nav-link"><span class="material-symbols-outlined">fact_check</span>Presenças</a>
       <a href="/usuarios.html" class="nav-link hidden" id="linkUsuarios"><span class="material-symbols-outlined">manage_accounts</span>Usuários</a>
     </div>
     <div class="p-4 border-t-2 border-outline-variant">
@@ -237,6 +238,49 @@
     </div>
   </div>
 
+  <!-- Modal Equipe da Obra -->
+  <div id="modal-equipe" class="fixed inset-0 z-[110] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-on-surface/80" onclick="fecharModal('modal-equipe')"></div>
+    <div class="relative bg-surface-container-lowest border-2 border-outline w-full max-w-lg flex flex-col max-h-[85vh]">
+      <div class="flex justify-between items-center border-b-2 border-outline-variant px-5 py-4 bg-inverse-surface">
+        <div>
+          <h2 class="text-base font-bold font-heading text-inverse-on-surface">Equipe da Obra</h2>
+          <p class="font-mono text-xs text-outline-variant" id="equipeObraNome"></p>
+        </div>
+        <button onclick="fecharModal('modal-equipe')" class="w-9 h-9 flex items-center justify-center text-inverse-on-surface hover:opacity-70">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="px-5 py-3 border-b border-outline-variant">
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary" style="font-size:18px">search</span>
+          <input type="text" id="equipeBusca" placeholder="Buscar funcionário..." oninput="filtrarEquipe()"
+            class="h-10 w-full pl-9 pr-3 border-2 border-outline-variant bg-surface font-mono text-sm focus:border-primary">
+        </div>
+      </div>
+      <div class="flex items-center justify-between px-5 py-2 bg-surface-container-low border-b border-outline-variant">
+        <span class="font-mono text-xs text-secondary uppercase tracking-wider" id="equipeContador"></span>
+        <div class="flex gap-2">
+          <button onclick="marcarTodosEquipe(true)" class="h-7 px-3 border border-outline-variant font-mono text-xs uppercase text-secondary hover:bg-surface-container transition-colors">Todos</button>
+          <button onclick="marcarTodosEquipe(false)" class="h-7 px-3 border border-error font-mono text-xs uppercase text-error hover:bg-error-container transition-colors">Nenhum</button>
+        </div>
+      </div>
+      <div id="equipeListaContainer" class="flex-1 overflow-y-auto">
+        <div id="equipeLoading" class="flex items-center justify-center py-12 gap-3">
+          <div class="w-6 h-6 border-4 border-outline-variant border-t-primary rounded-full animate-spin"></div>
+          <span class="font-mono text-xs text-secondary uppercase">Carregando...</span>
+        </div>
+        <div id="equipeLista" class="hidden divide-y divide-outline-variant"></div>
+      </div>
+      <div class="px-5 py-4 border-t-2 border-outline-variant flex gap-3">
+        <button onclick="fecharModal('modal-equipe')" class="flex-1 h-11 border-2 border-outline text-secondary font-mono text-xs uppercase hover:bg-surface-container transition-colors">Cancelar</button>
+        <button onclick="salvarEquipe()" class="flex-1 h-11 bg-primary text-on-primary font-mono text-xs uppercase hover:bg-primary-container transition-colors flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1">save</span>Salvar Equipe
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script src="/js/header-actions.js"></script>
   <script>
     let usuarioAtual = null;
@@ -338,8 +382,13 @@
               <a href="/registro-ponto.html?obra_id=${o.id}" onclick="event.stopPropagation()" class="flex-1 h-10 bg-primary text-on-primary text-xs font-mono uppercase flex items-center justify-center gap-1 hover:bg-primary-container hover:text-on-primary-container transition-colors">
                 <span class="material-symbols-outlined" style="font-size:16px">check_circle</span>Ponto
               </a>
+              ${canEdit ? `
+              <button onclick="event.stopPropagation();abrirModalEquipe(${o.id},'${esc(o.nome)}')" class="flex-1 h-10 border-2 border-secondary-container bg-secondary-container text-on-secondary-container text-xs font-mono uppercase flex items-center justify-center gap-1 hover:bg-outline-variant transition-colors">
+                <span class="material-symbols-outlined" style="font-size:16px">groups</span>Equipe
+              </button>
+              ` : ''}
               <a href="/relatorio.html?obra_id=${o.id}" onclick="event.stopPropagation()" class="flex-1 h-10 border-2 border-outline text-secondary text-xs font-mono uppercase flex items-center justify-center gap-1 hover:bg-surface-container transition-colors">
-                <span class="material-symbols-outlined" style="font-size:16px">analytics</span>Relatório
+                <span class="material-symbols-outlined" style="font-size:16px">analytics</span>Rel.
               </a>
             </div>
           </div>
@@ -467,6 +516,75 @@
       renderObras();
       allObras = orig;
     });
+
+    let equipeObraId = null;
+    let equipeFuncionarios = [];
+
+    async function abrirModalEquipe(obraId, obraNome) {
+      equipeObraId = obraId;
+      document.getElementById('equipeObraNome').textContent = obraNome;
+      document.getElementById('equipeBusca').value = '';
+      document.getElementById('equipeLoading').classList.remove('hidden');
+      document.getElementById('equipeLista').classList.add('hidden');
+      abrirModal('modal-equipe');
+
+      const res = await fetch(`/api/obras/${obraId}/funcionarios-lista`);
+      if (!res.ok) { mostrarToast('Erro ao carregar funcionários', 'danger'); return; }
+      equipeFuncionarios = await res.json();
+
+      document.getElementById('equipeLoading').classList.add('hidden');
+      renderEquipeLista(equipeFuncionarios);
+      document.getElementById('equipeLista').classList.remove('hidden');
+      atualizarContadorEquipe();
+    }
+
+    function renderEquipeLista(lista) {
+      const container = document.getElementById('equipeLista');
+      if (lista.length === 0) {
+        container.innerHTML = '<div class="p-6 text-center font-mono text-xs text-secondary uppercase">Nenhum funcionário encontrado</div>';
+        return;
+      }
+      container.innerHTML = lista.map(f => `
+        <label class="flex items-center gap-3 px-5 py-3 cursor-pointer hover:bg-surface-container transition-colors">
+          <input type="checkbox" class="equipe-cb w-5 h-5 accent-[#a20513] flex-shrink-0" data-id="${f.id}" ${f.atribuido ? 'checked' : ''} onchange="atualizarContadorEquipe()">
+          <div>
+            <div class="font-semibold text-on-surface">${esc(f.nome)}</div>
+          </div>
+          ${f.atribuido ? '<span class="ml-auto font-mono text-xs bg-tertiary-fixed-dim text-on-tertiary-fixed-variant px-2 py-0.5">Na obra</span>' : ''}
+        </label>
+      `).join('');
+    }
+
+    function filtrarEquipe() {
+      const q = document.getElementById('equipeBusca').value.toLowerCase().trim();
+      const filtrado = q ? equipeFuncionarios.filter(f => f.nome.toLowerCase().includes(q)) : equipeFuncionarios;
+      renderEquipeLista(filtrado);
+      atualizarContadorEquipe();
+    }
+
+    function marcarTodosEquipe(checked) {
+      document.querySelectorAll('.equipe-cb').forEach(cb => { cb.checked = checked; });
+      atualizarContadorEquipe();
+    }
+
+    function atualizarContadorEquipe() {
+      const total = document.querySelectorAll('.equipe-cb').length;
+      const sel = document.querySelectorAll('.equipe-cb:checked').length;
+      document.getElementById('equipeContador').textContent = `${sel} de ${total} selecionados`;
+    }
+
+    async function salvarEquipe() {
+      const ids = [...document.querySelectorAll('.equipe-cb:checked')].map(cb => parseInt(cb.dataset.id));
+      const res = await fetch(`/api/obras/${equipeObraId}/funcionarios-atribuir`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ funcionario_ids: ids })
+      });
+      if (!res.ok) { mostrarToast('Erro ao salvar equipe', 'danger'); return; }
+      fecharModal('modal-equipe');
+      mostrarToast(`Equipe salva — ${ids.length} funcionário(s) atribuídos`, 'success');
+      carregarDados();
+    }
 
     async function logout() { await fetch('/api/auth/logout', {method:'POST'}); window.location.href='/login.html'; }
 

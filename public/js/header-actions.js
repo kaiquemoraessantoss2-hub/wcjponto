@@ -377,6 +377,7 @@
     { href: '/funcionarios.html', icon: 'groups', label: 'Funcionários' },
     { href: '/responsaveis.html', icon: 'engineering', label: 'Responsáveis' },
     { href: '/relatorio.html', icon: 'analytics', label: 'Relatórios' },
+    { href: '/presencas.html', icon: 'fact_check', label: 'Presenças' },
     { href: '/usuarios.html', icon: 'manage_accounts', label: 'Usuários', adminOnly: true },
   ];
 

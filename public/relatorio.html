@@ -70,6 +70,7 @@
       <a href="/funcionarios.html" class="nav-link"><span class="material-symbols-outlined">groups</span>Funcionários</a>
       <a href="/responsaveis.html" class="nav-link"><span class="material-symbols-outlined">engineering</span>Responsáveis</a>
       <a href="/relatorio.html" class="nav-link active"><span class="material-symbols-outlined">analytics</span>Relatórios</a>
+      <a href="/presencas.html" class="nav-link"><span class="material-symbols-outlined">fact_check</span>Presenças</a>
       <a href="/usuarios.html" class="nav-link hidden" id="linkUsuarios"><span class="material-symbols-outlined">manage_accounts</span>Usuários</a>
     </div>
     <div class="p-4 border-t-2 border-outline-variant">
@@ -121,6 +122,14 @@
     <!-- Filters bar -->
     <div class="bg-surface-container-low border-b border-outline-variant px-4 md:px-10 py-4 no-print">
       <div class="flex flex-wrap items-end gap-3">
+        <!-- Obra selector (shown when no obra_id in URL) -->
+        <div class="flex-col gap-1" id="obraSelectorWrap" style="display:none">
+          <label class="font-mono text-xs uppercase text-secondary tracking-wider">Obra</label>
+          <select id="obraSelector"
+            class="h-12 border-2 border-outline-variant bg-surface px-3 font-mono text-sm text-on-surface focus:border-primary w-52">
+            <option value="">Selecione uma obra</option>
+          </select>
+        </div>
         <!-- Month selector -->
         <div class="flex flex-col gap-1">
           <label class="font-mono text-xs uppercase text-secondary tracking-wider">Mês</label>
@@ -162,7 +171,7 @@
     <div class="p-4 md:p-10">
 
       <!-- Loading -->
-      <div id="loadingRelatorio" class="hidden flex flex-col items-center justify-center py-20 gap-4">
+      <div id="loadingRelatorio" class="hidden flex-col items-center justify-center py-20 gap-4">
         <div class="w-10 h-10 border-4 border-outline-variant border-t-primary rounded-full animate-spin"></div>
         <span class="font-mono text-xs uppercase text-secondary tracking-wider">Gerando relatório...</span>
       </div>
@@ -184,7 +193,7 @@
       </div>
 
       <!-- Empty state -->
-      <div id="emptyRelatorio" class="hidden flex flex-col items-center justify-center py-24 gap-4">
+      <div id="emptyRelatorio" class="flex-col items-center justify-center py-24 gap-4" style="display:none">
         <span class="material-symbols-outlined text-outline-variant" style="font-size: 4rem;">bar_chart</span>
         <p class="font-mono text-xs uppercase text-secondary tracking-wider">Selecione um mês e clique em "Gerar Relatório"</p>
       </div>
@@ -197,7 +206,7 @@
 
   <script>
     const params = new URLSearchParams(window.location.search);
-    const obraId = params.get('obra_id');
+    let obraId = params.get('obra_id');
 
     function mostrarToast(msg, tipo = 'success') {
       const c = document.getElementById('toast-container');
@@ -250,13 +259,14 @@
     }
 
     async function carregarRelatorio() {
+      if (!obraId) { mostrarToast('Selecione uma obra', 'danger'); return; }
       const mes = document.getElementById('mesSelector').value;
       if (!mes) { mostrarToast('Selecione um mês', 'danger'); return; }
       const funcId = document.getElementById('funcionarioSelector').value;
 
-      document.getElementById('loadingRelatorio').classList.remove('hidden');
+      document.getElementById('loadingRelatorio').style.display = 'flex';
       document.getElementById('relatorioContainer').classList.add('hidden');
-      document.getElementById('emptyRelatorio').classList.add('hidden');
+      document.getElementById('emptyRelatorio').style.display = 'none';
 
       try {
         let url = `/api/obras/${obraId}/registros/mensal?mes=${mes}`;
@@ -264,16 +274,16 @@
         const res = await fetch(url);
         if (!res.ok) throw new Error('Erro ao carregar relatório');
         const report = await res.json();
-        document.getElementById('loadingRelatorio').classList.add('hidden');
+        document.getElementById('loadingRelatorio').style.display = 'none';
         if (!report.funcionarios || report.funcionarios.length === 0) {
-          document.getElementById('emptyRelatorio').classList.remove('hidden');
+          document.getElementById('emptyRelatorio').style.display = 'flex';
           document.getElementById('emptyRelatorio').querySelector('p').textContent = 'Nenhum registro encontrado para este mês';
           return;
         }
         renderizarRelatorio(report);
         document.getElementById('relatorioContainer').classList.remove('hidden');
       } catch (err) {
-        document.getElementById('loadingRelatorio').classList.add('hidden');
+        document.getElementById('loadingRelatorio').style.display = 'none';
         mostrarToast(err.message, 'danger');
       }
     }
@@ -308,15 +318,15 @@
 
       const thead = document.getElementById('theadRelatorio');
       thead.innerHTML = `
-        <tr>
-          <th class="sticky-col bg-inverse-surface py-2 px-4 text-left font-mono text-xs uppercase text-inverse-on-surface border-r border-outline-variant/30 min-w-[160px]">Funcionário</th>
+        <tr class="bg-inverse-surface">
+          <th class="sticky-col bg-inverse-surface py-3 px-4 text-left font-mono text-xs uppercase text-white font-bold border-r border-white/30 min-w-[160px]">Funcionário</th>
           ${dias.map(d => {
             const diaObj = new Date(report.mes + '-' + String(d).padStart(2, '0') + 'T12:00:00');
             const isDom = diaObj.getDay() === 0;
-            return `<th class="py-2 px-1 text-center font-mono text-xs text-inverse-on-surface border-r border-outline-variant/30 min-w-[32px] ${isDom ? 'opacity-50' : ''}">${String(d).padStart(2,'0')}</th>`;
+            return `<th class="py-3 px-1 text-center font-mono text-sm font-black text-white border-r border-white/20 min-w-[40px] ${isDom ? 'bg-black/30' : ''}">${String(d).padStart(2,'0')}</th>`;
           }).join('')}
-          <th class="py-2 px-3 text-right font-mono text-xs text-inverse-on-surface border-l-2 border-outline-variant min-w-[60px]">Trab.</th>
-          <th class="py-2 px-3 text-right font-mono text-xs text-inverse-on-surface min-w-[60px]">Falt.</th>
+          <th class="py-3 px-4 text-right font-mono text-xs uppercase text-white font-bold border-l-2 border-white/40 min-w-[64px]">Trab.</th>
+          <th class="py-3 px-4 text-right font-mono text-xs uppercase text-white font-bold min-w-[64px]">Falt.</th>
         </tr>
       `;
 
@@ -326,21 +336,21 @@
           const diaInfo = f.dias[d];
           const diaObj = new Date(report.mes + '-' + String(d).padStart(2, '0') + 'T12:00:00');
           const isDomingo = diaObj.getDay() === 0;
-          if (isDomingo) return `<td class="py-2 px-1 text-center border-r border-outline-variant/30 bg-surface-container-high text-secondary font-mono text-xs">D</td>`;
-          if (!diaInfo || diaInfo.presente === null) return `<td class="py-2 px-1 text-center border-r border-outline-variant/30 text-outline font-mono text-xs">-</td>`;
-          if (diaInfo.presente) return `<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-[16px] text-green-700" style="font-variation-settings:'FILL' 1">check</span></td>`;
-          return `<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="material-symbols-outlined text-[16px] text-error" style="font-variation-settings:'FILL' 1">close</span></td>`;
+          if (isDomingo) return `<td class="py-2 px-1 text-center border-r border-outline-variant/30 bg-surface-container-high"><span class="font-mono text-xs font-bold text-secondary">D</span></td>`;
+          if (!diaInfo || diaInfo.presente === null) return `<td class="py-2 px-1 text-center border-r border-outline-variant/30"><span class="font-mono text-sm text-on-surface-variant">·</span></td>`;
+          if (diaInfo.presente) return `<td class="py-2 px-1 text-center border-r border-outline-variant/30 bg-green-50"><span class="material-symbols-outlined text-[18px] text-green-700" style="font-variation-settings:'FILL' 1">check</span></td>`;
+          return `<td class="py-2 px-1 text-center border-r border-outline-variant/30 bg-red-50"><span class="material-symbols-outlined text-[18px] text-error" style="font-variation-settings:'FILL' 1">close</span></td>`;
         }).join('');
 
         return `
-          <tr class="border-b border-outline-variant ${rowIdx % 2 === 0 ? '' : 'bg-surface-container-low/50'} hover:bg-surface-container transition-colors">
-            <td class="sticky-col py-2 px-4 border-r border-outline-variant ${rowIdx % 2 === 0 ? 'bg-surface-container-lowest' : 'bg-surface-container-low'}">
-              <div class="font-semibold text-sm">${escapeHtml(f.nome)}</div>
-              <div class="font-mono text-xs text-secondary uppercase">${escapeHtml(f.cargo || '-')}</div>
+          <tr class="border-b border-outline-variant ${rowIdx % 2 === 0 ? 'bg-white' : 'bg-surface-container-low'} hover:bg-surface-container transition-colors">
+            <td class="sticky-col py-3 px-4 border-r-2 border-outline-variant ${rowIdx % 2 === 0 ? 'bg-white' : 'bg-surface-container-low'}">
+              <div class="font-bold text-sm text-on-surface">${escapeHtml(f.nome)}</div>
+              <div class="font-mono text-xs text-secondary uppercase">${escapeHtml(f.cargo || '—')}</div>
             </td>
             ${linhaDias}
-            <td class="py-2 px-3 text-right font-bold font-mono text-sm text-green-700 border-l-2 border-outline-variant">${f.diasTrabalhados}</td>
-            <td class="py-2 px-3 text-right font-bold font-mono text-sm text-error">${f.diasAusente}</td>
+            <td class="py-3 px-4 text-right font-black font-heading text-base text-green-700 border-l-2 border-outline-variant bg-green-50">${f.diasTrabalhados}</td>
+            <td class="py-3 px-4 text-right font-black font-heading text-base text-error bg-red-50">${f.diasAusente}</td>
           </tr>
         `;
       }).join('');
@@ -378,13 +388,47 @@
     function formatarData(dataStr) { if (!dataStr) return '-'; return new Date(dataStr+'T12:00:00').toLocaleDateString('pt-BR'); }
     async function logout() { await fetch('/api/auth/logout', {method:'POST'}); window.location.href='/login.html'; }
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      await checkAuth();
-      if (!obraId) { document.getElementById('obraNome').textContent = 'Obra não especificada'; mostrarToast('ID da obra não informado', 'danger'); return; }
+    async function carregarObrasDropdown() {
+      document.getElementById('obraSelectorWrap').style.display = 'flex';
+      try {
+        const res = await fetch('/api/obras');
+        if (!res.ok) return;
+        const obras = await res.json();
+        const sel = document.getElementById('obraSelector');
+        sel.innerHTML = '<option value="">Selecione uma obra</option>';
+        obras.forEach(o => { sel.innerHTML += `<option value="${o.id}">${escapeHtml(o.nome)}</option>`; });
+      } catch {}
+    }
+
+    document.getElementById('obraSelector').addEventListener('change', async function() {
+      obraId = this.value || null;
+      if (!obraId) {
+        document.getElementById('obraNome').textContent = 'Selecione uma obra';
+        document.getElementById('obraInfo').textContent = '';
+        document.getElementById('funcionarioSelector').innerHTML = '<option value="">Todos os funcionários</option>';
+        document.getElementById('relatorioContainer').classList.add('hidden');
+        document.getElementById('emptyRelatorio').style.display = 'flex';
+        return;
+      }
       await carregarObra();
       await carregarFuncionarios();
+      const mes = document.getElementById('mesSelector').value;
+      if (mes) await carregarRelatorio();
+    });
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await checkAuth();
       const hoje = new Date();
       document.getElementById('mesSelector').value = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}`;
+      if (!obraId) {
+        document.getElementById('obraNome').textContent = 'Selecione uma obra';
+        document.getElementById('obraInfo').textContent = '';
+        document.getElementById('emptyRelatorio').style.display = 'flex';
+        await carregarObrasDropdown();
+        return;
+      }
+      await carregarObra();
+      await carregarFuncionarios();
       await carregarRelatorio();
     });
   </script>

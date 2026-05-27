@@ -7,11 +7,9 @@ const router = express.Router();
 async function checkObraAccess(obraId, papel, userId) {
   if (papel === 'admin') return true;
   if (papel === 'responsavel') {
-    const { data: obra } = await supabase.from('obras').select('empreiteira_id').eq('id', obraId).single();
-    if (!obra) return false;
-    const { data: eq } = await supabase.from('equipes')
-      .select('id').eq('empreiteira_id', obra.empreiteira_id).eq('responsavel_id', userId).single();
-    return !!eq;
+    const { data: link } = await supabase.from('obra_responsaveis')
+      .select('id').eq('obra_id', obraId).eq('responsavel_id', userId).single();
+    return !!link;
   }
   const { data } = await supabase.from('obra_encarregados')
     .select('id').eq('obra_id', obraId).eq('usuario_id', userId).single();
@@ -68,22 +66,24 @@ router.get('/obras/:obra_id/registros', isAuthenticated, async (req, res) => {
     return res.status(400).json({ error: 'Data inválida. Use YYYY-MM-DD' });
 
   let funcionarios = [];
-  if (req.session.papel === 'responsavel') {
-    const equipeId = req.session.equipeId;
-    if (equipeId) {
-      const { data: fList } = await supabase.from('funcionarios').select('*').eq('equipe_id', equipeId).order('nome');
-      funcionarios = fList || [];
-    }
-  } else if (req.session.papel === 'encarregado') {
-    const { data: fList } = await supabase.from('funcionarios').select('*').eq('encarregado_id', req.session.userId).order('nome');
+  let ofIds = [];
+  try {
+    const { data: ofRows } = await supabase.from('obra_funcionarios')
+      .select('funcionario_id').eq('obra_id', req.params.obra_id);
+    ofIds = (ofRows || []).map(r => r.funcionario_id);
+  } catch (_) {}
+
+  if (ofIds.length > 0) {
+    const { data: fList } = await supabase.from('funcionarios')
+      .select('*').in('id', ofIds).order('nome');
     funcionarios = fList || [];
   } else {
     const { data: fList } = await supabase.from('funcionarios').select('*').order('nome');
-    funcionarios = fList || [];
+    funcionarios = (fList || []).filter(f => f.is_responsavel !== 1);
   }
 
   const { data: registros } = await supabase.from('registros_ponto')
-    .select('*, funcionarios(nome)').eq('obra_id', req.params.obra_id).eq('data', data).order('funcionarios(nome)');
+    .select('*').eq('obra_id', req.params.obra_id).eq('data', data);
 
   const regMap = {};
   for (const r of (registros || [])) regMap[r.funcionario_id] = r;
@@ -109,33 +109,28 @@ router.post('/obras/:obra_id/registros', isAuthenticated, async (req, res) => {
     return res.status(400).json({ error: 'presencas é obrigatório' });
 
   if (req.session.papel === 'responsavel') {
-    const { data: myFunc } = await supabase.from('funcionarios')
-      .select('equipe_id').eq('id', req.session.userId).single();
-    const myEquipeId = myFunc?.equipe_id;
-    const funcIds = presencas.map(p => p.funcionario_id);
-    const { data: funcs } = await supabase.from('funcionarios').select('id, equipe_id').in('id', funcIds);
-    for (const f of (funcs || [])) {
-      if (f.equipe_id !== myEquipeId) {
-        return res.status(403).json({ error: 'Você só pode registrar ponto para sua equipe' });
-      }
+    const { data: link } = await supabase.from('obra_responsaveis')
+      .select('id').eq('obra_id', req.params.obra_id).eq('responsavel_id', req.session.userId).single();
+    if (!link) {
+      return res.status(403).json({ error: 'Você não tem permissão para registrar ponto nesta obra' });
     }
   }
 
+  const rows = presencas.map(p => ({
+    obra_id: parseInt(req.params.obra_id),
+    funcionario_id: p.funcionario_id,
+    data,
+    presente: p.presente ? 1 : 0,
+    observacao: p.observacao || null,
+    registrado_por: req.session.tipo === 'usuario' ? req.session.userId : null,
+    registrado_por_func: req.session.tipo === 'funcionario' ? req.session.userId : null,
+    updated_at: new Date().toISOString()
+  }));
   const { error } = await supabase.from('registros_ponto').upsert(
-    presencas.map(p => ({
-      obra_id: parseInt(req.params.obra_id),
-      funcionario_id: p.funcionario_id,
-      data,
-      presente: p.presente ? 1 : 0,
-      observacao: p.observacao || null,
-      registrado_por: req.session.tipo === 'usuario' ? req.session.userId : null,
-      registrado_por_func: req.session.tipo === 'funcionario' ? req.session.userId : null,
-      updated_at: new Date().toISOString()
-    })),
-    { onConflict: 'obra_id,funcionario_id,data' }
+    rows, { onConflict: 'obra_id,funcionario_id,data' }
   );
 
-  if (error) return res.status(500).json({ error: 'Erro ao salvar' });
+  if (error) return res.status(500).json({ error: 'Erro ao salvar: ' + error.message });
   res.json({ message: 'Registros salvos' });
 });
 
@@ -157,48 +152,46 @@ router.get('/obras/:obra_id/registros/mensal', isAuthenticated, async (req, res)
   if (!obra) return res.status(404).json({ error: 'Obra não encontrada' });
 
   const { data: registros } = await supabase.from('registros_ponto')
-    .select('*, funcionarios(nome)').eq('obra_id', req.params.obra_id)
+    .select('*').eq('obra_id', req.params.obra_id)
     .gte('data', firstDay).lte('data', lastDay)
     .order('funcionario_id').order('data');
 
-  let funcionarioQuery = supabase.from('funcionarios').select('*').order('nome');
+  const funcIdsInPeriod = [...new Set((registros || []).map(r => r.funcionario_id))];
 
-  if (req.session.papel === 'responsavel') {
-    const equipeId = req.session.equipeId;
-    const funcIdsInPeriod = [...new Set((registros || []).map(r => r.funcionario_id))];
-    if (funcIdsInPeriod.length > 0 && equipeId) {
-      funcionarioQuery = funcionarioQuery.in('id', funcIdsInPeriod).eq('equipe_id', equipeId);
-    } else if (equipeId) {
-      funcionarioQuery = funcionarioQuery.eq('equipe_id', equipeId);
+  let funcionarios = [];
+  if (funcIdsInPeriod.length > 0) {
+    const { data: fList } = await supabase.from('funcionarios')
+      .select('*').in('id', funcIdsInPeriod).order('nome');
+    funcionarios = fList || [];
+  }
+
+  if (funcionarios.length === 0) {
+    let ofIds = [];
+    try {
+      const { data: ofRows } = await supabase.from('obra_funcionarios')
+        .select('funcionario_id').eq('obra_id', req.params.obra_id);
+      ofIds = (ofRows || []).map(r => r.funcionario_id);
+    } catch (_) {}
+
+    if (ofIds.length > 0) {
+      const { data: fList } = await supabase.from('funcionarios')
+        .select('*').in('id', ofIds).order('nome');
+      funcionarios = (fList || []).filter(f => f.is_responsavel !== 1);
     } else {
-      funcionarioQuery = funcionarioQuery.in('id', funcIdsInPeriod.length > 0 ? funcIdsInPeriod : [0]);
-    }
-  } else {
-    const funcIdsInPeriod = [...new Set((registros || []).map(r => r.funcionario_id))];
-    if (funcIdsInPeriod.length > 0) {
-      funcionarioQuery = funcionarioQuery.in('id', funcIdsInPeriod);
+      const { data: fList } = await supabase.from('funcionarios').select('*').order('nome');
+      funcionarios = (fList || []).filter(f => f.is_responsavel !== 1);
     }
   }
 
-  let { data: funcionarios } = await funcionarioQuery;
-  funcionarios = funcionarios || [];
-
-  if (funcionarios.length === 0) {
-    if (req.session.papel === 'responsavel') {
-      const equipeId = req.session.equipeId;
-      if (equipeId) {
-        const { data } = await supabase.from('funcionarios').select('*').eq('equipe_id', equipeId).order('nome');
-        funcionarios = data || [];
-      }
-    } else {
-      const { data } = await supabase.from('funcionarios').select('*').order('nome');
-      funcionarios = data || [];
-    }
+  let totalDiasUteis = 0;
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dt = new Date(year, month - 1, d);
+    if (dt.getDay() !== 0) totalDiasUteis++;
   }
 
   const report = {
     obra: { id: obra.id, nome: obra.nome, local: obra.local },
-    mes, diasNoMes: daysInMonth,
+    mes, diasNoMes: daysInMonth, totalDiasUteis,
     funcionarios: funcionarios.map(f => {
       const dias = {};
       let trab = 0, aus = 0;
@@ -206,7 +199,7 @@ router.get('/obras/:obra_id/registros/mensal', isAuthenticated, async (req, res)
         const dt = new Date(year, month - 1, d);
         dias[d] = { presente: null, observacao: null, registro_id: null, isDiaUtil: dt.getDay() !== 0 };
       }
-      for (const r of (registros || []).filter(r => r.funcionario_id === f.id)) {
+      for (const r of (registros || []).filter(r => Number(r.funcionario_id) === Number(f.id))) {
         const day = parseInt(r.data.split('-')[2]);
         dias[day] = { presente: !!r.presente, observacao: r.observacao, registro_id: r.id, isDiaUtil: true };
         if (r.presente) trab++; else aus++;
@@ -327,13 +320,13 @@ router.get('/relatorio/consolidado', isAuthenticated, async (req, res) => {
       const funcIds = (funcRows || []).map(f => f.id);
       if (funcIds.length === 0) return res.json({ mes, funcionarios: [] });
       const { data: registros } = await supabase.from('registros_ponto')
-        .select('funcionario_id, obra_id, presente, obras(nome), funcionarios(nome, cargo)')
+        .select('funcionario_id, obra_id, presente, obras(nome), funcionarios!funcionario_id(nome, cargo)')
         .gte('data', firstDay).lte('data', lastDay).in('funcionario_id', funcIds);
       return res.json(buildConsolidado(mes, registros || []));
     }
 
     let regQuery = supabase.from('registros_ponto')
-      .select('funcionario_id, obra_id, presente, obras(nome), funcionarios(nome, cargo)')
+      .select('funcionario_id, obra_id, presente, obras(nome), funcionarios!funcionario_id(nome, cargo)')
       .gte('data', firstDay).lte('data', lastDay);
 
     if (req.session.papel === 'encarregado') {
