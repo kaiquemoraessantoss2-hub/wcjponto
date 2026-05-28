@@ -12,7 +12,13 @@ router.get('/', isAuthenticated, async (req, res) => {
       registros_ponto(funcionario_id)
     `).order('nome');
 
-    if (req.session.papel !== 'admin') {
+    if (req.session.papel === 'responsavel') {
+      const { data: orRows } = await supabase.from('obra_responsaveis')
+        .select('obra_id').eq('funcionario_id', req.session.userId);
+      const obraIds = (orRows || []).map(r => r.obra_id);
+      if (obraIds.length === 0) return res.json([]);
+      query = query.in('id', obraIds);
+    } else if (req.session.papel !== 'admin') {
       const { data: oeRows } = await supabase.from('obra_encarregados')
         .select('obra_id').eq('usuario_id', req.session.userId);
       const obraIds = (oeRows || []).map(r => r.obra_id);
@@ -44,6 +50,10 @@ router.get('/:id', isAuthenticated, async (req, res) => {
   if (req.session.papel === 'encarregado') {
     const { data: isResp } = await supabase.from('obra_encarregados')
       .select('id').eq('obra_id', req.params.id).eq('usuario_id', req.session.userId).single();
+    if (!isResp) return res.status(403).json({ error: 'Você não é responsável por esta obra' });
+  } else if (req.session.papel === 'responsavel') {
+    const { data: isResp } = await supabase.from('obra_responsaveis')
+      .select('id').eq('obra_id', req.params.id).eq('funcionario_id', req.session.userId).single();
     if (!isResp) return res.status(403).json({ error: 'Você não é responsável por esta obra' });
   }
 

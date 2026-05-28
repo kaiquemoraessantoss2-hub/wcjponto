@@ -57,11 +57,10 @@
 
   <!-- Main content -->
   <main class="pt-16 pb-6 min-h-screen">
-    <div class="max-w-3xl mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto px-4 py-6">
 
-      <!-- Card wrapper -->
-      <div class="border-2 border-outline-variant bg-surface-container-lowest border-l-4 border-l-primary">
-        <!-- Card header -->
+      <!-- Filters card -->
+      <div class="border-2 border-outline-variant bg-surface-container-lowest border-l-4 border-l-primary mb-6">
         <div class="px-6 py-4 border-b-2 border-outline-variant">
           <h2 class="font-heading font-bold text-on-surface text-lg flex items-center gap-2">
             <span class="material-symbols-outlined text-primary">clipboard_check</span>
@@ -69,70 +68,91 @@
           </h2>
           <p class="font-mono text-xs text-secondary mt-1 uppercase tracking-wider">Selecione a obra e a data para lançar o ponto</p>
         </div>
-
-        <!-- Card body -->
         <div class="p-6">
-          <form id="form-lancamento">
-            <!-- Filters -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div>
-                <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Obra <span class="text-error">*</span></label>
-                <select id="select-obra" required class="h-12 border-2 border-outline bg-surface-container-lowest px-3 w-full font-sans text-sm">
-                  <option value="" disabled selected>Selecione a obra...</option>
-                </select>
-              </div>
-              <div>
-                <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Data <span class="text-error">*</span></label>
-                <input type="date" id="input-data" required class="h-12 border-2 border-outline bg-surface-container-lowest px-3 w-full font-sans text-sm">
-              </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Obra <span class="text-error">*</span></label>
+              <select id="select-obra" class="h-12 border-2 border-outline bg-surface-container-lowest px-3 w-full font-sans text-sm">
+                <option value="" disabled selected>Selecione a obra...</option>
+              </select>
             </div>
-
-            <!-- Loading funcionários -->
-            <div id="loading-funcionarios" class="hidden flex flex-col items-center py-10 gap-3">
-              <div class="w-8 h-8 border-4 border-outline-variant border-t-primary rounded-full animate-spin"></div>
-              <span class="font-mono text-xs text-secondary uppercase tracking-wider">Carregando funcionários...</span>
+            <div>
+              <label class="font-mono text-xs uppercase tracking-wider text-secondary block mb-1">Data <span class="text-error">*</span></label>
+              <input type="date" id="input-data" class="h-12 border-2 border-outline bg-surface-container-lowest px-3 w-full font-sans text-sm">
             </div>
-
-            <!-- Funcionários table -->
-            <div id="lista-funcionarios" class="hidden">
-              <div class="font-mono text-xs text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
-                <span class="material-symbols-outlined" style="font-size:14px">group</span>
-                Funcionários da Obra
-              </div>
-              <div class="border-2 border-outline-variant overflow-hidden mb-4">
-                <div class="overflow-x-auto">
-                  <table class="w-full text-sm">
-                    <thead>
-                      <tr class="bg-inverse-surface text-inverse-on-surface">
-                        <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider w-10">#</th>
-                        <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider">Nome</th>
-                        <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider">Cargo</th>
-                        <th class="px-4 py-3 text-center font-mono text-xs uppercase tracking-wider w-28">Presente?</th>
-                      </tr>
-                    </thead>
-                    <tbody id="tbody-funcionarios" class="divide-y divide-outline-variant"></tbody>
-                  </table>
-                </div>
-              </div>
-
-              <!-- Action buttons -->
-              <div class="flex justify-end gap-3">
-                <button type="button" onclick="limparFormulario()" class="h-12 px-6 border-2 border-outline text-secondary font-mono text-xs uppercase flex items-center gap-2 hover:bg-surface-container transition-colors">
-                  <span class="material-symbols-outlined" style="font-size:16px">close</span>Limpar
-                </button>
-                <button type="submit" class="h-12 px-6 bg-primary text-on-primary font-mono text-xs uppercase flex items-center gap-2 hover:bg-primary-container transition-colors">
-                  <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1">check</span>Salvar Ponto
-                </button>
-              </div>
-            </div>
-          </form>
+          </div>
         </div>
+      </div>
+
+      <!-- Loading -->
+      <div id="loading-funcionarios" class="hidden flex flex-col items-center py-10 gap-3">
+        <div class="w-8 h-8 border-4 border-outline-variant border-t-primary rounded-full animate-spin"></div>
+        <span class="font-mono text-xs text-secondary uppercase tracking-wider">Carregando equipe...</span>
+      </div>
+
+      <!-- Two-column marking area -->
+      <div id="area-marcacao" class="hidden grid grid-cols-1 md:grid-cols-[260px_1fr] gap-6">
+
+        <!-- Sidebar: equipe -->
+        <aside class="border-2 border-outline-variant bg-surface-container-lowest h-fit">
+          <div class="px-4 py-3 border-b-2 border-outline-variant bg-inverse-surface flex items-center justify-between">
+            <span class="font-mono text-xs uppercase tracking-wider text-inverse-on-surface flex items-center gap-1">
+              <span class="material-symbols-outlined" style="font-size:16px">group</span>Equipe
+            </span>
+            <span id="equipe-contador" class="font-mono text-xs text-inverse-on-surface">0</span>
+          </div>
+          <div id="equipe-lista" class="divide-y divide-outline-variant max-h-[60vh] overflow-y-auto"></div>
+        </aside>
+
+        <!-- Marking section -->
+        <section>
+          <div class="flex flex-wrap gap-2 mb-3">
+            <button type="button" onclick="marcarTodos('P')" class="h-10 px-4 border-2 border-green-600 text-green-700 font-mono text-xs uppercase flex items-center gap-1 hover:bg-green-50 transition-colors">
+              <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1">check_circle</span>Todos Presentes
+            </button>
+            <button type="button" onclick="marcarTodos('F')" class="h-10 px-4 border-2 border-error text-error font-mono text-xs uppercase flex items-center gap-1 hover:bg-red-50 transition-colors">
+              <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1">cancel</span>Todas Faltas
+            </button>
+          </div>
+
+          <div class="border-2 border-outline-variant overflow-x-auto">
+            <table class="w-full text-sm border-collapse">
+              <thead>
+                <tr class="bg-inverse-surface text-inverse-on-surface">
+                  <th class="px-3 py-3 text-left font-mono text-xs uppercase tracking-wider w-10 hidden sm:table-cell">#</th>
+                  <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider">Nome</th>
+                  <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider hidden sm:table-cell">Cargo</th>
+                  <th class="px-4 py-3 text-center font-mono text-xs uppercase tracking-wider w-40">Presença</th>
+                  <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider hidden md:table-cell">Observação</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-funcionarios" class="divide-y divide-outline-variant"></tbody>
+            </table>
+          </div>
+
+          <div class="flex justify-end gap-3 mt-4">
+            <button type="button" onclick="limparMarcacao()" class="h-12 px-6 border-2 border-outline text-secondary font-mono text-xs uppercase flex items-center gap-2 hover:bg-surface-container transition-colors">
+              <span class="material-symbols-outlined" style="font-size:16px">restart_alt</span>Limpar
+            </button>
+            <button type="button" id="btn-salvar" onclick="salvar()" class="h-12 px-6 bg-primary text-on-primary font-mono text-xs uppercase font-bold flex items-center gap-2 hover:bg-primary-container transition-colors disabled:opacity-50">
+              <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1">save</span>Salvar Ponto
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Empty -->
+      <div id="empty-equipe" class="hidden flex flex-col items-center py-16 gap-3">
+        <span class="material-symbols-outlined text-outline-variant" style="font-size:3rem">group_off</span>
+        <p class="font-mono text-xs text-secondary uppercase tracking-wider">Nenhum funcionário alocado nesta obra</p>
       </div>
 
     </div>
   </main>
 
   <script>
+    let equipe = [];
+
     function mostrarToast(msg, tipo) {
       const c = document.getElementById('toast-container');
       const colors = { success: '#15803d', danger: '#ba1a1a', warning: '#b45309' };
@@ -157,12 +177,12 @@
       const res = await fetch('/api/obras');
       const obras = await res.json();
       const select = document.getElementById('select-obra');
-      if (obras.length === 0) {
-        select.innerHTML = '<option value="" disabled selected>Nenhuma obra disponível</option>';
+      if (!obras || obras.length === 0) {
+        select.innerHTML = '<option value="" disabled selected>Nenhuma obra atribuída</option>';
         return;
       }
-      select.innerHTML = '<option value="" disabled selected>Selecione a obra...</option>' +
-        obras.map(o => `<option value="${o.id}">${esc(o.nome)}</option>`).join('');
+      select.innerHTML = obras.map(o => `<option value="${o.id}">${esc(o.nome)}</option>`).join('');
+      if (obras.length === 1) { select.value = obras[0].id; carregarFuncionarios(); }
     }
 
     async function carregarFuncionarios() {
@@ -170,78 +190,161 @@
       const data = document.getElementById('input-data').value;
       if (!obraId || !data) return;
 
-      const lista = document.getElementById('lista-funcionarios');
-      const tbody = document.getElementById('tbody-funcionarios');
-      const loading = document.getElementById('loading-funcionarios');
-
-      lista.classList.add('hidden');
-      loading.classList.remove('hidden');
+      document.getElementById('area-marcacao').classList.add('hidden');
+      document.getElementById('empty-equipe').classList.add('hidden');
+      document.getElementById('loading-funcionarios').classList.remove('hidden');
 
       const res = await fetch(`/api/obras/${obraId}/registros?data=${data}`);
-      loading.classList.add('hidden');
+      document.getElementById('loading-funcionarios').classList.add('hidden');
 
-      if (!res.ok) { mostrarToast('Erro ao carregar funcionários', 'danger'); return; }
+      if (!res.ok) { mostrarToast('Erro ao carregar equipe', 'danger'); return; }
       const result = await res.json();
 
-      if (result.registros.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-6 text-center font-mono text-xs text-secondary">Nenhum funcionário alocado nesta obra.</td></tr>';
-      } else {
-        tbody.innerHTML = result.registros.map((f, i) => `
-          <tr class="${i%2===1 ? 'bg-surface-container-low' : ''}">
-            <td class="px-4 py-3 font-mono text-xs text-secondary">${i+1}</td>
-            <td class="px-4 py-3 font-bold">${esc(f.nome)}</td>
-            <td class="px-4 py-3">
-              <span class="font-mono text-xs bg-surface-container px-2 py-0.5">${esc(f.cargo || '-')}</span>
-            </td>
-            <td class="px-4 py-3 text-center">
-              <input type="checkbox" class="w-5 h-5 accent-[#a20513]" id="presenca-${f.id}" ${f.presente ? 'checked' : ''}>
-            </td>
-          </tr>
-        `).join('');
+      equipe = (result.registros || []).map(f => ({
+        id: f.id, nome: f.nome, cargo: f.cargo,
+        estado: f.registro ? (f.presente ? 'P' : 'F') : '',
+        regId: f.registro?.id || null,
+        observacao: f.registro?.observacao || ''
+      }));
+
+      if (equipe.length === 0) {
+        document.getElementById('empty-equipe').classList.remove('hidden');
+        return;
       }
-      lista.classList.remove('hidden');
+
+      renderTabela();
+      renderEquipe();
+      document.getElementById('area-marcacao').classList.remove('hidden');
     }
 
-    document.getElementById('select-obra').addEventListener('change', carregarFuncionarios);
-    document.getElementById('input-data').addEventListener('change', carregarFuncionarios);
+    function renderTabela() {
+      const tbody = document.getElementById('tbody-funcionarios');
+      tbody.innerHTML = equipe.map((f, i) => `
+        <tr class="${i%2===1 ? 'bg-surface-container-low' : ''}">
+          <td class="px-3 py-3 font-mono text-xs text-secondary hidden sm:table-cell">${i+1}</td>
+          <td class="px-4 py-3">
+            <div class="font-bold">${esc(f.nome)}</div>
+            <div class="font-mono text-xs text-secondary sm:hidden">${esc(f.cargo || '-')}</div>
+          </td>
+          <td class="px-4 py-3 hidden sm:table-cell"><span class="font-mono text-xs bg-surface-container px-2 py-0.5">${esc(f.cargo || '-')}</span></td>
+          <td class="px-4 py-3">
+            <div class="flex justify-center">
+              <div class="inline-flex border-2 border-outline-variant" data-toggle="${f.id}">
+                <button type="button" onclick="setEstado(${f.id},'P')" data-val="P" class="estado-btn h-9 px-3 font-mono text-xs uppercase font-bold flex items-center gap-1 transition-colors">
+                  <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1">check</span>P
+                </button>
+                <button type="button" onclick="setEstado(${f.id},'F')" data-val="F" class="estado-btn h-9 px-3 font-mono text-xs uppercase font-bold flex items-center gap-1 border-l-2 border-outline-variant transition-colors">
+                  <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1">close</span>F
+                </button>
+              </div>
+            </div>
+          </td>
+          <td class="px-4 py-3 hidden md:table-cell">
+            <input type="text" class="obs-input w-full h-9 border-2 border-outline-variant bg-surface px-2 font-mono text-xs focus:border-primary" data-obs="${f.id}" placeholder="Obs (opcional)" value="${esc(f.observacao)}">
+          </td>
+        </tr>
+      `).join('');
+      equipe.forEach(f => paintToggle(f.id));
+    }
 
-    document.getElementById('form-lancamento').addEventListener('submit', async (e) => {
-      e.preventDefault();
+    function renderEquipe() {
+      const cont = document.getElementById('equipe-lista');
+      document.getElementById('equipe-contador').textContent = equipe.length;
+      cont.innerHTML = equipe.map(f => {
+        const dot = f.estado === 'P' ? 'bg-green-600' : f.estado === 'F' ? 'bg-error' : 'bg-outline-variant';
+        const label = f.estado === 'P' ? 'Presente' : f.estado === 'F' ? 'Falta' : 'Pendente';
+        return `
+          <div class="px-4 py-2 flex items-center gap-2" data-side="${f.id}">
+            <span class="w-2.5 h-2.5 rounded-full ${dot} shrink-0"></span>
+            <div class="min-w-0">
+              <div class="text-sm font-semibold truncate">${esc(f.nome)}</div>
+              <div class="font-mono text-[10px] text-secondary uppercase">${label}</div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function paintToggle(id) {
+      const f = equipe.find(x => x.id === id);
+      const wrap = document.querySelector(`[data-toggle="${id}"]`);
+      if (!wrap || !f) return;
+      wrap.querySelectorAll('.estado-btn').forEach(b => {
+        const sel = b.dataset.val === f.estado;
+        b.classList.remove('bg-green-600','bg-error','text-white','bg-white','text-secondary');
+        if (sel && b.dataset.val === 'P') b.classList.add('bg-green-600','text-white');
+        else if (sel && b.dataset.val === 'F') b.classList.add('bg-error','text-white');
+        else b.classList.add('bg-white','text-secondary');
+      });
+    }
+
+    function setEstado(id, val) {
+      const f = equipe.find(x => x.id === id);
+      if (!f) return;
+      f.estado = f.estado === val ? '' : val;
+      paintToggle(id);
+      renderEquipe();
+    }
+
+    function marcarTodos(val) {
+      equipe.forEach(f => { f.estado = val; paintToggle(f.id); });
+      renderEquipe();
+    }
+
+    function limparMarcacao() {
+      equipe.forEach(f => { f.estado = ''; paintToggle(f.id); });
+      renderEquipe();
+    }
+
+    async function salvar() {
       const obraId = document.getElementById('select-obra').value;
       const data = document.getElementById('input-data').value;
       if (!obraId || !data) { mostrarToast('Selecione a obra e a data.', 'warning'); return; }
 
-      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-      const presencas = [...checkboxes].map(cb => ({
-        funcionario_id: parseInt(cb.id.replace('presenca-', '')),
-        presente: cb.checked,
-        observacao: ''
-      }));
-
-      const res = await fetch(`/api/obras/${obraId}/registros`, {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ data, presencas })
+      const presencas = [];
+      const remover = [];
+      equipe.forEach(f => {
+        const obsEl = document.querySelector(`.obs-input[data-obs="${f.id}"]`);
+        const obs = obsEl ? obsEl.value.trim() : '';
+        if (f.estado === 'P' || f.estado === 'F') {
+          presencas.push({ funcionario_id: f.id, presente: f.estado === 'P', observacao: obs });
+        } else if (f.regId) {
+          remover.push(f.id);
+        }
       });
-      const result = await res.json();
-      mostrarToast(result.message || result.error, res.ok ? 'success' : 'danger');
-      if (res.ok) limparFormulario();
-    });
 
-    function limparFormulario() {
-      document.getElementById('select-obra').value = '';
-      document.getElementById('input-data').value = '';
-      document.getElementById('lista-funcionarios').classList.add('hidden');
-      document.getElementById('tbody-funcionarios').innerHTML = '';
+      if (presencas.length === 0 && remover.length === 0) {
+        mostrarToast('Marque presença ou falta de ao menos um funcionário', 'warning');
+        return;
+      }
+
+      const btn = document.getElementById('btn-salvar');
+      btn.disabled = true;
+      try {
+        const res = await fetch(`/api/obras/${obraId}/registros`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data, presencas, remover })
+        });
+        const result = await res.json();
+        btn.disabled = false;
+        mostrarToast(result.message || result.error, res.ok ? 'success' : 'danger');
+        if (res.ok) await carregarFuncionarios();
+      } catch {
+        btn.disabled = false;
+        mostrarToast('Erro de conexão', 'danger');
+      }
     }
+
+    document.getElementById('select-obra').addEventListener('change', carregarFuncionarios);
+    document.getElementById('input-data').addEventListener('change', carregarFuncionarios);
 
     function esc(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
     async function logout() { await fetch('/api/auth/logout', {method:'POST'}); window.location.href='/login.html'; }
 
     document.addEventListener('DOMContentLoaded', async () => {
       await checkAuth();
-      await carregarObras();
       document.getElementById('input-data').value = new Date().toISOString().split('T')[0];
+      await carregarObras();
     });
   </script>
 </body>

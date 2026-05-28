@@ -1,15 +1,15 @@
 :root {
-  --cor-primaria: #E65100;
-  --cor-primaria-escura: #BF360C;
-  --cor-secundaria: #1A237E;
+  --cor-primaria: #FF6D00;
+  --cor-primaria-escura: #E65100;
+  --cor-secundaria: #283593;
   --cor-sucesso: #2E7D32;
-  --cor-perigo: #C62828;
+  --cor-perigo: #D32F2F;
   --cor-aviso: #F9A825;
-  --cor-fundo: #F5F5F5;
+  --cor-fundo: #F8FAFC;
   --cor-card: #FFFFFF;
-  --cor-texto: #212121;
-  --cor-texto-secundario: #616161;
-  --cor-borda: #E0E0E0;
+  --cor-texto: #1E293B;
+  --cor-texto-secundario: #64748B;
+  --cor-borda: #E2E8F0;
 }
 
 * {
@@ -23,8 +23,18 @@ body {
   min-height: 100vh;
 }
 
+/* Modificações globais para deixar menos quadrado */
+.btn, .form-control, .form-select, .input-group-text {
+  border-radius: 100px !important; /* Arredondamento máximo estilo pílula */
+}
+.card {
+  border-radius: 24px !important;
+  border: none !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03) !important;
+}
+
 .login-page {
-  background: linear-gradient(135deg, var(--cor-secundaria) 0%, #283593 50%, var(--cor-primaria-escura) 100%);
+  background: linear-gradient(135deg, var(--cor-secundaria) 0%, #3949AB 50%, var(--cor-primaria) 100%);
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -32,12 +42,14 @@ body {
 }
 
 .login-card {
-  background: white;
-  border-radius: 16px;
-  padding: 2.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 32px !important;
+  padding: 3rem 2.5rem;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
 }
 
 .login-card .logo {
@@ -46,164 +58,185 @@ body {
 }
 
 .login-card .logo-icon {
-  width: 72px;
-  height: 72px;
-  background: var(--cor-primaria);
-  border-radius: 18px;
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--cor-primaria), var(--cor-primaria-escura));
+  border-radius: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1rem;
-  font-size: 2rem;
+  margin: 0 auto 1.2rem;
+  font-size: 2.5rem;
   color: white;
+  box-shadow: 0 8px 24px rgba(230, 81, 0, 0.3);
 }
 
 .login-card h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.75rem;
+  font-weight: 800;
   color: var(--cor-texto);
   margin: 0;
+  letter-spacing: -0.5px;
 }
 
 .login-card p {
   color: var(--cor-texto-secundario);
-  font-size: 0.9rem;
-  margin: 0.25rem 0 0;
+  font-size: 0.95rem;
+  margin: 0.5rem 0 0;
 }
 
 .navbar-brand {
-  font-weight: 700;
-  font-size: 1.25rem;
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: -0.5px;
 }
 
 .navbar-brand .badge {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   vertical-align: middle;
+  border-radius: 50px;
+  padding: 0.35em 0.65em;
 }
 
 .card-obra {
   border: none;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  transition: transform 0.2s, box-shadow 0.2s;
+  border-radius: 24px !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.04) !important;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   height: 100%;
 }
 
 .card-obra:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.08) !important;
 }
 
 .card-obra .card-header {
-  background: var(--cor-secundaria);
+  background: linear-gradient(135deg, var(--cor-secundaria), #3949AB);
   color: white;
-  border-radius: 12px 12px 0 0 !important;
-  padding: 1rem 1.25rem;
+  border-radius: 24px 24px 0 0 !important;
+  padding: 1.25rem 1.5rem;
   font-weight: 600;
 }
 
 .card-obra .card-body {
-  padding: 1.25rem;
+  padding: 1.5rem;
 }
 
 .card-obra .info-label {
   font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
   color: var(--cor-texto-secundario);
-  margin-bottom: 0.15rem;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
 }
 
 .card-obra .info-value {
-  font-size: 0.9rem;
-  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
 }
 
-.registro-header {
-  background: linear-gradient(135deg, var(--cor-secundaria), #283593);
+.registro-header, .relatorio-header {
+  background: linear-gradient(135deg, var(--cor-secundaria), #3949AB);
   color: white;
-  padding: 1.5rem 0;
-  margin-bottom: 1.5rem;
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+  border-radius: 0 0 32px 32px;
+  box-shadow: 0 4px 24px rgba(40, 53, 147, 0.2);
 }
 
-.registro-header h4 {
+.relatorio-header {
+  background: linear-gradient(135deg, var(--cor-primaria), var(--cor-primaria-escura));
+  box-shadow: 0 4px 24px rgba(230, 81, 0, 0.2);
+}
+
+.registro-header h4, .relatorio-header h4 {
   margin: 0;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
 .registro-header .data-info {
   opacity: 0.9;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  margin-top: 0.25rem;
 }
 
 .table-presenca {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .table-presenca th {
   background: var(--cor-secundaria);
   color: white;
-  font-weight: 500;
+  font-weight: 600;
   border: none;
-  padding: 0.65rem 0.75rem;
+  padding: 1rem;
 }
+
+.table-presenca th:first-child { border-top-left-radius: 16px; }
+.table-presenca th:last-child { border-top-right-radius: 16px; }
 
 .table-presenca td {
   vertical-align: middle;
-  padding: 0.5rem 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--cor-borda);
 }
 
 .table-presenca .form-check-input {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
   cursor: pointer;
+  border-radius: 50% !important; /* Arredondado como um círculo */
+  border: 2px solid var(--cor-borda);
+  transition: all 0.2s;
 }
 
 .table-presenca .form-check-input:checked {
   background-color: var(--cor-sucesso);
   border-color: var(--cor-sucesso);
+  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.3);
 }
 
-.table-presenca tr:hover {
-  background-color: rgba(26, 35, 126, 0.04);
-}
-
-.relatorio-header {
-  background: linear-gradient(135deg, var(--cor-primaria), var(--cor-primaria-escura));
-  color: white;
-  padding: 1.5rem 0;
-  margin-bottom: 1.5rem;
-}
-
-.relatorio-header h4 {
-  margin: 0;
-  font-weight: 600;
+.table-presenca tr:hover td {
+  background-color: rgba(40, 53, 147, 0.04);
 }
 
 .resumo-card {
   border: none;
-  border-radius: 12px;
+  border-radius: 24px !important;
   text-align: center;
-  padding: 1.25rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 1.75rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.04) !important;
+  background: white;
+  transition: transform 0.2s;
+}
+
+.resumo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08) !important;
 }
 
 .resumo-card .numero {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 2.5rem;
+  font-weight: 800;
   line-height: 1;
+  color: var(--cor-primaria);
 }
 
 .resumo-card .rotulo {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   color: var(--cor-texto-secundario);
-  margin-top: 0.35rem;
+  margin-top: 0.5rem;
+  font-weight: 600;
 }
 
 .table-relatorio {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
 }
 
 .table-relatorio th {
@@ -211,7 +244,7 @@ body {
   color: white;
   font-weight: 500;
   border: none;
-  padding: 0.5rem;
+  padding: 0.75rem 0.5rem;
   text-align: center;
   vertical-align: middle;
 }
@@ -225,30 +258,32 @@ body {
 }
 
 .table-relatorio td {
-  padding: 0.35rem 0.5rem;
+  padding: 0.5rem;
   text-align: center;
   vertical-align: middle;
+  border-bottom: 1px solid var(--cor-borda);
 }
 
 .table-relatorio td.funcionario-nome {
   text-align: left;
-  font-weight: 500;
+  font-weight: 600;
   position: sticky;
   left: 0;
   background: white;
   z-index: 1;
+  border-right: 2px solid var(--cor-fundo);
 }
 
 .table-relatorio .presenca-sim {
   color: var(--cor-sucesso);
-  font-weight: 700;
-  font-size: 1rem;
+  font-weight: 800;
+  font-size: 1.1rem;
 }
 
 .table-relatorio .presenca-nao {
   color: var(--cor-perigo);
-  font-weight: 700;
-  font-size: 1rem;
+  font-weight: 800;
+  font-size: 1.1rem;
 }
 
 .table-relatorio .presenca-nula {
@@ -260,35 +295,41 @@ body {
 }
 
 .table-relatorio .dia-nao-util {
-  background: #EEEEEE;
-  color: #BDBDBD;
+  background: #F1F5F9;
+  color: #94A3B8;
 }
 
 .table-relatorio-wrapper {
   overflow-x: auto;
   max-width: 100%;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  background: white;
+  padding-bottom: 0.5rem;
 }
 
 .btn-primary {
-  background-color: var(--cor-primaria) !important;
-  border-color: var(--cor-primaria) !important;
+  background: linear-gradient(135deg, var(--cor-primaria), var(--cor-primaria-escura)) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(230, 81, 0, 0.2);
 }
 
 .btn-primary:hover {
-  background-color: var(--cor-primaria-escura) !important;
-  border-color: var(--cor-primaria-escura) !important;
+  background: linear-gradient(135deg, var(--cor-primaria-escura), #B13B0C) !important;
+  box-shadow: 0 6px 16px rgba(230, 81, 0, 0.3);
+  transform: translateY(-1px);
 }
 
 .btn-outline-primary {
   color: var(--cor-primaria) !important;
-  border-color: var(--cor-primaria) !important;
+  border: 2px solid var(--cor-primaria) !important;
 }
 
 .btn-outline-primary:hover {
   background-color: var(--cor-primaria) !important;
   color: white !important;
+  border-color: var(--cor-primaria) !important;
+  box-shadow: 0 4px 12px rgba(230, 81, 0, 0.2);
 }
 
 .spinner-overlay {
@@ -297,7 +338,8 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -306,21 +348,24 @@ body {
 
 .alert-fixed {
   position: fixed;
-  top: 1rem;
-  right: 1rem;
+  top: 1.5rem;
+  right: 1.5rem;
   z-index: 10000;
   min-width: 280px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  border-radius: 16px !important;
+  border: none !important;
 }
 
 @media (max-width: 768px) {
   .login-card {
     margin: 1rem;
-    padding: 1.5rem;
+    padding: 2rem 1.5rem;
+    border-radius: 24px !important;
   }
 
   .table-relatorio {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
   }
 
   .table-relatorio th.funcionario-col,
@@ -329,6 +374,6 @@ body {
   }
 
   .resumo-card .numero {
-    font-size: 1.5rem;
+    font-size: 2rem;
   }
 }

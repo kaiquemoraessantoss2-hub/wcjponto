@@ -38,7 +38,19 @@
     .nav-link:hover { background-color: rgba(215,228,236,0.5); }
     .nav-link.active { background-color: #c62828; color: #ffe0dd; border-right: 4px solid #a20513; font-weight: 700; }
     input:focus, select:focus, textarea:focus { border-color: #a20513 !important; outline: none; box-shadow: none; }
-  </style>
+  
+  /* Estilos Adicionais p/ Modernização Visual */
+  input:not([type=checkbox]):not([type=radio]), select { border-radius: 12px !important; }
+  button { border-radius: 12px !important; }
+  .rounded-full { border-radius: 9999px !important; }
+  .bg-surface-container-lowest.max-w-sm, .bg-surface-container-lowest.max-w-md, .bg-inverse-surface { border-radius: 16px !important; }
+  .bg-inverse-surface { border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; }
+  .obra-card, .bg-surface-container-lowest > .p-6, .bg-surface-container-lowest.p-6, .border-2.p-3 { border-radius: 16px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.03) !important; }
+  /* Removendo bordas quadradas onde já colocamos sombra e radius */
+  .obra-card { border: 1px solid #e4beba !important; border-radius: 16px !important; }
+  .navbar-brand, .font-heading { letter-spacing: -0.5px; }
+  .bar-inner { border-radius: 6px 6px 0 0 !important; }
+</style>
 </head>
 <body class="min-h-screen bg-surface">
 

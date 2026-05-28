@@ -37,14 +37,22 @@ router.get('/responsaveis', isAuthenticated, async (req, res) => {
   const funcIds = responsaveis.map(f => f.id);
 
   const { data: obraLinks } = await supabase.from('obra_responsaveis')
-    .select('responsavel_id, obras(nome)')
-    .in('responsavel_id', funcIds);
+    .select('funcionario_id, obra_id')
+    .in('funcionario_id', funcIds);
+
+  const obraIds = [...new Set((obraLinks || []).map(l => l.obra_id))];
+  const obraNomeMap = {};
+  if (obraIds.length > 0) {
+    const { data: obrasData } = await supabase.from('obras').select('id, nome').in('id', obraIds);
+    for (const o of (obrasData || [])) obraNomeMap[o.id] = o.nome;
+  }
 
   const obrasPerFunc = {};
   for (const r of (obraLinks || [])) {
-    if (!r.obras) continue;
-    if (!obrasPerFunc[r.responsavel_id]) obrasPerFunc[r.responsavel_id] = new Set();
-    obrasPerFunc[r.responsavel_id].add(r.obras.nome);
+    const nome = obraNomeMap[r.obra_id];
+    if (!nome) continue;
+    if (!obrasPerFunc[r.funcionario_id]) obrasPerFunc[r.funcionario_id] = new Set();
+    obrasPerFunc[r.funcionario_id].add(nome);
   }
 
   res.json(responsaveis.map(f => ({
@@ -74,7 +82,7 @@ router.post('/responsaveis', isAuthenticated, async (req, res) => {
   }
 
   if (obra_id) {
-    await supabase.from('obra_responsaveis').insert({ obra_id: parseInt(obra_id), responsavel_id: data.id });
+    await supabase.from('obra_responsaveis').insert({ obra_id: parseInt(obra_id), funcionario_id: data.id });
   }
 
   res.status(201).json({ id: data.id, message: 'Responsável cadastrado com sucesso' });
@@ -92,10 +100,10 @@ router.put('/responsaveis/:id', isAuthenticated, async (req, res) => {
   if (error) return res.status(500).json({ error: 'Erro ao atualizar responsável' });
 
   if (Array.isArray(obra_ids)) {
-    await supabase.from('obra_responsaveis').delete().eq('responsavel_id', req.params.id);
+    await supabase.from('obra_responsaveis').delete().eq('funcionario_id', req.params.id);
     if (obra_ids.length > 0) {
       await supabase.from('obra_responsaveis').insert(
-        obra_ids.map(oid => ({ obra_id: parseInt(oid), responsavel_id: parseInt(req.params.id) }))
+        obra_ids.map(oid => ({ obra_id: parseInt(oid), funcionario_id: parseInt(req.params.id) }))
       );
     }
   }
@@ -104,9 +112,12 @@ router.put('/responsaveis/:id', isAuthenticated, async (req, res) => {
 });
 
 router.get('/responsaveis/:id/obras', isAuthenticated, async (req, res) => {
-  const { data } = await supabase.from('obra_responsaveis')
-    .select('obra_id, obras(id, nome)').eq('responsavel_id', req.params.id);
-  res.json((data || []).map(r => r.obras).filter(Boolean));
+  const { data: links } = await supabase.from('obra_responsaveis')
+    .select('obra_id').eq('funcionario_id', req.params.id);
+  const ids = (links || []).map(l => l.obra_id);
+  if (ids.length === 0) return res.json([]);
+  const { data: obrasData } = await supabase.from('obras').select('id, nome').in('id', ids);
+  res.json(obrasData || []);
 });
 
 router.get('/:id', isAuthenticated, async (req, res) => {

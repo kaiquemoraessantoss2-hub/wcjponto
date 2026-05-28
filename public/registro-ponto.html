@@ -43,7 +43,19 @@
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: #eeeeee; }
     ::-webkit-scrollbar-thumb { background: #8f706c; border-radius: 2px; }
-  </style>
+  
+  /* Estilos Adicionais p/ Modernização Visual */
+  input:not([type=checkbox]):not([type=radio]), select { border-radius: 12px !important; }
+  button { border-radius: 12px !important; }
+  .rounded-full { border-radius: 9999px !important; }
+  .bg-surface-container-lowest.max-w-sm, .bg-surface-container-lowest.max-w-md, .bg-inverse-surface { border-radius: 16px !important; }
+  .bg-inverse-surface { border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; }
+  .obra-card, .bg-surface-container-lowest > .p-6, .bg-surface-container-lowest.p-6, .border-2.p-3 { border-radius: 16px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.03) !important; }
+  /* Removendo bordas quadradas onde já colocamos sombra e radius */
+  .obra-card { border: 1px solid #e4beba !important; border-radius: 16px !important; }
+  .navbar-brand, .font-heading { letter-spacing: -0.5px; }
+  .bar-inner { border-radius: 6px 6px 0 0 !important; }
+</style>
 </head>
 <body class="bg-surface">
 
@@ -134,17 +146,17 @@
         </div>
         <!-- Action buttons -->
         <div class="flex items-end gap-2 flex-wrap">
-          <button onclick="marcarTodos(true)"
-            class="h-12 px-4 border-2 border-outline-variant text-secondary font-mono text-xs uppercase flex items-center gap-2 hover:bg-surface-container transition-colors">
-            <span class="material-symbols-outlined text-base">check_box</span>
+          <button onclick="marcarTodos('P')"
+            class="h-12 px-4 border-2 border-green-600 text-green-700 font-mono text-xs uppercase flex items-center gap-2 hover:bg-green-50 transition-colors">
+            <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1">check_circle</span>
             <span class="hidden sm:inline">Todos Presentes</span>
             <span class="sm:hidden">Pres.</span>
           </button>
-          <button onclick="marcarTodos(false)"
-            class="h-12 px-4 border-2 border-outline-variant text-secondary font-mono text-xs uppercase flex items-center gap-2 hover:bg-surface-container transition-colors">
-            <span class="material-symbols-outlined text-base">check_box_outline_blank</span>
-            <span class="hidden sm:inline">Todos Ausentes</span>
-            <span class="sm:hidden">Aus.</span>
+          <button onclick="marcarTodos('F')"
+            class="h-12 px-4 border-2 border-error text-error font-mono text-xs uppercase flex items-center gap-2 hover:bg-red-50 transition-colors">
+            <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1">cancel</span>
+            <span class="hidden sm:inline">Todas Faltas</span>
+            <span class="sm:hidden">Falt.</span>
           </button>
           <button onclick="carregarRegistros()"
             class="h-12 px-4 border-2 border-secondary-container bg-secondary-container text-on-secondary-container font-mono text-xs uppercase flex items-center gap-2 hover:bg-outline-variant transition-colors">
@@ -184,7 +196,7 @@
                 <th class="py-3 px-3 text-left font-mono text-xs uppercase text-inverse-on-surface border-r border-outline-variant/30 w-10 hidden sm:table-cell">#</th>
                 <th class="py-3 px-4 text-left font-mono text-xs uppercase text-inverse-on-surface border-r border-outline-variant/30">Nome</th>
                 <th class="py-3 px-4 text-left font-mono text-xs uppercase text-inverse-on-surface border-r border-outline-variant/30 hidden sm:table-cell">Cargo</th>
-                <th class="py-3 px-4 text-center font-mono text-xs uppercase text-inverse-on-surface border-r border-outline-variant/30 w-20 sm:w-28">Presente</th>
+                <th class="py-3 px-4 text-center font-mono text-xs uppercase text-inverse-on-surface border-r border-outline-variant/30 w-36 sm:w-44">Presença</th>
                 <th class="py-3 px-4 text-left font-mono text-xs uppercase text-inverse-on-surface hidden sm:table-cell">Observação</th>
               </tr>
             </thead>
@@ -294,7 +306,14 @@
             <td class="p-3 font-mono text-xs text-secondary hidden sm:table-cell">${escapeHtml(f.cargo || '-')}</td>
             <td class="p-3">
               <div class="flex justify-center">
-                <input type="checkbox" class="checkbox-presenca" data-func-id="${f.id}" ${f.presente ? 'checked' : ''}>
+                <div class="inline-flex border-2 border-outline-variant" data-estado-wrap="${f.id}" data-estado="${f.registro ? (f.presente ? 'P' : 'F') : ''}" data-reg-id="${f.registro?.id || ''}">
+                  <button type="button" onclick="setEstado(${f.id},'P')" data-val="P" class="estado-btn h-9 px-3 font-mono text-xs uppercase font-bold flex items-center gap-1 transition-colors">
+                    <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1">check</span>P
+                  </button>
+                  <button type="button" onclick="setEstado(${f.id},'F')" data-val="F" class="estado-btn h-9 px-3 font-mono text-xs uppercase font-bold flex items-center gap-1 border-l-2 border-outline-variant transition-colors">
+                    <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1">close</span>F
+                  </button>
+                </div>
               </div>
             </td>
             <td class="p-3 hidden sm:table-cell">
@@ -303,6 +322,7 @@
           </tr>
         `).join('');
 
+        document.querySelectorAll('[data-estado-wrap]').forEach(paintEstado);
         document.getElementById('contadorRegistros').textContent = `${funcionarios.length} funcionário(s) listados`;
         document.getElementById('tabelaContainer').classList.remove('hidden');
       } catch (err) {
@@ -311,22 +331,47 @@
       }
     }
 
-    function marcarTodos(presente) {
-      document.querySelectorAll('.checkbox-presenca').forEach(cb => { cb.checked = presente; });
+    function paintEstado(wrap) {
+      const estado = wrap.dataset.estado || '';
+      wrap.querySelectorAll('.estado-btn').forEach(b => {
+        const sel = b.dataset.val === estado;
+        b.classList.remove('bg-green-600', 'bg-error', 'text-white', 'bg-white', 'text-secondary');
+        if (sel && b.dataset.val === 'P') b.classList.add('bg-green-600', 'text-white');
+        else if (sel && b.dataset.val === 'F') b.classList.add('bg-error', 'text-white');
+        else b.classList.add('bg-white', 'text-secondary');
+      });
+    }
+
+    function setEstado(funcId, val) {
+      const wrap = document.querySelector(`[data-estado-wrap="${funcId}"]`);
+      wrap.dataset.estado = wrap.dataset.estado === val ? '' : val;
+      paintEstado(wrap);
+    }
+
+    function marcarTodos(val) {
+      document.querySelectorAll('[data-estado-wrap]').forEach(w => { w.dataset.estado = val; paintEstado(w); });
     }
 
     async function salvarRegistros() {
       const data = document.getElementById('dataRegistro').value;
       if (!data) { mostrarToast('Selecione uma data', 'danger'); return; }
 
-      const checkboxes = document.querySelectorAll('.checkbox-presenca');
       const presencas = [];
-      checkboxes.forEach(cb => {
-        const funcId = parseInt(cb.dataset.funcId);
-        const allObs = document.querySelectorAll(`.input-obs[data-func-id="${funcId}"]`);
-        const visibleObs = [...allObs].find(inp => inp.offsetParent !== null);
-        presencas.push({ funcionario_id: funcId, presente: cb.checked, observacao: visibleObs ? visibleObs.value.trim() : '' });
+      const remover = [];
+      document.querySelectorAll('[data-estado-wrap]').forEach(w => {
+        const estado = w.dataset.estado;
+        const funcId = parseInt(w.dataset.estadoWrap);
+        const tinhaReg = !!w.dataset.regId;
+        if (estado === 'P' || estado === 'F') {
+          const allObs = document.querySelectorAll(`.input-obs[data-func-id="${funcId}"]`);
+          const visibleObs = [...allObs].find(inp => inp.offsetParent !== null);
+          presencas.push({ funcionario_id: funcId, presente: estado === 'P', observacao: visibleObs ? visibleObs.value.trim() : '' });
+        } else if (tinhaReg) {
+          remover.push(funcId);
+        }
       });
+
+      if (presencas.length === 0 && remover.length === 0) { mostrarToast('Marque presença ou falta de ao menos um funcionário', 'danger'); return; }
 
       const btnSalvar = document.getElementById('btnSalvar');
       btnSalvar.disabled = true;
@@ -335,12 +380,13 @@
         const res = await fetch(`/api/obras/${obraId}/registros`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ data, presencas })
+          body: JSON.stringify({ data, presencas, remover })
         });
         const result = await res.json();
         btnSalvar.disabled = false;
         if (!res.ok) { mostrarToast(result.error || 'Erro ao salvar', 'danger'); return; }
         mostrarToast(result.message || 'Registros salvos com sucesso!');
+        await carregarRegistros();
       } catch (err) {
         btnSalvar.disabled = false;
         mostrarToast('Erro de conexão', 'danger');

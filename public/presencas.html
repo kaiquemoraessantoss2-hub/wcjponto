@@ -47,7 +47,19 @@
     .func-card:hover { box-shadow: 0 2px 8px rgba(162,5,19,0.10); }
     .obras-row { display: none; }
     .obras-row.open { display: table-row; }
-  </style>
+  
+  /* Estilos Adicionais p/ Modernização Visual */
+  input:not([type=checkbox]):not([type=radio]), select { border-radius: 12px !important; }
+  button { border-radius: 12px !important; }
+  .rounded-full { border-radius: 9999px !important; }
+  .bg-surface-container-lowest.max-w-sm, .bg-surface-container-lowest.max-w-md, .bg-inverse-surface { border-radius: 16px !important; }
+  .bg-inverse-surface { border-bottom-left-radius: 0 !important; border-bottom-right-radius: 0 !important; }
+  .obra-card, .bg-surface-container-lowest > .p-6, .bg-surface-container-lowest.p-6, .border-2.p-3 { border-radius: 16px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.03) !important; }
+  /* Removendo bordas quadradas onde já colocamos sombra e radius */
+  .obra-card { border: 1px solid #e4beba !important; border-radius: 16px !important; }
+  .navbar-brand, .font-heading { letter-spacing: -0.5px; }
+  .bar-inner { border-radius: 6px 6px 0 0 !important; }
+</style>
 </head>
 <body class="bg-surface">
 

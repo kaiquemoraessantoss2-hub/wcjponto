@@ -8,7 +8,7 @@ async function checkObraAccess(obraId, papel, userId) {
   if (papel === 'admin') return true;
   if (papel === 'responsavel') {
     const { data: link } = await supabase.from('obra_responsaveis')
-      .select('id').eq('obra_id', obraId).eq('responsavel_id', userId).single();
+      .select('id').eq('obra_id', obraId).eq('funcionario_id', userId).single();
     return !!link;
   }
   const { data } = await supabase.from('obra_encarregados')
@@ -102,35 +102,49 @@ router.post('/obras/:obra_id/registros', isAuthenticated, async (req, res) => {
     return res.status(403).json({ error: 'Sem permissão para esta obra' });
   }
 
-  const { data, presencas } = req.body;
+  const { data, presencas, remover } = req.body;
   if (!data || !/^\d{4}-\d{2}-\d{2}$/.test(data))
     return res.status(400).json({ error: 'Data inválida' });
-  if (!presencas || !Array.isArray(presencas) || presencas.length === 0)
-    return res.status(400).json({ error: 'presencas é obrigatório' });
+
+  const hasPres = Array.isArray(presencas) && presencas.length > 0;
+  const hasRem = Array.isArray(remover) && remover.length > 0;
+  if (!hasPres && !hasRem)
+    return res.status(400).json({ error: 'Nada para salvar' });
 
   if (req.session.papel === 'responsavel') {
     const { data: link } = await supabase.from('obra_responsaveis')
-      .select('id').eq('obra_id', req.params.obra_id).eq('responsavel_id', req.session.userId).single();
+      .select('id').eq('obra_id', req.params.obra_id).eq('funcionario_id', req.session.userId).single();
     if (!link) {
       return res.status(403).json({ error: 'Você não tem permissão para registrar ponto nesta obra' });
     }
   }
 
-  const rows = presencas.map(p => ({
-    obra_id: parseInt(req.params.obra_id),
-    funcionario_id: p.funcionario_id,
-    data,
-    presente: p.presente ? 1 : 0,
-    observacao: p.observacao || null,
-    registrado_por: req.session.tipo === 'usuario' ? req.session.userId : null,
-    registrado_por_func: req.session.tipo === 'funcionario' ? req.session.userId : null,
-    updated_at: new Date().toISOString()
-  }));
-  const { error } = await supabase.from('registros_ponto').upsert(
-    rows, { onConflict: 'obra_id,funcionario_id,data' }
-  );
+  const obraId = parseInt(req.params.obra_id);
 
-  if (error) return res.status(500).json({ error: 'Erro ao salvar: ' + error.message });
+  if (hasPres) {
+    const rows = presencas.map(p => ({
+      obra_id: obraId,
+      funcionario_id: p.funcionario_id,
+      data,
+      presente: p.presente ? 1 : 0,
+      observacao: p.observacao || null,
+      registrado_por: req.session.tipo === 'usuario' ? req.session.userId : null,
+      registrado_por_func: req.session.tipo === 'funcionario' ? req.session.userId : null,
+      updated_at: new Date().toISOString()
+    }));
+    const { error } = await supabase.from('registros_ponto').upsert(
+      rows, { onConflict: 'obra_id,funcionario_id,data' }
+    );
+    if (error) return res.status(500).json({ error: 'Erro ao salvar: ' + error.message });
+  }
+
+  if (hasRem) {
+    const { error: errDel } = await supabase.from('registros_ponto').delete()
+      .eq('obra_id', obraId).eq('data', data)
+      .in('funcionario_id', remover.map(Number));
+    if (errDel) return res.status(500).json({ error: 'Erro ao remover: ' + errDel.message });
+  }
+
   res.json({ message: 'Registros salvos' });
 });
 
