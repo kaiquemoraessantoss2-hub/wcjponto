@@ -82,7 +82,10 @@ router.post('/responsaveis', isAuthenticated, async (req, res) => {
   }
 
   if (obra_id) {
-    await supabase.from('obra_responsaveis').insert({ obra_id: parseInt(obra_id), funcionario_id: data.id });
+    const oid = parseInt(obra_id);
+    await supabase.from('obra_responsaveis').delete().eq('obra_id', oid);
+    const { error: errLink } = await supabase.from('obra_responsaveis').insert({ obra_id: oid, funcionario_id: data.id });
+    if (errLink) return res.status(500).json({ error: 'Responsável criado, mas falhou ao atribuir obra: ' + errLink.message });
   }
 
   res.status(201).json({ id: data.id, message: 'Responsável cadastrado com sucesso' });
@@ -100,11 +103,16 @@ router.put('/responsaveis/:id', isAuthenticated, async (req, res) => {
   if (error) return res.status(500).json({ error: 'Erro ao atualizar responsável' });
 
   if (Array.isArray(obra_ids)) {
-    await supabase.from('obra_responsaveis').delete().eq('funcionario_id', req.params.id);
+    const fid = parseInt(req.params.id);
+    await supabase.from('obra_responsaveis').delete().eq('funcionario_id', fid);
     if (obra_ids.length > 0) {
-      await supabase.from('obra_responsaveis').insert(
-        obra_ids.map(oid => ({ obra_id: parseInt(oid), funcionario_id: parseInt(req.params.id) }))
+      const oids = obra_ids.map(o => parseInt(o));
+      // remove qualquer outro responsavel ligado a essas obras (substituicao 1:1)
+      await supabase.from('obra_responsaveis').delete().in('obra_id', oids);
+      const { error: errIns } = await supabase.from('obra_responsaveis').insert(
+        oids.map(oid => ({ obra_id: oid, funcionario_id: fid }))
       );
+      if (errIns) return res.status(500).json({ error: 'Erro ao atribuir obras: ' + errIns.message });
     }
   }
 
